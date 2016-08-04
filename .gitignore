@@ -1,0 +1,13 @@
+# Maven
+target/
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+
+# Bower
+bower_components/
+
+# Logs
+*.log

@@ -1,0 +1,179 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+
+
+<dom-module id="product-edit">
+    <template>
+        <style>
+            /* Small */
+            @media (max-width: 600px) {
+                paper-material {
+                    --menu-container-display: none;
+                    width: calc(97.33% - 32px);
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+            }
+
+            /* Tablet+ */
+            @media (min-width: 601px) {
+                paper-material {
+                    width: calc(98% - 46px);
+                    margin-bottom: 32px;
+                    padding-left: 30px;
+                    padding-right: 30px;
+                }
+            }
+        </style>
+
+        <iron-ajax
+                id="product"
+                url="{{targetUrl}}"
+                handl-as="json"
+                on-response="getResponse"
+                last-response="{{currentProduct}}">
+        </iron-ajax>
+
+        <paper-material elevation="1">
+            <form is="iron-form" method="POST" action="{{targetUrl}}" id="productForm" content-type="application/json">
+                <paper-input name="name" label="Name" value="{{currentProduct.name}}" required></paper-input>
+                <paper-input name="price" label="Price" value="{{currentProduct.price}}" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
+
+                <vaadin-upload
+                        id="fileUpload"
+                        hidden
+                        nodrop
+                        max-files="1"
+                        max-file-size="1000000"
+                        headers='{"Authorization": "Bearer {{token}}"}'
+                        accept="image/*"
+                        target="{{targetUrl}}/image"
+                        on-upload-start="readImage">
+                </vaadin-upload>
+
+
+                <iron-image id="image" style="height:50px; width: 50px;" sizing="contain"
+                            src="{{currentProduct.imageUrl}}"></iron-image>
+                <br>
+                <paper-button raised onclick="_submit(event)">Submit</paper-button>
+                <paper-button raised onclick="_reset(event)">Reset</paper-button>
+                <paper-button raised onclick="_cancel(event)">Cancel</paper-button>
+
+            </form>
+            <br>
+        </paper-material>
+
+    </template>
+
+    <script>
+
+        function _submit(event) {
+            Polymer.dom(event).localTarget.parentElement.submit();
+        }
+        function _reset(event) {
+            var form = Polymer.dom(event).localTarget.parentElement;
+            form.reset();
+        }
+        function _cancel(event) {
+            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl
+            page(url)
+        }
+
+        (function () {
+            'use-strict';
+
+            Polymer({
+                is: 'product-edit',
+
+                properties: {
+                    targetUrl: {
+                        type: String,
+                        observer: 'updated'
+                    },
+
+                    returnUrl: {
+                        type: String
+                    },
+
+                    token: {
+                        type: String,
+                        value: ""
+                    }
+                },
+
+                ready: function () {
+
+                    this.$.productForm.headers = {
+                        Authorization: "Bearer " + getToken()
+                    };
+
+                    this.$.fileUpload.headers = {
+                        Authorization: "Bearer " + getToken()
+                    };
+
+                    this.$.productForm.addEventListener('iron-form-response', function (e) {
+
+                        this.fire('updated');
+
+                        var status = e.detail.status;
+                        var url = e.detail.url;
+                        if (!url.endsWith(e.detail.response.id)) {
+                            url = url + '/' + e.detail.response.id;
+                        }
+
+                        var toast = adminApp.$.toast;
+
+                        if (status === 200) {
+                            toast.text = "Product was updated/created successfully";
+                        } else {
+                            toast.text = "Some problems appeared during updating product.\n" +
+                                    e.detail.request.xhr.response.message;
+                        }
+                        toast.show();
+                        window.setTimeout(function () {
+                            page(url);
+                        }, 1000);
+                    });
+                    this.$.fileUpload.addEventListener('upload-request', function (e) {
+                        e.defaultPrevented = true;
+                    })
+                },
+
+                readImage: function (e) {
+                    var input = e.currentTarget;
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            input.parentElement.querySelector('#image')
+                                    .setAttribute('src', e.target.result);
+                        };
+
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                },
+
+                getResponse: function() {
+                    this.$.fileUpload.hidden=false;
+                },
+
+                updated: function(){
+                    this.$.fileUpload.hidden=true;
+                    this.$.fileUpload.files = []
+                    this.$.image.src = "";
+                }
+
+            });
+        })();
+    </script>
+</dom-module>
+

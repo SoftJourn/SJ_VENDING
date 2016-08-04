@@ -1,0 +1,196 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+<dom-module id="admin-items-list">
+    <template>
+        <style>
+
+            iron-icon {
+                color: #616161;
+            }
+
+            paper-toolbar {
+                margin-bottom: 1px;
+            }
+
+            paper-dialog.colored-red {
+                border: 2px solid;
+                border-color: var(--paper-red-500);
+                background-color: var(--paper-light-red-50);
+                color: var(--paper-red-500);
+            }
+
+            .edit:hover {
+                color: orange;
+            }
+
+            .delete:hover {
+                color: red;
+            }
+
+            .create:hover {
+                color: green;
+            }
+        </style>
+
+        <iron-ajax
+                auto
+                id="items"
+                url="{{targetUrl}}"
+                handl-as="json"
+                last-response="{{items}}">
+        </iron-ajax>
+
+        <iron-ajax
+                id="deleteElement"
+                content-type="application/json"
+                method="DELETE"
+                on-response="onDeleteResponse"
+                on-error="onDeleteError">
+        </iron-ajax>
+
+        <paper-toolbar on-click="toggle">
+            <div class="title">{{name}}</div>
+        </paper-toolbar>
+        <div>
+            <iron-collapse id="collapse" tabindex="0">
+                <div class="content">
+                    <template is="dom-repeat" items="{{items}}" as="item">
+                        <paper-material id="{{targetUrl}}/{{item.id}}">
+                            <paper-ripple></paper-ripple>
+                            <template is="dom-repeat" items="{{getFields(item)}}" as="field">
+                                <div>{{show(field)}}</div>
+                            </template>
+                            <p>
+                                <a data-route="edit" href="{{targetUrl}}/{{item.id}}">
+                                    <iron-icon class="edit" icon="icons:create"></iron-icon>
+                                </a>
+                                <iron-icon class="delete" icon="icons:delete"
+                                           on-click="confirmDelete"></iron-icon>
+                            </p>
+                        </paper-material>
+                    </template>
+                    <paper-material>
+                        <a href="{{targetUrl}}">
+                            <iron-icon class="create" icon="icons:note-add"></iron-icon>
+                        </a>
+                    </paper-material>
+                </div>
+            </iron-collapse>
+        </div>
+
+        <paper-dialog id="deleteDialog" elementId="" modal="true" class="colored-red">
+            <h2>Deleting...</h2>
+            <div>
+                Are you sure you want to delete this item?
+            </div>
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button dialog-confirm on-click="acceptDelete">Delete</paper-button>
+            </div>
+        </paper-dialog>
+
+
+    </template>
+
+    <script>
+        Polymer(
+                {
+                    /* this is the element's prototype */
+                    is: 'admin-items-list',
+                    properties: {
+                        targetUrl: String,
+                        ignore: {
+                            type: Array,
+                            value: []
+                        },
+                        aliases: {
+                            type: Object,
+                            value: {}
+                        },
+
+                        token: {
+                            type: String,
+                            value: ""
+                        }
+                    },
+
+                    currentId: 0,
+                    getter: {},
+
+                    ready: function() {
+                        this.$.deleteElement.headers = {
+                            Authorization: "Bearer " + getToken()
+                        }
+                    },
+
+                    toggle: function () {
+                        this.$.collapse.toggle();
+                    },
+
+                    confirmDelete: function (e) {
+                        this.currentId = e.target.closest("paper-material").id;
+                        this.$.deleteDialog.open();
+                    },
+
+                    acceptDelete: function () {
+                        this.$.deleteElement.url = this.currentId;
+                        this.$.deleteElement.generateRequest();
+                    },
+
+                    onDeleteError: function (e) {
+                        var toast = adminApp.$.toast;
+                        toast.text = "Some problems appeared during deleting item.\n" +
+                                e.detail.request.xhr.response.message;
+                        toast.show();
+                    },
+
+                    onDeleteResponse: function (e) {
+                        var status = e.detail.status;
+                        var toast = adminApp.$.toast;
+
+                        if (status === 200) {
+                            toast.text = "Item was deleted successfully.";
+                            this.$.items.generateRequest();
+                        } else {
+                            toast.text = "Some problems appeared during deleting item.\n" +
+                                    e.detail.request.xhr.response.message;
+                        }
+                        toast.show();
+                    },
+
+                    getFields: function (object) {
+                        var result = [];
+                        for (var property in object) {
+                            if (object.hasOwnProperty(property)) {
+                                if (!this.ignore.includes(property)) {
+                                    result.push({
+                                        name: property,
+                                        value: object[property]
+                                    })
+                                }
+                            }
+                        }
+                        return result;
+                    },
+
+                    show:function(field) {
+                        return this.capitalize(this.useAlias(field.name)) + ': ' +  field.value;
+                    },
+
+                    useAlias: function(name) {
+                        var res = this.aliases[name];
+                        return res ? res : name;
+                    },
+
+                    capitalize: function (string) {
+                        return string[0].toUpperCase() + string.slice(1);
+                    }
+
+                })
+        ;
+    </script>
+</dom-module>

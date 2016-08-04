@@ -1,0 +1,141 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+
+
+<dom-module id="machine-create">
+    <template>
+        <style>
+            /* Small */
+            @media (max-width: 600px) {
+                paper-material {
+                    --menu-container-display: none;
+                    width: calc(97.33% - 32px);
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+            }
+
+            /* Tablet+ */
+            @media (min-width: 601px) {
+                paper-material {
+                    width: calc(98% - 46px);
+                    margin-bottom: 32px;
+                    padding-left: 30px;
+                    padding-right: 30px;
+                }
+            }
+        </style>
+
+        <paper-material elevation="1">
+            <form is="iron-form" method="POST" action="{{targetUrl}}" id="machineBuilderForm" content-type="application/json">
+                <paper-input name="name" label="Name" required></paper-input>
+
+                <paper-input name="rowsCount" label="Rows count" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
+                <paper-dropdown-menu label="Rows numbering" selected-item-label="{{rowsSelected}}">
+                    <paper-menu class="dropdown-content">
+                        <paper-item>NUMERICAL</paper-item>
+                        <paper-item>ALPHABETICAL</paper-item>
+                        <paper-item>CUSTOM</paper-item>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <input is="iron-input" name="rowsNumbering" type="hidden" value$="[[rowsSelected]]">
+
+                <paper-input name="columnsCount" label="Columns count" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
+                <paper-dropdown-menu label="Columns numbering" selected-item-label="{{columnsSelected}}">
+                    <paper-menu class="dropdown-content">
+                        <paper-item>NUMERICAL</paper-item>
+                        <paper-item>ALPHABETICAL</paper-item>
+                        <paper-item>CUSTOM</paper-item>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <input is="iron-input" name="columnsNumbering" type="hidden" value$="[[columnsSelected]]">
+
+                <paper-button raised onclick="_submit(event)">Submit</paper-button>
+                <paper-button raised onclick="_reset(event)">Reset</paper-button>
+                <paper-button raised onclick="_cancel(event)">Cancel</paper-button>
+
+            </form>
+            <br>
+        </paper-material>
+
+    </template>
+
+    <script>
+
+        function _submit(event) {
+            Polymer.dom(event).localTarget.parentElement.submit();
+        }
+        function _reset(event) {
+            var form = Polymer.dom(event).localTarget.parentElement;
+            form.reset();
+        }
+        function _cancel(event) {
+            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl;
+            page(url)
+        }
+
+        (function () {
+            'use-strict';
+
+            Polymer({
+                is: 'machine-create',
+
+                properties: {
+                    targetUrl: {
+                        type: String,
+                        observer: 'updated'
+                    },
+
+                    returnUrl: {
+                        type: String
+                    },
+
+                    token: {
+                        type: String,
+                        value: ""
+                    }
+                },
+
+                ready: function () {
+                    this.$.machineBuilderForm.headers = {
+                        Authorization: "Bearer " + getToken()
+                    };
+
+                    this.$.machineBuilderForm.addEventListener('iron-form-response', function (e) {
+
+                        this.fire('updated');
+
+                        var status = e.detail.status;
+                        var url = e.detail.url;
+                        if (!url.endsWith(e.detail.response.id)) {
+                            url = url + '/' + e.detail.response.id;
+                        }
+
+                        var toast = adminApp.$.toast;
+
+                        if (status === 200) {
+                            toast.text = "Vending machine was created successfully.";
+                        } else {
+                            toast.text = "Some problems appeared during creating vending machine.\n" +
+                                    e.detail.request.xhr.response.message;
+                        }
+                        toast.show();
+                        window.setTimeout(function () {
+                            page(url);
+                        }, 1000);
+                    });
+                }
+            });
+        })();
+    </script>
+</dom-module>
+

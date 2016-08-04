@@ -1,0 +1,288 @@
+= Vending server API Guide
+Vasyl Danyliuk;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource or update an existing resource, including partial updates
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+
+| `409 Conflict`
+| Cant process request due to error like such item already presented or not enough money to buy item
+|===
+
+[[overview-errors]]
+== Errors
+
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
+that describes the problem. The error object has the following structure:
+
+[[resources]]
+= Resources
+
+
+[[resources]]
+== Client endpoints
+
+[[resources-machines-list]]
+=== Listing machines
+
+A `GET` request will list all of the installed machines.
+
+==== Response structure
+
+include::{snippets}/machines/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/machines/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/machines/http-response.adoc[]
+
+[[resources-machine]]
+
+[[resources-machine]]
+=== Getting one machine by it's id
+
+A `GET` request will get machine with requested id.
+
+==== Response structure
+
+include::{snippets}/machine/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/machine/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/machine/http-response.adoc[]
+
+
+[[resources-products-list]]
+=== Listing products
+
+A `GET` request will list all of the available in selected machine products.
+
+==== Response structure
+
+include::{snippets}/products/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/products/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/products/http-response.adoc[]
+
+
+[[resources-buy-by-id]]
+=== Buying item by field name
+
+A `POST` request will check available money amount decrease it and perform machine to get requested product.
+
+==== Example request
+
+include::{snippets}/buy-by-id/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/buy-by-id/http-response.adoc[]
+
+
+
+[[resources-buy-by-product]]
+=== Buying by product id
+
+A `POST` request will check available money amount decrease it and perform machine to get requested product.
+
+==== Example request
+
+include::{snippets}/buy-by-product/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/buy-by-product/http-response.adoc[]
+
+
+[[resources-all-products]]
+== Administrative product endpoints
+
+Make request to get all products registered in system. Not depend on any machine.
+
+[[resources-all-products]]
+=== Getting all products
+
+A `GET` request to get all products registered in system. Not depend on any machine.
+
+
+==== Example request
+
+include::{snippets}/all-products/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/all-products/http-response.adoc[]
+
+[[resources-all-product]]
+=== Getting one product registered in system by it's id
+
+Make request to get product registered in system by id. Not depend on any machine.
+
+==== Example request
+
+include::{snippets}/all-product/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/all-product/http-response.adoc[]
+
+[[resources-add-product]]
+=== Adding product into system
+
+Make request to add products into system. Not depend on any machine.
+
+==== Example request
+
+include::{snippets}/add-product/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/add-product/http-response.adoc[]
+
+[[resources-update-product]]
+=== Updating product's fields
+
+Make request to update product in system.
+
+==== Example request
+
+include::{snippets}/update-product/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-product/http-response.adoc[]
+
+
+[[resources-update-product-image]]
+=== Updating product's image
+
+Make request to update product image.
+
+==== Example request
+
+include::{snippets}/update-product-image/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-product-image/http-response.adoc[]
+
+[[resources-delete-product]]
+=== Deleting product
+
+Make request to delete product from system.
+
+==== Example request
+
+include::{snippets}/delete-product/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/delete-product/http-response.adoc[]
+
+== Administrative machine endpoints
+
+[[resources-add-machine]]
+=== Adding machine
+
+Make request to add new machine to system.
+
+==== Example request
+
+include::{snippets}/add-machine/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/add-machine/http-response.adoc[]
+
+[[resources-delete-machine]]
+=== Deleting machine
+
+Make request to delete machine from system.
+
+==== Example request
+
+include::{snippets}/delete-machine/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/delete-machine/http-response.adoc[]
+
+[[resources-update-machine-field]]
+=== Updating concrete machine field
+
+Make request to update machine field. Set new product, update products count, update internal machine field id.
+
+==== Example request
+
+include::{snippets}/update-machine-field/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-machine-field/http-response.adoc[]
+
+[[resources-update-machine-row]]
+=== Updating concrete machine field
+
+Make request to update machine row. In body should be new count of fields in this row.
+
+==== Example request
+
+include::{snippets}/update-machine-row/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/update-machine-row/http-response.adoc[]

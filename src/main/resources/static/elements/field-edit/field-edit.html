@@ -1,0 +1,159 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+
+
+<dom-module id="field-edit">
+    <template>
+        <style>
+            /* Small */
+            @media (max-width: 600px) {
+                paper-material {
+                    --menu-container-display: none;
+                    width: calc(97.33% - 32px);
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+            }
+
+            /* Tablet+ */
+            @media (min-width: 601px) {
+                paper-material {
+                    width: calc(98% - 46px);
+                    margin-bottom: 32px;
+                    padding-left: 30px;
+                    padding-right: 30px;
+                }
+            }
+        </style>
+
+        <iron-ajax
+                auto
+                id="products"
+                url="{{productsUrl}}"
+                handl-as="json"
+                last-response="{{products}}">
+        </iron-ajax>
+
+        <paper-material elevation="1">
+            <form is="iron-form" method="POST" action="{{targetUrl}}" id="fieldForm" content-type="application/json">
+
+                <paper-input name="internalId" label="Name" value="{{field.internalId}}" required></paper-input>
+
+                <paper-input name="count" label="Count" value="{{field.count}}" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
+
+                <paper-dropdown-menu label="Product" selected-item-label="{{selectedField}}">
+                    <paper-menu class="dropdown-content" attr-for-selected="value" selected="{{field.product.id}}">
+                        <template is="dom-repeat" items="{{products}}" as="product">
+                            <paper-item value="{{product.id}}">{{product.name}}</paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <input is="iron-input" name="product" type="hidden" value$="[[selectedField]]">
+
+                <paper-button raised onclick="_submit(event)">Submit</paper-button>
+                <paper-button raised onclick="_reset(event)">Reset</paper-button>
+                <paper-button raised onclick="_cancel(event)">Cancel</paper-button>
+
+            </form>
+            <br>
+        </paper-material>
+
+    </template>
+
+    <script>
+
+        function _submit(event) {
+            Polymer.dom(event).localTarget.parentElement.submit();
+        }
+        function _reset(event) {
+            var form = Polymer.dom(event).localTarget.parentElement;
+            form.reset();
+        }
+        function _cancel(event) {
+            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl
+            page(url)
+        }
+
+        (function () {
+            'use-strict';
+
+            Polymer({
+                is: 'field-edit',
+
+                properties: {
+                    targetUrl: {
+                        type: String
+                    },
+
+                    field: {
+                        type: Object,
+                        observer: 'updated'
+                    },
+
+                    productsUrl: {
+                        type: String
+                    },
+
+                    returnUrl: {
+                        type: String
+                    },
+
+                    token: {
+                        type: String,
+                        value: ""
+                    }
+                },
+
+                ready: function () {
+                    this.$.fieldForm.headers = {
+                        Authorization: "Bearer " + getToken()
+                    };
+
+                    this.$.fieldForm.addEventListener('iron-form-presubmit', function (e) {
+                        var self = this;
+                        this.request.body['product'] = function (name) {
+                            for (var p of self.parentElement.parentElement.products) {
+                                if (p.name === name) return p;
+                            }
+                        }(this.elements['product'].value);
+                    });
+
+                    this.$.fieldForm.addEventListener('iron-form-response', function (e) {
+
+                        this.fire('updated');
+                        var toast = adminApp.$.toast;
+
+                        if (e.detail.status === 200) {
+                            toast.text = "Field was updated successfully";
+                        } else {
+                            toast.text = "Some problems appeared during deleting item.\n" +
+                                    e.detail.request.xhr.response.message;
+                        }
+                        toast.show();
+                    });
+
+                    this.$.fieldForm.addEventListener('iron-form-error',function(e) {
+                        var toast = adminApp.$.toast;
+                        toast.text = e.detail.request.xhr.response.error + ": " + e.detail.request.xhr.response.message;
+                        toast.show();
+                    });
+                },
+
+                updated: function() {
+                    this.$.products.generateRequest()
+                }
+
+            });
+        })();
+    </script>
+</dom-module>
+

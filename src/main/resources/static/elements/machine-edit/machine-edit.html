@@ -1,0 +1,186 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+
+
+<dom-module id="machine-edit">
+    <template>
+        <style>
+            /* Small */
+            @media (max-width: 600px) {
+                paper-material {
+                    --menu-container-display: none;
+                    width: calc(97.33% - 32px);
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+            }
+
+            /* Tablet+ */
+            @media (min-width: 601px) {
+                paper-material {
+                    width: calc(98% - 46px);
+                    margin-bottom: 32px;
+                    padding-left: 30px;
+                    padding-right: 30px;
+                }
+            }
+
+            .back {
+                margin: auto;
+                width: 60%;
+            }
+
+            .field {
+                min-width: 70px;
+                min-height: 70px;
+                border: solid;
+                background-size: 100%;
+                background-repeat: no-repeat;
+            }
+
+        </style>
+
+        <iron-ajax
+                id="machine"
+                url="{{targetUrl}}"
+                handl-as="json"
+                last-response="{{currentMachine}}">
+        </iron-ajax>
+
+        <iron-ajax
+                id="updateAjax"
+                content-type="application/json"
+                url="{{targetUrl}}/rows/{{currentRow.id}}"
+                method="POST"
+                on-response="reload"
+                handl-as="json">
+        </iron-ajax>
+
+        <paper-material elevation="1">
+            <div class="back">
+                <table>
+                    <tbody>
+                        <template is="dom-repeat" items="{{currentMachine.rows}}" as="row">
+                            <tr>
+                                <td>
+                                    <paper-input
+                                            name="count"
+                                            id="{{row.id}}"
+                                            label="Count"
+                                            value="{{row.fields.length}}"
+                                            auto-validate
+                                            allowed-pattern="[1-9][0-9]*"
+                                            on-change="changeRows"
+                                            required>
+
+                                    </paper-input>
+                                </td>
+                                <template is="dom-repeat" items="{{row.fields}}" as="field">
+                                    <td on-click="changeField">
+                                        <div class="field" style="background-image: url({{field.product.imageUrl}})">
+                                            <h3>{{field.internalId}}</h3>
+                                            <div>{{field.product.name}}</div>
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </paper-material>
+
+        <field-edit
+                products-url="{{productsUrl}}"
+                id="fieldEdit"
+                field="{{currentField}}"
+                target-url="{{targetUrl}}/fields/{{currentField.id}}"
+                return-url="{{targetUrl}}"
+                on-updated="reload">
+
+        </field-edit>
+    </template>
+
+    <script>
+
+        function _submit(event) {
+            Polymer.dom(event).localTarget.parentElement.submit();
+        }
+        function _reset(event) {
+            var form = Polymer.dom(event).localTarget.parentElement;
+            form.reset();
+        }
+        function _cancel(event) {
+            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl
+            page(url)
+        }
+
+        (function () {
+            'use-strict';
+
+            Polymer({
+                is: 'machine-edit',
+
+                properties: {
+                    targetUrl: {
+                        type: String,
+                        observer: 'updated'
+                    },
+
+                    returnUrl: {
+                        type: String
+                    },
+
+                    currentField: {
+                        type: String
+                    },
+
+                    currentRow: {
+                        type: String
+                    },
+
+                    productsUrl: {
+                        type: String
+                    },
+
+                    token: {
+                        type: String,
+                        value: ""
+                    }
+                },
+
+                ready: function () {
+                    this.$.updateAjax.headers = {
+                        Authorization: "Bearer " + getToken()
+                    };
+                },
+
+                changeField: function(e) {
+                    this.currentField = e.model.field;
+                },
+
+                reload: function() {
+                    this.$.machine.generateRequest();
+                },
+
+                changeRows: function(e) {
+                    this.currentRow = e.model.row;
+                    var newCount = e.currentTarget.value;
+                    this.$.updateAjax.body = newCount;
+                    this.$.updateAjax.generateRequest();
+                }
+
+            });
+        })();
+    </script>
+</dom-module>
+

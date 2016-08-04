@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 public class ControllerTestConfig {
 
 
-    private Product product2;
+    private static Product product2;
 
     private Field field1;
     private Field field2;
@@ -40,10 +40,7 @@ public class ControllerTestConfig {
 
     private Row row1;
 
-    @Bean
-    public ProductService productService() {
-        ProductService productService;
-
+    static {
         product = new Product();
         product.setId(0);
         product.setName("COLA");
@@ -56,6 +53,11 @@ public class ControllerTestConfig {
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
         product2.setImageUrl("/image2.jpg");
+    }
+
+    @Bean
+    public ProductService productService() {
+        ProductService productService;
 
         productService = Mockito.mock(ProductService.class);
         when(productService.getProducts()).thenReturn(new ArrayList<Product>() {{

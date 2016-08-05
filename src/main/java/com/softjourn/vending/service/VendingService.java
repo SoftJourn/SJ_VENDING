@@ -10,7 +10,6 @@ import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -45,7 +44,6 @@ public class VendingService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
     public VendingMachine create(VendingMachineBuilderDTO builder) {
         VendingMachine machine = new VendingMachine();
         machine.setName(builder.getName());
@@ -60,7 +58,6 @@ public class VendingService {
         return repository.save(machine);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Integer id) {
         repository.delete(id);
     }

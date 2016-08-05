@@ -8,7 +8,6 @@ import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.exceptions.AlreadyPresentedException;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +34,6 @@ public class FieldService {
                 .build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized Field update(Integer id, Field field, Integer machineId) {
         Field old = fieldRepository.findOne(id);
         checkNewInternalId(old, field.getInternalId(), machineId);
@@ -43,7 +41,6 @@ public class FieldService {
         return fieldRepository.save(newField);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized Row updateFieldsCountInRow(Integer id, Integer fieldsCount) {
         Row old = rowRepository.findOne(id);
         if (old.getFields().size() == fieldsCount) return old;

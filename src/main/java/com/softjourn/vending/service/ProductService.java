@@ -50,12 +50,10 @@ public class ProductService {
         return product;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized Product add(@NonNull Product product) {
         return repository.save(product);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized Product update(@NonNull Integer id, @NonNull Product product) {
         Product old = getProduct(id);
         Product newProduct = mergeUtil.merge(old, product);
@@ -63,7 +61,6 @@ public class ProductService {
         return newProduct;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized void updateImage(@NonNull MultipartFile file, Integer id) {
         Product product = getProduct(id);
         String fileName = IMAGES_DIR + FileUploadUtil.saveImage(file, STATIC_CONTENT_DIR + IMAGES_DIR, product.getName(), product.getImageUrl());
@@ -71,7 +68,6 @@ public class ProductService {
         repository.save(product);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public synchronized Product delete(@NonNull Integer id) {
         Product product = getProduct(id);
         repository.delete(id);

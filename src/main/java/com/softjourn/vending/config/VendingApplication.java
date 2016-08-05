@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -83,6 +84,8 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers("/admin").authenticated()
+                .antMatchers(HttpMethod.POST, "/v1/vending/**", "/v1/products/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/v1/vending/**", "/v1/products/**").authenticated()
                 .anyRequest().permitAll()
             .and()
             .sessionManagement()

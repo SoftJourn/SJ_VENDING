@@ -1,5 +1,7 @@
 package com.softjourn.vending.controller.sso;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -22,6 +24,16 @@ import java.util.stream.Collectors;
 
 @Controller
 public class SsoController {
+
+    private String authServerUrl;
+    private String redirectUrl;
+
+    @Autowired
+    public SsoController(@Value("${auth.server.host}") String authServerUrl,
+                         @Value("${auth.redirect.url}") String redirectUrl) {
+        this.authServerUrl = authServerUrl;
+        this.redirectUrl = redirectUrl;
+    }
 
     /**
      * Handle redirected requests from auth server,
@@ -57,11 +69,11 @@ public class SsoController {
         Map<String, String> params = new HashMap<>();
         params.put("code", code);
         params.put("grant_type","authorization_code");
-        params.put("redirect_uri","https://localhost:8222/sso");
+        params.put("redirect_uri", redirectUrl);
 
         HttpEntity<String> entity = new HttpEntity<>("", headers);
 
-        Map map = restTemplate.postForEntity(formatUrl("https://localhost:8111/oauth/token?", params),
+        Map map = restTemplate.postForEntity(formatUrl(authServerUrl + "/oauth/token?", params),
                 entity,
                 HashMap.class).getBody();
 

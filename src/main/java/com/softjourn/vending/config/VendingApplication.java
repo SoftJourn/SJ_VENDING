@@ -37,6 +37,12 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
     @Value("${auth.server.host}")
     private String authServerHost;
 
+    @Value("${auth.redirect.url}")
+    private String authRedirectUri;
+
+    @Value("${auth.client.id}")
+    private String clientId;
+
     public static void main(String[] args) {
         SpringApplication.run(VendingApplication.class, args);
     }
@@ -94,10 +100,10 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
         return authServerHost +
                 "/oauth/authorize?" +
                 "response_type=code&" +
-                "redirect_uri=https://localhost:8222/sso&" +
+                "redirect_uri="+ authRedirectUri +"&" +
                 "response_type=code&" +
                 "scope=read&" +
-                "client_id=vending_admin";
+                "client_id=" + clientId;
     }
 
     public static class ServletInit extends SpringBootServletInitializer {

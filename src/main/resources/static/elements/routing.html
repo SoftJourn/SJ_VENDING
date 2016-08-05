@@ -27,11 +27,11 @@
             next();
         });
 
-        page('/admin', function () {
+        page(getContext() + 'admin', function () {
             adminApp.route = 'admin';
         });
 
-        page('/v1/products/:id', function (data) {
+        page(getContext() + 'v1/products/:id', function (data) {
             adminApp.route = 'product-edit';
             adminApp.$.productEdit.targetUrl = data.path;
             adminApp.$.productEdit.$.productForm.reset();
@@ -40,19 +40,19 @@
             }, 300);
         });
 
-        page('/v1/products', function (data) {
+        page(getContext() + 'v1/products', function (data) {
             adminApp.route = 'product-edit';
             adminApp.$.productEdit.$.productForm.reset();
             adminApp.$.productEdit.targetUrl = data.path;
         });
 
-        page('/v1/vending', function (data) {
+        page(getContext() + 'v1/vending', function (data) {
             adminApp.route = 'machine-add';
             adminApp.$.addMachine.$.machineBuilderForm.reset();
             adminApp.$.addMachine.targetUrl = data.path;
         });
 
-        page('/v1/vending/:id', function (data) {
+        page(getContext() + 'v1/vending/:id', function (data) {
             adminApp.route = 'machine-edit';
             adminApp.$.editMachine.targetUrl = data.path;
             adminApp.$.editMachine.$.machine.generateRequest();

@@ -26,12 +26,14 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-
         const token = [[${token}]];
+        const context =/*[[@{/}]]*/;
         function getToken() {
             return token
+        };
+        function getContext() {
+            return context;
         }
-
         /*]]>*/
     </script>
 </head>

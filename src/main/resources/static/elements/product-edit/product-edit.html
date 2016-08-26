@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
@@ -47,6 +48,16 @@
             <form is="iron-form" method="POST" action="{{targetUrl}}" id="productForm" content-type="application/json">
                 <paper-input name="name" label="Name" value="{{currentProduct.name}}" required></paper-input>
                 <paper-input name="price" label="Price" value="{{currentProduct.price}}" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
+                <paper-textarea name="description" label="Description" value="{{currentProduct.description}}"></paper-textarea>
+                <paper-dropdown-menu label="Category" selected-item-label="{{selectedField}}">
+                    <paper-menu class="dropdown-content" attr-for-selected="value" selected="{{currentProduct.category}}">
+                        <template is="dom-repeat" items="[[categories]]" as="category">
+                            <paper-item value="{{category}}">{{category}}</paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+                <input is="iron-input" name="category" type="hidden" value$="[[selectedField]]">
+
 
                 <vaadin-upload
                         id="fileUpload"
@@ -84,7 +95,7 @@
             form.reset();
         }
         function _cancel(event) {
-            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl
+            var url = Polymer.dom(event).localTarget.parentElement.parentElement.parentElement.returnUrl;
             page(url)
         }
 
@@ -107,7 +118,13 @@
                     token: {
                         type: String,
                         value: ""
+                    },
+
+                    categories: {
+                        type: Array,
+                        value: ['DRINK', 'SNACK']
                     }
+
                 },
 
                 ready: function () {

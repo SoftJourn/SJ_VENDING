@@ -7,6 +7,7 @@ import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.utils.FileUploadUtil;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@Slf4j
 public class ProductService {
 
     private ProductRepository repository;
@@ -31,6 +33,8 @@ public class ProductService {
     public ProductService(@NonNull ProductRepository repository, ServletContext servletContext) {
         this.repository = repository;
         String CONTEXT_PATH = servletContext.getRealPath("/images");
+        log.warn("Context paht: " + CONTEXT_PATH);
+        log.warn(servletContext.getRealPath("/"));
 
         mergeUtil = ReflectionMergeUtil
                 .forClass(Product.class)

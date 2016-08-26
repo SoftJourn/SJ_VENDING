@@ -32,5 +32,15 @@ public class Product {
     private String imageUrl;
 
     @Column
-    Instant addedTime;
+    private Instant addedTime;
+
+    @Column
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    public enum Category {
+        DRINK, SNACK
+    }
 }

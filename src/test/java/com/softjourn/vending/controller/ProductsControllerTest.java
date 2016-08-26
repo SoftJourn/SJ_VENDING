@@ -73,7 +73,9 @@ public class ProductsControllerTest {
                                 fieldWithPath("[0].id").description("Product id."),
                                 fieldWithPath("[0].name").description("Product name."),
                                 fieldWithPath("[0].price").description("Product price."),
-                                fieldWithPath("[0].imageUrl").description("Relative path to product image.")
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].category").description("Product category."),
+                                fieldWithPath("[0].description").description("Product description.")
                         )));
     }
 
@@ -87,7 +89,9 @@ public class ProductsControllerTest {
                                 fieldWithPath("id").description("Product id."),
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
-                                fieldWithPath("imageUrl").description("Relative path to product image.")
+                                fieldWithPath("imageUrl").description("Relative path to product image."),
+                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("description").description("Product description.")
                         )));
     }
 
@@ -112,7 +116,9 @@ public class ProductsControllerTest {
                                 fieldWithPath("id").description("Product id."),
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
-                                fieldWithPath("imageUrl").description("Relative path to product image.")
+                                fieldWithPath("imageUrl").description("Relative path to product image."),
+                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("description").description("Product description.")
                         )));
     }
 
@@ -135,7 +141,9 @@ public class ProductsControllerTest {
                                 fieldWithPath("id").description("Product id."),
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
-                                fieldWithPath("imageUrl").description("Relative path to product image.")
+                                fieldWithPath("imageUrl").description("Relative path to product image."),
+                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("description").description("Product description.")
                         )));
     }
 
@@ -171,7 +179,9 @@ public class ProductsControllerTest {
                                 fieldWithPath("id").description("Product id."),
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
-                                fieldWithPath("imageUrl").description("Relative path to product image.")
+                                fieldWithPath("imageUrl").description("Relative path to product image."),
+                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("description").description("Product description.")
                         )));
     }
 

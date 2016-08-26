@@ -4,18 +4,8 @@ package com.softjourn.vending.dto;
 import com.softjourn.vending.entity.Product;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
-public class ProductDTO {
-
-    private Integer id;
-
-    private BigDecimal price;
-
-    private String name;
-
-    private String imageUrl;
+public class ProductDTO extends Product {
 
     private Position position;
 
@@ -25,9 +15,11 @@ public class ProductDTO {
     }
 
     private ProductDTO(Product product) {
-        this.id = product.getId();
-        this.price = product.getPrice();
-        this.name = product.getName();
-        this.imageUrl = product.getImageUrl();
+        this.setId(product.getId());
+        this.setPrice(product.getPrice());
+        this.setName(product.getName());
+        this.setImageUrl(product.getImageUrl());
+        this.setCategory(product.getCategory());
+        this.setDescription(product.getDescription());
     }
 }

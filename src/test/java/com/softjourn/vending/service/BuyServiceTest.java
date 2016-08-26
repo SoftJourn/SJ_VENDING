@@ -144,7 +144,7 @@ public class BuyServiceTest {
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
 
         when(purchaseRepository.getAllByMachineId(anyInt())).thenReturn(purchases);
-        when(purchaseRepository.getAllByUser("user")).thenReturn(purchases);
+        when(purchaseRepository.getAllByUserAndMachine("user", 0)).thenReturn(purchases);
 
 
     }
@@ -176,7 +176,7 @@ public class BuyServiceTest {
 
         assertTrue(buyService.buy(1, "A0", principal));
 
-        verify(vendingService, times(2)).get(1);
+        verify(vendingService, times(3)).get(1);
         verify(coinService, times(1)).spent(principal, new BigDecimal(5));
         verify(machineService, times(1)).bye(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
@@ -208,6 +208,6 @@ public class BuyServiceTest {
 
     @Test
     public void getLastPurchasesTest() throws Exception {
-        assertThat(buyService.lastPurchases(() -> "user"), IsIterableContainingInOrder.contains(product, product2));
+        assertThat(buyService.lastPurchases(() -> "user", 0), IsIterableContainingInOrder.contains(product, product2));
     }
 }

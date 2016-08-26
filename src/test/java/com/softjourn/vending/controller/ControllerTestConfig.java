@@ -16,6 +16,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -33,6 +34,7 @@ public class ControllerTestConfig {
 
 
     private static Product product2;
+    private static Product product3;
 
     private Field field1;
     private Field field2;
@@ -46,13 +48,25 @@ public class ControllerTestConfig {
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
         product.setImageUrl("/image.jpg");
+        product.setCategory(Product.Category.DRINK);
+        product.setDescription("Cola with coca.");
 
 
         product2 = new Product();
         product2.setId(1);
-        product2.setName("COCA");
+        product2.setName("Nuts");
         product2.setPrice(new BigDecimal(50));
         product2.setImageUrl("/image2.jpg");
+        product2.setCategory(Product.Category.SNACK);
+        product2.setDescription("Energy bar with nuts.");
+
+        product3 = new Product();
+        product3.setId(1);
+        product3.setName("Snickers");
+        product3.setPrice(new BigDecimal(50));
+        product3.setImageUrl("/image3.jpg");
+        product3.setCategory(Product.Category.SNACK);
+        product3.setDescription("Energy bar with nuts.");
     }
 
     @Bean
@@ -153,6 +167,7 @@ public class ControllerTestConfig {
 
         ProductDTO productDTO = new ProductDTO(product, new Position(0, 0, "A0"));
         ProductDTO productDTO1 = new ProductDTO(product2, new Position(0, 1, "A1"));
+        ProductDTO productDTO2 = new ProductDTO(product3, new Position(1, 1, "B1"));
 
         when(buyService.getAvailableProducts(anyInt())).thenReturn(new ArrayList<ProductDTO>() {{
             add(productDTO);
@@ -161,6 +176,11 @@ public class ControllerTestConfig {
 
         when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(true);
         when(buyService.buy(anyInt(), anyString(), any())).thenReturn(false);
+        when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
+        when(buyService.getByCategory(Product.Category.DRINK, 0)).thenReturn(Collections.singletonList(productDTO));
+        when(buyService.getByCategory(Product.Category.SNACK, 0)).thenReturn(new ArrayList<ProductDTO>(){{add(productDTO1);add(productDTO2);}});
+        when(buyService.getNew(anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
+        when(buyService.lastPurchases(any(Principal.class), anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
 
         return buyService;
     }

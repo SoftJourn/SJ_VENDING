@@ -100,6 +100,22 @@ include::{snippets}/machine/http-request.adoc[]
 
 include::{snippets}/machine/http-response.adoc[]
 
+[[resources-features]]
+=== Features list
+
+A `GET` request will returns products by categories, newest, best sellers ...
+
+==== Response structure
+
+include::{snippets}/features/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/features/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/features/http-response.adoc[]
 
 [[resources-products-list]]
 === Listing products

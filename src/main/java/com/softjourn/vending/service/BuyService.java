@@ -93,12 +93,13 @@ public class BuyService {
     public List<Product> getNew(Integer machineId) {
         return getAvailableProductsStream(machineId)
                 .sorted((p1, p2) -> p2.getAddedTime().compareTo(p1.getAddedTime()))
+                .distinct()
                 .limit(NEW_PRODUCTS_LIMIT)
                 .collect(Collectors.toList());
     }
 
-    public List<Product> lastPurchases(Principal principal) {
-        return purchaseRepository.getAllByUser(principal.getName()).stream()
+    public List<Product> lastPurchases(Principal principal, Integer machineId) {
+        return purchaseRepository.getAllByUserAndMachine(principal.getName(), machineId).stream()
                 .sorted((p1, p2) -> p2.getTime().compareTo(p1.getTime()))
                 .map(Purchase::getProduct)
                 .distinct()
@@ -106,8 +107,8 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public List<Product> getByCategory(Product.Category category, Integer machineId) {
-        return getAvailableProductsStream(machineId)
+    public List<ProductDTO> getByCategory(Product.Category category, Integer machineId) {
+        return getAvailableProducts(machineId).stream()
                 .filter(p -> p.getCategory().equals(category))
                 .collect(Collectors.toList());
     }

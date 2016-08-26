@@ -1,6 +1,7 @@
 package com.softjourn.vending.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -32,6 +33,7 @@ public class Product {
     private String imageUrl;
 
     @Column
+    @JsonIgnore
     private Instant addedTime;
 
     @Column
@@ -41,6 +43,17 @@ public class Product {
     private Category category;
 
     public enum Category {
-        DRINK, SNACK
+        DRINK("Drink"),
+        SNACK("Snack");
+
+        private String readableName;
+
+        public String readableName() {
+            return readableName;
+        }
+
+        Category(String readableName) {
+            this.readableName = readableName;
+        }
     }
 }

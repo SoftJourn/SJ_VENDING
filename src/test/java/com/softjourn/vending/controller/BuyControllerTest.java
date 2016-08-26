@@ -86,7 +86,7 @@ public class BuyControllerTest {
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
                                 fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines).")
-                                )));
+                        )));
     }
 
     @Test
@@ -109,6 +109,23 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].position.column").description("Number of column that contains product(Starts with 0)."),
                                 fieldWithPath("[0].position.cellName").description("Name of cell where product is located.")
                         )));
+    }
+
+    @Test
+    public void testGetFeatures() throws Exception {
+        mockMvc
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/machines/{machineId}/features", 0))
+                .andExpect(status().isOk())
+                .andDo(document("features",
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("New products").description("Top 10 newest products."),
+                                fieldWithPath("My lastPurchases").description("Ten products that was purchased last time by user."),
+                                fieldWithPath("Best sellers").description("Top 10 best sellers products."),
+                                fieldWithPath("Drink").description("All drinks in machine. With positions."),
+                                fieldWithPath("Snack").description("All snacks in machine. With positions.")
+                                )));
     }
 
     @Test

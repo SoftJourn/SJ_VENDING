@@ -3,6 +3,7 @@ package com.softjourn.vending.utils;
 
 import com.softjourn.vending.exceptions.NotImageException;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
+@Slf4j
 public class FileUploadUtil {
 
     public static boolean isImage(@NonNull MultipartFile file) {
@@ -47,6 +49,7 @@ public class FileUploadUtil {
         try {
             fileName = name + "." + getResolution(file);
             Path imagePath = Paths.get(path + fileName);
+            log.warn("Full path: " + imagePath.toAbsolutePath().toString());
             while (Files.exists(imagePath)) {
                 fileName = name + getRandomString() + "." + getResolution(file);
                 imagePath = Paths.get(path + fileName);

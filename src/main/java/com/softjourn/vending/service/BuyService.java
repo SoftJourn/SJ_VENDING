@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Setter
@@ -92,11 +93,7 @@ public class BuyService {
     }
 
     public List<Product> getNew(Integer machineId) {
-        VendingMachine machine = vendingService.get(machineId);
-        if (machine == null) throw new NotFoundException("There is no machine with id " + machine);
-        return machine.getFields().stream()
-                .filter(f -> f.getProduct() != null && f.getCount() > 0)
-                .map(Field::getProduct)
+        return getAvailableProductsStream(machineId)
                 .sorted((p1, p2) -> p2.getAddedTime().compareTo(p1.getAddedTime()))
                 .limit(NEW_PRODUCTS_LIMIT)
                 .collect(Collectors.toList());
@@ -109,6 +106,20 @@ public class BuyService {
                 .distinct()
                 .limit(LAST_PURCHASES_LIMIT)
                 .collect(Collectors.toList());
+    }
+
+    public List<Product> getByCategory(Product.Category category, Integer machineId) {
+        return getAvailableProductsStream(machineId)
+                .filter(p -> p.getCategory().equals(category))
+                .collect(Collectors.toList());
+    }
+
+    private Stream<Product> getAvailableProductsStream(Integer machineId) {
+        VendingMachine machine = vendingService.get(machineId);
+        if (machine == null) throw new NotFoundException("There is no machine with id " + machineId);
+        return machine.getFields().stream()
+                .filter(f -> f.getProduct() != null && f.getCount() > 0)
+                .map(Field::getProduct);
     }
 
     private void savePurchase(Integer machineId, Product product, Principal principal) {

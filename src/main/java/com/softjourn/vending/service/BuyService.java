@@ -1,12 +1,10 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +23,15 @@ public class BuyService {
 
     private VendingService vendingService;
     private MachineService machineService;
+    private PurchaseRepository purchaseRepository;
     private CoinService coinService;
     private FieldService fieldService;
 
     @Autowired
-    public BuyService(VendingService vendingService, MachineService machineService, CoinService coinService, FieldService fieldService) {
+    public BuyService(VendingService vendingService, MachineService machineService, PurchaseRepository purchaseRepository, CoinService coinService, FieldService fieldService) {
         this.vendingService = vendingService;
         this.machineService = machineService;
+        this.purchaseRepository = purchaseRepository;
         this.coinService = coinService;
         this.fieldService = fieldService;
     }
@@ -67,7 +68,16 @@ public class BuyService {
         coinService.spent(principal, product.getPrice());
         machineService.bye(machineId, itemId);
         decreaseProductsCount(machineId, itemId);
+        savePurchase(product, principal);
         return true;
+    }
+
+    private void savePurchase(Product product, Principal principal) {
+        Purchase purchase = new Purchase();
+        purchase.setAccount(principal.getName());
+        purchase.setProduct(product);
+        purchase.setTime(Instant.now());
+        purchaseRepository.save(purchase);
     }
 
     private String getFieldByProduct(Integer machineId, Integer productId) {

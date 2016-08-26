@@ -1,10 +1,9 @@
 package com.softjourn.vending.service;
 
+import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.entity.*;
+import com.softjourn.vending.exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,13 +12,16 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuyServiceTest {
@@ -32,6 +34,8 @@ public class BuyServiceTest {
     private CoinService coinService;
     @Mock
     private FieldService fieldService;
+    @Mock
+    private PurchaseRepository purchaseRepository;
 
     @InjectMocks
     private BuyService buyService;
@@ -128,6 +132,30 @@ public class BuyServiceTest {
         assertEquals("COCA", res.get(1).getName());
     }
 
+    @Test
+    public void buyTest() {
+        Principal principal = () -> "user";
 
+        assertTrue(buyService.buy(1, "A0", principal));
+
+        verify(vendingService, times(2)).get(1);
+        verify(coinService, times(1)).spent(principal, new BigDecimal(5));
+        verify(machineService, times(1)).bye(1, "A0");
+        verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
+        verify(purchaseRepository, times(1)).save(any(Purchase.class));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void buyNotExistTest() {
+        Principal principal = () -> "user";
+
+        assertFalse(buyService.buy(1, "B0", principal));
+
+        verify(vendingService, times(2)).get(1);
+        verify(coinService, times(0)).spent(principal, new BigDecimal(5));
+        verify(machineService, times(0)).bye(1, "B0");
+        verify(fieldService, times(0)).update(anyInt(), any(Field.class), anyInt());
+        verify(purchaseRepository, times(0)).save(any(Purchase.class));
+    }
 
 }

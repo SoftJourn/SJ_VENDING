@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -23,12 +24,13 @@ public class ProductService {
 
     private ReflectionMergeUtil<Product> mergeUtil;
 
-    private static final String STATIC_CONTENT_DIR = "static/";
     private static final String IMAGES_DIR = "images/";
+    private String CONTEXT_PATH;
 
     @Autowired
-    public ProductService(@NonNull ProductRepository repository) {
+    public ProductService(@NonNull ProductRepository repository, ServletContext servletContext) {
         this.repository = repository;
+        String CONTEXT_PATH = servletContext.getRealPath("/images");
 
         mergeUtil = ReflectionMergeUtil
                 .forClass(Product.class)
@@ -64,7 +66,7 @@ public class ProductService {
 
     public synchronized void updateImage(@NonNull MultipartFile file, Integer id) {
         Product product = getProduct(id);
-        String fileName = IMAGES_DIR + FileUploadUtil.saveImage(file, STATIC_CONTENT_DIR + IMAGES_DIR, product.getName(), product.getImageUrl());
+        String fileName = IMAGES_DIR + FileUploadUtil.saveImage(file, CONTEXT_PATH, product.getName(), product.getImageUrl());
         product.setImageUrl(fileName);
         repository.save(product);
     }

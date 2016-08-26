@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.servlet.ServletContext;
 import java.math.BigDecimal;
 import java.util.Collections;
 
@@ -25,13 +26,16 @@ public class ProductServiceTest {
 
     ProductService productService;
 
+    @Mock
+    ServletContext servletContext;
+
     Product product;
     Product updated;
 
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(repository);
+        productService = new ProductService(repository, servletContext);
 
         product = new Product();
         product.setId(1);

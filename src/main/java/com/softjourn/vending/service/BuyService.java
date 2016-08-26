@@ -8,7 +8,6 @@ import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +70,6 @@ public class BuyService {
     }
 
     @Transactional
-    @PreAuthorize("isAuthenticated()")
     public synchronized boolean buy(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
         coinService.spent(principal, product.getPrice());

@@ -10,3 +10,5 @@ CREATE TABLE purchases
 );
 CREATE INDEX FK_product ON purchases (product);
 CREATE INDEX FK_machine ON purchases (machine);
+
+ALTER TABLE products ADD addedTime TINYBLOB;

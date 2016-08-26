@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -29,4 +30,7 @@ public class Product {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Column
+    Instant addedTime;
 }

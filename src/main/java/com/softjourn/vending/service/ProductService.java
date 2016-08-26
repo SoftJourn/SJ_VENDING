@@ -8,10 +8,10 @@ import com.softjourn.vending.utils.FileUploadUtil;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -51,6 +51,7 @@ public class ProductService {
     }
 
     public synchronized Product add(@NonNull Product product) {
+        product.setAddedTime(Instant.now());
         return repository.save(product);
     }
 

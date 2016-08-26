@@ -16,11 +16,15 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
 public class BuyService {
 
+    private static final long BES_SELLERS_LIMIT = 10;
     private VendingService vendingService;
     private MachineService machineService;
     private PurchaseRepository purchaseRepository;
@@ -68,15 +72,27 @@ public class BuyService {
         coinService.spent(principal, product.getPrice());
         machineService.bye(machineId, itemId);
         decreaseProductsCount(machineId, itemId);
-        savePurchase(product, principal);
+        savePurchase(machineId, product, principal);
         return true;
     }
 
-    private void savePurchase(Product product, Principal principal) {
+    public List<Product> getBestSellers(Integer machineId) {
+        return purchaseRepository.getAllByMachineId(machineId).stream()
+                .map(Purchase::getProduct)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+                .limit(BES_SELLERS_LIMIT)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private void savePurchase(Integer machineId, Product product, Principal principal) {
         Purchase purchase = new Purchase();
         purchase.setAccount(principal.getName());
         purchase.setProduct(product);
         purchase.setTime(Instant.now());
+        purchase.setMachine(vendingService.get(machineId));
         purchaseRepository.save(purchase);
     }
 

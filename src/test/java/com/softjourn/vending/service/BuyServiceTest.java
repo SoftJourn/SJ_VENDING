@@ -4,6 +4,7 @@ import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
+import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -40,6 +42,9 @@ public class BuyServiceTest {
     @InjectMocks
     private BuyService buyService;
 
+    private Product product;
+    private Product product2;
+
     private Field field;
     private Field field1;
     private Field field2;
@@ -51,14 +56,14 @@ public class BuyServiceTest {
     @Before
     public void setUp() throws Exception {
 
-        Product product = new Product();
+
+        product = new Product();
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
         product.setImageUrl("/image.jpg");
 
-
-        Product product2 = new Product();
+        product2 = new Product();
         product2.setId(1);
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
@@ -107,7 +112,36 @@ public class BuyServiceTest {
             add(row1);
         }});
 
+        Purchase purchase = new Purchase("user", product2, vendingMachine);
+        Purchase purchase1 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase2 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase3 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase4 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase5 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase6 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase7 = new Purchase("user", product2, vendingMachine);
+        Purchase purchase8 = new Purchase("user", product, vendingMachine);
+        Purchase purchase9 = new Purchase("user", product, vendingMachine);
+        Purchase purchase10 = new Purchase("user", product, vendingMachine);
+
+        List<Purchase> purchases = new ArrayList<Purchase>(){{
+            add(purchase);
+            add(purchase1);
+            add(purchase2);
+            add(purchase3);
+            add(purchase4);
+            add(purchase5);
+            add(purchase6);
+            add(purchase7);
+            add(purchase8);
+            add(purchase9);
+            add(purchase10);
+        }};
+
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
+
+        when(purchaseRepository.getAllByMachineId(anyInt())).thenReturn(purchases);
+
 
     }
 
@@ -156,6 +190,11 @@ public class BuyServiceTest {
         verify(machineService, times(0)).bye(1, "B0");
         verify(fieldService, times(0)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(0)).save(any(Purchase.class));
+    }
+
+    @Test
+    public void getBestSellersTest() {
+        assertThat(buyService.getBestSellers(0), IsIterableContainingInOrder.contains(product2, product));
     }
 
 }

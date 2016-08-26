@@ -70,6 +70,7 @@ public class ProductService {
 
     public synchronized void updateImage(@NonNull MultipartFile file, Integer id) {
         Product product = getProduct(id);
+        log.warn("Context paht: " + CONTEXT_PATH);
         String fileName = IMAGES_DIR + FileUploadUtil.saveImage(file, CONTEXT_PATH, product.getName(), product.getImageUrl());
         product.setImageUrl(fileName);
         repository.save(product);

@@ -115,17 +115,17 @@ public class BuyServiceTest {
             add(row1);
         }});
 
-        Purchase purchase = new Purchase("user", product2, vendingMachine);
-        Purchase purchase1 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase2 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase3 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase4 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase5 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase6 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase7 = new Purchase("user", product2, vendingMachine);
-        Purchase purchase8 = new Purchase("user", product, vendingMachine);
-        Purchase purchase9 = new Purchase("user", product, vendingMachine);
-        Purchase purchase10 = new Purchase("user", product, vendingMachine);
+        Purchase purchase = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(1_000_000));
+        Purchase purchase1 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(2_000_000));
+        Purchase purchase2 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(3_000_000));
+        Purchase purchase3 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(4_000_000));
+        Purchase purchase4 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(5_000_000));
+        Purchase purchase5 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(6_000_000));
+        Purchase purchase6 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(7_000_000));
+        Purchase purchase7 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(8_000_000));
+        Purchase purchase8 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(9_000_000));
+        Purchase purchase9 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(10_000_000));
+        Purchase purchase10 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(11_000_000));
 
         List<Purchase> purchases = new ArrayList<Purchase>(){{
             add(purchase);
@@ -144,6 +144,7 @@ public class BuyServiceTest {
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
 
         when(purchaseRepository.getAllByMachineId(anyInt())).thenReturn(purchases);
+        when(purchaseRepository.getAllByUser("user")).thenReturn(purchases);
 
 
     }
@@ -205,4 +206,8 @@ public class BuyServiceTest {
         assertThat(buyService.getNew(0), IsIterableContainingInOrder.contains(product2, product));
     }
 
+    @Test
+    public void getLastPurchasesTest() throws Exception {
+        assertThat(buyService.lastPurchases(() -> "user"), IsIterableContainingInOrder.contains(product, product2));
+    }
 }

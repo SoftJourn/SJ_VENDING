@@ -26,6 +26,7 @@ public class BuyService {
 
     private static final long BES_SELLERS_LIMIT = 10;
     private static final long NEW_PRODUCTS_LIMIT = 10;
+    private static final long LAST_PURCHASES_LIMIT = 10;
 
 
     private VendingService vendingService;
@@ -98,6 +99,15 @@ public class BuyService {
                 .map(Field::getProduct)
                 .sorted((p1, p2) -> p2.getAddedTime().compareTo(p1.getAddedTime()))
                 .limit(NEW_PRODUCTS_LIMIT)
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> lastPurchases(Principal principal) {
+        return purchaseRepository.getAllByUser(principal.getName()).stream()
+                .sorted((p1, p2) -> p2.getTime().compareTo(p1.getTime()))
+                .map(Purchase::getProduct)
+                .distinct()
+                .limit(LAST_PURCHASES_LIMIT)
                 .collect(Collectors.toList());
     }
 

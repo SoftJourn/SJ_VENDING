@@ -30,9 +30,10 @@ public class Purchase {
     @ManyToOne
     private VendingMachine machine;
 
-    public Purchase(String account, Product product, VendingMachine machine) {
+    public Purchase(String account, Product product, VendingMachine machine, Instant time) {
         this.account = account;
         this.product = product;
         this.machine = machine;
+        this.time = time;
     }
 }

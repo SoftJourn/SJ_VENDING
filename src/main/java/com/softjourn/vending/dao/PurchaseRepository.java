@@ -9,4 +9,7 @@ import java.util.List;
 public interface PurchaseRepository extends CrudRepository<Purchase, Double> {
     @Query("SELECT p FROM Purchase p WHERE p.machine = ?1")
     List<Purchase> getAllByMachineId(Integer machineId);
+
+    @Query("SELECT p FROM Purchase p WHERE p.account = ?1")
+    List<Purchase> getAllByUser(String user);
 }

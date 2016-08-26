@@ -14,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,12 +63,14 @@ public class BuyServiceTest {
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
         product.setImageUrl("/image.jpg");
+        product.setAddedTime(Instant.ofEpochMilli(1_000_000));
 
         product2 = new Product();
         product2.setId(1);
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
         product2.setImageUrl("/image2.jpg");
+        product2.setAddedTime(Instant.ofEpochMilli(2_000_000));
 
         field = new Field("A0", 0);
         field1 = new Field("A1", 1);
@@ -195,6 +198,11 @@ public class BuyServiceTest {
     @Test
     public void getBestSellersTest() {
         assertThat(buyService.getBestSellers(0), IsIterableContainingInOrder.contains(product2, product));
+    }
+
+    @Test
+    public void getNewTest() {
+        assertThat(buyService.getNew(0), IsIterableContainingInOrder.contains(product2, product));
     }
 
 }

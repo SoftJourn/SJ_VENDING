@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 public class BuyService {
 
     private static final long BES_SELLERS_LIMIT = 10;
+    private static final long NEW_PRODUCTS_LIMIT = 10;
+
+
     private VendingService vendingService;
     private MachineService machineService;
     private PurchaseRepository purchaseRepository;
@@ -84,6 +87,17 @@ public class BuyService {
                 .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
                 .limit(BES_SELLERS_LIMIT)
                 .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> getNew(Integer machineId) {
+        VendingMachine machine = vendingService.get(machineId);
+        if (machine == null) throw new NotFoundException("There is no machine with id " + machine);
+        return machine.getFields().stream()
+                .filter(f -> f.getProduct() != null && f.getCount() > 0)
+                .map(Field::getProduct)
+                .sorted((p1, p2) -> p2.getAddedTime().compareTo(p1.getAddedTime()))
+                .limit(NEW_PRODUCTS_LIMIT)
                 .collect(Collectors.toList());
     }
 

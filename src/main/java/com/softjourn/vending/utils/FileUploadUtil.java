@@ -53,7 +53,7 @@ public class FileUploadUtil {
             }
             FileUtils.writeByteArrayToFile(imagePath.toFile(), file.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException("Can't save uploaded file.");
+            throw new RuntimeException("Can't save uploaded file.", e);
         }
 
         return fileName;

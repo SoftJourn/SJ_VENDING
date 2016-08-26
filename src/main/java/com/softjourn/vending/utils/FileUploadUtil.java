@@ -6,6 +6,7 @@ import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +47,7 @@ public class FileUploadUtil {
         String fileName;
         try {
             fileName = name + "." + getResolution(file);
-            Path imagePath = Paths.get(path + fileName);
+            Path imagePath = Paths.get(path + File.separator + fileName);
             while (Files.exists(imagePath)) {
                 fileName = name + getRandomString() + "." + getResolution(file);
                 imagePath = Paths.get(path + fileName);

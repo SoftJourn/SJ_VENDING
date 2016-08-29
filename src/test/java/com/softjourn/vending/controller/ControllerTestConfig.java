@@ -2,10 +2,7 @@ package com.softjourn.vending.controller;
 
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.entity.*;
 import com.softjourn.vending.service.*;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
@@ -86,6 +83,19 @@ public class ControllerTestConfig {
         when(productService.delete(anyInt())).thenReturn(product);
 
         return productService;
+    }
+
+    @Bean
+    public FavoritesService favoritesService() {
+        FavoritesService favoritesService;
+
+        favoritesService = Mockito.mock(FavoritesService.class);
+        when(favoritesService.get(anyString())).thenReturn(new ArrayList<Product>() {{
+            add(product);
+            add(product2);
+        }});
+
+        return favoritesService;
     }
 
     @Bean

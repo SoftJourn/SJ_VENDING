@@ -164,7 +164,50 @@ include::{snippets}/buy-by-product/http-request.adoc[]
 include::{snippets}/buy-by-product/http-response.adoc[]
 
 
-[[resources-all-products]]
+[[resources-all-favorites-products]]
+=== Getting favorite products
+
+A `GET` request to get all favorite user's products.
+
+==== Example request
+
+include::{snippets}/favorites/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/favorites/http-response.adoc[]
+
+
+[[resources-add-product-to-favorites]]
+=== Adding to favorites
+
+A `POST` request to add product to favorites.
+
+==== Example request
+
+include::{snippets}/add-favorite/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/add-favorite/http-response.adoc[]
+
+
+[[resources-delete-product-from-favorites]]
+=== Deleting from favorites
+
+A `DELETE` request to delete product from favorites.
+
+==== Example request
+
+include::{snippets}/delete-favorite/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/delete-favorite/http-response.adoc[]
+
+
+
+
 == Administrative product endpoints
 
 Make request to get all products registered in system. Not depend on any machine.

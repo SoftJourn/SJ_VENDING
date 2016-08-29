@@ -479,44 +479,62 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_example_response_6">Example response</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#resources-all-products">Administrative product endpoints</a>
-<ul class="sectlevel2">
-<li><a href="#resources-all-products">Getting all products</a>
+<li><a href="#resources-all-favorites-products">Getting favorite products</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_7">Example request</a></li>
 <li><a href="#_example_response_7">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-all-product">Getting one product registered in system by it&#8217;s id</a>
+<li><a href="#resources-add-product-to-favorites">Adding to favorites</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_8">Example request</a></li>
 <li><a href="#_example_response_8">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-add-product">Adding product into system</a>
+<li><a href="#resources-delete-product-from-favorites">Deleting from favorites</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_9">Example request</a></li>
 <li><a href="#_example_response_9">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-product">Updating product&#8217;s fields</a>
+</ul>
+</li>
+<li><a href="#_administrative_product_endpoints">Administrative product endpoints</a>
+<ul class="sectlevel2">
+<li><a href="#resources-all-products">Getting all products</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_10">Example request</a></li>
 <li><a href="#_example_response_10">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-product-image">Updating product&#8217;s image</a>
+<li><a href="#resources-all-product">Getting one product registered in system by it&#8217;s id</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_11">Example request</a></li>
 <li><a href="#_example_response_11">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-delete-product">Deleting product</a>
+<li><a href="#resources-add-product">Adding product into system</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_12">Example request</a></li>
 <li><a href="#_example_response_12">Example response</a></li>
+</ul>
+</li>
+<li><a href="#resources-update-product">Updating product&#8217;s fields</a>
+<ul class="sectlevel3">
+<li><a href="#_example_request_13">Example request</a></li>
+<li><a href="#_example_response_13">Example response</a></li>
+</ul>
+</li>
+<li><a href="#resources-update-product-image">Updating product&#8217;s image</a>
+<ul class="sectlevel3">
+<li><a href="#_example_request_14">Example request</a></li>
+<li><a href="#_example_response_14">Example response</a></li>
+</ul>
+</li>
+<li><a href="#resources-delete-product">Deleting product</a>
+<ul class="sectlevel3">
+<li><a href="#_example_request_15">Example request</a></li>
+<li><a href="#_example_response_15">Example response</a></li>
 </ul>
 </li>
 </ul>
@@ -525,26 +543,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#resources-add-machine">Adding machine</a>
 <ul class="sectlevel3">
-<li><a href="#_example_request_13">Example request</a></li>
-<li><a href="#_example_response_13">Example response</a></li>
+<li><a href="#_example_request_16">Example request</a></li>
+<li><a href="#_example_response_16">Example response</a></li>
 </ul>
 </li>
 <li><a href="#resources-delete-machine">Deleting machine</a>
 <ul class="sectlevel3">
-<li><a href="#_example_request_14">Example request</a></li>
-<li><a href="#_example_response_14">Example response</a></li>
+<li><a href="#_example_request_17">Example request</a></li>
+<li><a href="#_example_response_17">Example response</a></li>
 </ul>
 </li>
 <li><a href="#resources-update-machine-field">Updating concrete machine field</a>
 <ul class="sectlevel3">
-<li><a href="#_example_request_15">Example request</a></li>
-<li><a href="#_example_response_15">Example response</a></li>
+<li><a href="#_example_request_18">Example request</a></li>
+<li><a href="#_example_response_18">Example response</a></li>
 </ul>
 </li>
 <li><a href="#resources-update-machine-row">Updating concrete machine field</a>
 <ul class="sectlevel3">
-<li><a href="#_example_request_16">Example request</a></li>
-<li><a href="#_example_response_16">Example response</a></li>
+<li><a href="#_example_request_19">Example request</a></li>
+<li><a href="#_example_response_19">Example response</a></li>
 </ul>
 </li>
 </ul>
@@ -1132,24 +1150,17 @@ Host: localhost</code></pre>
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="resources-all-products"><a class="link" href="#resources-all-products">Administrative product endpoints</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Make request to get all products registered in system. Not depend on any machine.</p>
-</div>
 <div class="sect2">
-<h3 id="resources-all-products"><a class="link" href="#resources-all-products">Getting all products</a></h3>
+<h3 id="resources-all-favorites-products"><a class="link" href="#resources-all-favorites-products">Getting favorite products</a></h3>
 <div class="paragraph">
-<p>A <code>GET</code> request to get all products registered in system. Not depend on any machine.</p>
+<p>A <code>GET</code> request to get all favorite user&#8217;s products.</p>
 </div>
 <div class="sect3">
 <h4 id="_example_request_7"><a class="link" href="#_example_request_7">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/products HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/favorites HTTP/1.1
+Authentication: Bearer ACCESS_TOKEN_VALUE
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1182,12 +1193,109 @@ Content-Length: 290
 </div>
 </div>
 <div class="sect2">
+<h3 id="resources-add-product-to-favorites"><a class="link" href="#resources-add-product-to-favorites">Adding to favorites</a></h3>
+<div class="paragraph">
+<p>A <code>POST</code> request to add product to favorites.</p>
+</div>
+<div class="sect3">
+<h4 id="_example_request_8"><a class="link" href="#_example_request_8">Example request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/favorites/0 HTTP/1.1
+Authentication: Bearer ACCESS_TOKEN_VALUE
+Host: localhost</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_response_8"><a class="link" href="#_example_response_8">Example response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="resources-delete-product-from-favorites"><a class="link" href="#resources-delete-product-from-favorites">Deleting from favorites</a></h3>
+<div class="paragraph">
+<p>A <code>DELETE</code> request to delete product from favorites.</p>
+</div>
+<div class="sect3">
+<h4 id="_example_request_9"><a class="link" href="#_example_request_9">Example request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/favorites/0 HTTP/1.1
+Authentication: Bearer ACCESS_TOKEN_VALUE
+Host: localhost</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_response_9"><a class="link" href="#_example_response_9">Example response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_administrative_product_endpoints"><a class="link" href="#_administrative_product_endpoints">Administrative product endpoints</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Make request to get all products registered in system. Not depend on any machine.</p>
+</div>
+<div class="sect2">
+<h3 id="resources-all-products"><a class="link" href="#resources-all-products">Getting all products</a></h3>
+<div class="paragraph">
+<p>A <code>GET</code> request to get all products registered in system. Not depend on any machine.</p>
+</div>
+<div class="sect3">
+<h4 id="_example_request_10"><a class="link" href="#_example_request_10">Example request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/products HTTP/1.1
+Host: localhost</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_response_10"><a class="link" href="#_example_response_10">Example response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 290
+
+[ {
+  "id" : 0,
+  "price" : 5,
+  "name" : "COLA",
+  "imageUrl" : "/image.jpg",
+  "description" : "Cola with coca.",
+  "category" : "DRINK"
+}, {
+  "id" : 1,
+  "price" : 50,
+  "name" : "Nuts",
+  "imageUrl" : "/image2.jpg",
+  "description" : "Energy bar with nuts.",
+  "category" : "SNACK"
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="resources-all-product"><a class="link" href="#resources-all-product">Getting one product registered in system by it&#8217;s id</a></h3>
 <div class="paragraph">
 <p>Make request to get product registered in system by id. Not depend on any machine.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_8"><a class="link" href="#_example_request_8">Example request</a></h4>
+<h4 id="_example_request_11"><a class="link" href="#_example_request_11">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/products/0 HTTP/1.1
@@ -1196,7 +1304,7 @@ Host: localhost</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_8"><a class="link" href="#_example_response_8">Example response</a></h4>
+<h4 id="_example_response_11"><a class="link" href="#_example_response_11">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1221,7 +1329,7 @@ Content-Length: 138
 <p>Make request to add products into system. Not depend on any machine.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_9"><a class="link" href="#_example_request_9">Example request</a></h4>
+<h4 id="_example_request_12"><a class="link" href="#_example_request_12">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products HTTP/1.1
@@ -1235,7 +1343,7 @@ Content-Length: 107
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_9"><a class="link" href="#_example_response_9">Example response</a></h4>
+<h4 id="_example_response_12"><a class="link" href="#_example_response_12">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1260,7 +1368,7 @@ Content-Length: 138
 <p>Make request to update product in system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_10"><a class="link" href="#_example_request_10">Example request</a></h4>
+<h4 id="_example_request_13"><a class="link" href="#_example_request_13">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/0 HTTP/1.1
@@ -1274,7 +1382,7 @@ Content-Length: 107
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_10"><a class="link" href="#_example_response_10">Example response</a></h4>
+<h4 id="_example_response_13"><a class="link" href="#_example_response_13">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1299,7 +1407,7 @@ Content-Length: 138
 <p>Make request to update product image.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_11"><a class="link" href="#_example_request_11">Example request</a></h4>
+<h4 id="_example_request_14"><a class="link" href="#_example_request_14">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/0/image HTTP/1.1
@@ -1316,7 +1424,7 @@ imageFileContent
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_11"><a class="link" href="#_example_response_11">Example response</a></h4>
+<h4 id="_example_response_14"><a class="link" href="#_example_response_14">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
@@ -1330,7 +1438,7 @@ imageFileContent
 <p>Make request to delete product from system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_12"><a class="link" href="#_example_request_12">Example request</a></h4>
+<h4 id="_example_request_15"><a class="link" href="#_example_request_15">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/products/0 HTTP/1.1
@@ -1340,7 +1448,7 @@ Host: localhost</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_12"><a class="link" href="#_example_response_12">Example response</a></h4>
+<h4 id="_example_response_15"><a class="link" href="#_example_response_15">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1370,7 +1478,7 @@ Content-Length: 138
 <p>Make request to add new machine to system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_13"><a class="link" href="#_example_request_13">Example request</a></h4>
+<h4 id="_example_request_16"><a class="link" href="#_example_request_16">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending HTTP/1.1
@@ -1384,7 +1492,7 @@ Content-Length: 111
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_13"><a class="link" href="#_example_response_13">Example response</a></h4>
+<h4 id="_example_response_16"><a class="link" href="#_example_response_16">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1466,7 +1574,7 @@ Content-Length: 1321
 <p>Make request to delete machine from system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_14"><a class="link" href="#_example_request_14">Example request</a></h4>
+<h4 id="_example_request_17"><a class="link" href="#_example_request_17">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/vending/0 HTTP/1.1
@@ -1476,7 +1584,7 @@ Host: localhost</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_14"><a class="link" href="#_example_response_14">Example response</a></h4>
+<h4 id="_example_response_17"><a class="link" href="#_example_response_17">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
@@ -1490,7 +1598,7 @@ Host: localhost</code></pre>
 <p>Make request to update machine field. Set new product, update products count, update internal machine field id.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_15"><a class="link" href="#_example_request_15">Example request</a></h4>
+<h4 id="_example_request_18"><a class="link" href="#_example_request_18">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending/0/fields/0 HTTP/1.1
@@ -1504,7 +1612,7 @@ Content-Length: 154
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_15"><a class="link" href="#_example_response_15">Example response</a></h4>
+<h4 id="_example_response_18"><a class="link" href="#_example_response_18">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1534,7 +1642,7 @@ Content-Length: 220
 <p>Make request to update machine row. In body should be new count of fields in this row.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_16"><a class="link" href="#_example_request_16">Example request</a></h4>
+<h4 id="_example_request_19"><a class="link" href="#_example_request_19">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending/0/rows/0 HTTP/1.1
@@ -1548,7 +1656,7 @@ Content-Length: 1
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_16"><a class="link" href="#_example_response_16">Example response</a></h4>
+<h4 id="_example_response_19"><a class="link" href="#_example_response_19">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
@@ -1593,7 +1701,7 @@ Content-Length: 548
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-08-26 13:31:32 EEST
+Last updated 2016-08-29 11:12:53 EEST
 </div>
 </div>
 </body>

@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.templates.TemplateFormats;
@@ -58,7 +59,7 @@ public class FavoritesControllerTest {
                 .perform(RestDocumentationRequestBuilders
                         .get("/v1/favorites")
                         .principal(() -> "user")
-                        .header("Authentication", "Bearer ACCESS_TOKEN_VALUE"))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("favorites", preprocessResponse(prettyPrint()),
                         responseFields(
@@ -72,7 +73,7 @@ public class FavoritesControllerTest {
                 .perform(RestDocumentationRequestBuilders
                         .post("/v1/favorites/{productId}", 0)
                         .principal(() -> "user")
-                        .header("Authentication", "Bearer ACCESS_TOKEN_VALUE"))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("add-favorite", preprocessResponse(prettyPrint())));
     }
@@ -83,7 +84,7 @@ public class FavoritesControllerTest {
                 .perform(RestDocumentationRequestBuilders
                         .delete("/v1/favorites/{productId}", 0)
                         .principal(() -> "user")
-                        .header("Authentication", "Bearer ACCESS_TOKEN_VALUE"))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("delete-favorite", preprocessResponse(prettyPrint())));
     }

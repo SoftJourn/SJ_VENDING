@@ -64,7 +64,9 @@ public class ProductsControllerTest {
     @Test
     public void getProducts() throws Exception {
         mockMvc
-                .perform(RestDocumentationRequestBuilders.get("/v1/products"))
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/products")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("all-products", preprocessResponse(prettyPrint()),
                         responseFields(
@@ -82,7 +84,9 @@ public class ProductsControllerTest {
     @Test
     public void getProduct() throws Exception {
         mockMvc
-                .perform(RestDocumentationRequestBuilders.get("/v1/products/{productId}", 0))
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/products/{productId}", 0)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("all-product", preprocessResponse(prettyPrint()),
                         responseFields(

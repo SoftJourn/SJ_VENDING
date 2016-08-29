@@ -59,7 +59,9 @@ public class BuyControllerTest {
     @Test
     public void testGetMachines() throws Exception {
         mockMvc
-                .perform(RestDocumentationRequestBuilders.get("/v1/machines"))
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/machines")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]", is(notNullValue())))
                 .andDo(document("machines", preprocessResponse(prettyPrint()),
@@ -77,7 +79,9 @@ public class BuyControllerTest {
     @Test
     public void testGetMachine() throws Exception {
         mockMvc
-                .perform(RestDocumentationRequestBuilders.get("/v1/machines/{machineId}", 0))
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/machines/{machineId}", 0)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("machine", preprocessResponse(prettyPrint()),
                         responseFields(
@@ -93,7 +97,8 @@ public class BuyControllerTest {
     public void testGetAvailableProducts() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
-                        .get("/v1/machines/{machineId}/products", 0))
+                        .get("/v1/machines/{machineId}/products", 0)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("products",
                         preprocessResponse(prettyPrint()),
@@ -115,7 +120,8 @@ public class BuyControllerTest {
     public void testGetFeatures() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
-                        .get("/v1/machines/{machineId}/features", 0))
+                        .get("/v1/machines/{machineId}/features", 0)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("features",
                         preprocessResponse(prettyPrint()),
@@ -134,7 +140,7 @@ public class BuyControllerTest {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
                         .post("/v1/machines/{machineId}/fields/{fieldInternalId}", 0, "A1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ACCESS_TOKEN_VALUE"))
                 .andExpect(status().isOk())
                 .andDo(
                         document("buy-by-id",

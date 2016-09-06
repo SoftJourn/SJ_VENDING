@@ -15,7 +15,7 @@ public class Favorite {
 
     @Id
     @GeneratedValue
-    private Double id;
+    private Long id;
 
     @Column
     private String account;

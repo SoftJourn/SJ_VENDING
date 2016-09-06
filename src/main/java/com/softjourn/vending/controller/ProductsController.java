@@ -40,6 +40,11 @@ public class ProductsController {
         return productService.update(id, updater);
     }
 
+    @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
+    public byte[] getImage(@PathVariable Integer id) {
+        return productService.getProduct(id).getImageData();
+    }
+
     @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = "multipart/form-data;charset=UTF-8")
     public void updateImage(@RequestParam MultipartFile file, @PathVariable Integer id) {
         productService.updateImage(file, id);

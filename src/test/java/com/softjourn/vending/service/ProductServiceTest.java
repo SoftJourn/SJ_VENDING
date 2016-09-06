@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import java.math.BigDecimal;
@@ -27,6 +28,13 @@ public class ProductServiceTest {
     ProductService productService;
 
     @Mock
+    MultipartFile imagePng;
+    @Mock
+    MultipartFile imageJpg;
+
+    byte[] imageData = new byte[]{1,2,3,4,5,6,7,8,9,12,45,78,56,45,12,5,48,7,54,21,5,45,4,87,8,75,41,21,51};
+
+    @Mock
     ServletContext servletContext;
 
     Product product;
@@ -41,16 +49,24 @@ public class ProductServiceTest {
         product.setId(1);
         product.setName("Cola");
         product.setPrice(new BigDecimal(10));
-        product.setImageUrl("/images/1.jpg");
+        product.setImageUrl("/products/1/image.jpg");
 
         updated = new Product();
         updated.setName("Pepsi");
         updated.setPrice(new BigDecimal(10));
-        updated.setImageUrl("/images/1.jpg");
+        updated.setImageUrl("/products/1/image.jpg");
 
 
         when(repository.findOne(1)).thenReturn(product);
         when(repository.findAll()).thenReturn(Collections.singletonList(product));
+
+        when(imagePng.getContentType()).thenReturn("image/png");
+        when(imageJpg.getContentType()).thenReturn("image/jpeg");
+
+
+
+        when(imagePng.getBytes()).thenReturn(imageData);
+        when(imagePng.getBytes()).thenReturn(imageData);
     }
 
     @Test
@@ -73,10 +89,25 @@ public class ProductServiceTest {
     public void testUpdate() throws Exception {
         Product newProduct = productService.update(1, updated);
         assertEquals("Pepsi", newProduct.getName());
-        assertEquals("/images/1.jpg", newProduct.getImageUrl());
+        assertEquals("/products/1/image.jpg", newProduct.getImageUrl());
         assertEquals(new BigDecimal(10), newProduct.getPrice());
 
         verify(repository, times(1)).save(product);
+    }
+
+    @Test
+    public void testUpdateImage() throws Exception {
+        productService.updateImage(imageJpg, 1);
+        assertTrue(product.getImageUrl().endsWith("1/image.jpeg"));
+
+        productService.updateImage(imagePng, 1);
+        assertTrue(product.getImageUrl().endsWith("1/image.png"));
+
+        assertEquals(product.getImageData(), imageData);
+
+        verify(repository, times(2)).save(product);
+
+
     }
 
     @Test

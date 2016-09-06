@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
+import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -66,10 +68,10 @@ public class ProductService {
         return newProduct;
     }
 
+    @Transactional
     public synchronized void updateImage(@NonNull MultipartFile file, Integer id) {
         Product product = getProduct(id);
-        String fileName = IMAGES_DIR + FileUploadUtil.saveImage(file, CONTEXT_PATH, product.getName(), product.getImageUrl());
-        product.setImageUrl(fileName);
+        setImage(product, file);
         repository.save(product);
     }
 
@@ -77,6 +79,17 @@ public class ProductService {
         Product product = getProduct(id);
         repository.delete(id);
         return product;
+    }
+
+    private Product setImage(Product product, MultipartFile image) {
+        try {
+            String resolution = FileUploadUtil.getResolution(image);
+            product.setImageData(image.getBytes());
+            product.setImageUrl("v1/products/" + product.getId() + "/image." + resolution);
+            return product;
+        } catch (IOException e) {
+            throw new RuntimeException("Can't save image for product with id " + product.getId(), e);
+        }
     }
 
 }

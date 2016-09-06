@@ -32,6 +32,10 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @JsonIgnore
+    @Column(length = 2*1024*1024)
+    private byte[] imageData;
+
     @Column
     @JsonIgnore
     private Instant addedTime;

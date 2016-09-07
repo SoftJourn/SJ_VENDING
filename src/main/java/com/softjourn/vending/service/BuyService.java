@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -65,18 +66,19 @@ public class BuyService {
         return result;
     }
 
-    public boolean buy(Integer machineId, Integer productId, Principal principal) {
+    public BigDecimal buy(Integer machineId, Integer productId, Principal principal) {
         return buy(machineId, getFieldByProduct(machineId, productId), principal);
     }
 
     @Transactional
-    public synchronized boolean buy(Integer machineId, String itemId, Principal principal) {
+    public synchronized BigDecimal buy(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
-        coinService.spent(principal, product.getPrice());
+        VendingMachine machine = vendingService.get(machineId);
+        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getAddress());
         machineService.bye(machineId, itemId);
         decreaseProductsCount(machineId, itemId);
         savePurchase(machineId, product, principal);
-        return true;
+        return remain;
     }
 
     public List<Product> getBestSellers(Integer machineId) {

@@ -62,6 +62,7 @@ public class VendingControllerTest {
         vendingMachineBuilder.setRowsNumbering(ALPHABETICAL);
         vendingMachineBuilder.setColumnsCount(2);
         vendingMachineBuilder.setColumnsNumbering(NUMERICAL);
+        vendingMachineBuilder.setAddress("45a45f89d62b15c2d5b74f51a2541264a2415b12d5fcd24542");
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
@@ -87,6 +88,7 @@ public class VendingControllerTest {
                         responseFields(
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
+                                fieldWithPath("address").description("Vending machine address in eris."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
                                 fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),

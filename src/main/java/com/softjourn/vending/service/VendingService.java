@@ -47,6 +47,7 @@ public class VendingService {
     public VendingMachine create(VendingMachineBuilderDTO builder) {
         VendingMachine machine = new VendingMachine();
         machine.setName(builder.getName());
+        machine.setAddress(builder.getAddress());
 
         List<Row> rows = getRows(builder);
 

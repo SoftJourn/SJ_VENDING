@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/v1/machines")
@@ -63,17 +61,17 @@ public class BuyController {
     }
 
     @RequestMapping(value = "/{machineId}/fields/{fieldId}", method = RequestMethod.POST)
-    public void buyById(@PathVariable Integer machineId,
-                        @PathVariable String fieldId,
-                        Principal principal) {
-        buyService.buy(machineId, fieldId, principal);
+    public Map<String, BigDecimal> buyById(@PathVariable Integer machineId,
+                              @PathVariable String fieldId,
+                              Principal principal) {
+        return Collections.singletonMap("amount", buyService.buy(machineId, fieldId, principal));
     }
 
     @RequestMapping(value = "/{machineId}/products/{productId}", method = RequestMethod.POST)
-    public void buyByProduct(@PathVariable Integer machineId,
+    public Map<String, BigDecimal> buyByProduct(@PathVariable Integer machineId,
                              @PathVariable Integer productId,
                              Principal principal) {
-        buyService.buy(machineId, productId, principal);
+        return Collections.singletonMap("amount", buyService.buy(machineId, productId, principal));
     }
 
 }

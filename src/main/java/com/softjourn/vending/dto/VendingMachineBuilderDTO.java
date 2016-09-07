@@ -8,6 +8,8 @@ public class VendingMachineBuilderDTO {
 
     private String name;
 
+    private String address;
+
     private Integer rowsCount;
 
     private Integer columnsCount;

@@ -38,6 +38,7 @@
         <paper-material elevation="1">
             <form is="iron-form" method="POST" action="{{targetUrl}}" id="machineBuilderForm" content-type="application/json">
                 <paper-input name="name" label="Name" required></paper-input>
+                <paper-input name="address" label="Eris account address" required></paper-input>
 
                 <paper-input name="rowsCount" label="Rows count" auto-validate allowed-pattern="[1-9][0-9]*" required></paper-input>
                 <paper-dropdown-menu label="Rows numbering" selected-item-label="{{rowsSelected}}">

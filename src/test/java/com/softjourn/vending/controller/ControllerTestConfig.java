@@ -184,8 +184,8 @@ public class ControllerTestConfig {
             add(productDTO1);
         }});
 
-        when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(true);
-        when(buyService.buy(anyInt(), anyString(), any())).thenReturn(false);
+        when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(new BigDecimal(5));
+        when(buyService.buy(anyInt(), anyString(), any())).thenReturn(new BigDecimal(5));
         when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
         when(buyService.getByCategory(Product.Category.DRINK, 0)).thenReturn(Collections.singletonList(productDTO));
         when(buyService.getByCategory(Product.Category.SNACK, 0)).thenReturn(new ArrayList<ProductDTO>(){{add(productDTO1);add(productDTO2);}});
@@ -199,7 +199,7 @@ public class ControllerTestConfig {
     public CoinService coinService() {
         CoinService coinService = Mockito.mock(CoinService.class);
 
-        when(coinService.spent(any(), any())).thenReturn(true);
+        when(coinService.spent(any(), any(), anyString())).thenReturn(new BigDecimal(10));
 
         return coinService;
     }

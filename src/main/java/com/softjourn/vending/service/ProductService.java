@@ -28,13 +28,9 @@ public class ProductService {
 
     private ReflectionMergeUtil<Product> mergeUtil;
 
-    private static final String IMAGES_DIR = "images/";
-    private String CONTEXT_PATH;
-
     @Autowired
     public ProductService(@NonNull ProductRepository repository, ServletContext servletContext) {
         this.repository = repository;
-        CONTEXT_PATH = servletContext.getRealPath("/images");
 
         mergeUtil = ReflectionMergeUtil
                 .forClass(Product.class)
@@ -93,3 +89,5 @@ public class ProductService {
     }
 
 }
+
+//8fbd72cb38394f33ba93eb41c3af3867daf582d1

@@ -6,10 +6,7 @@ import com.softjourn.vending.dto.TransactionDTO;
 import com.softjourn.vending.exceptions.NotEnoughAmountException;
 import com.softjourn.vending.exceptions.PaymentProcessingException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -56,12 +53,17 @@ public class CoinService {
     }
 
     @PreAuthorize("isAuthenticated()")
-    public boolean spent(Principal principal, BigDecimal amount) {
+    public BigDecimal spent(Principal principal, BigDecimal amount, String machineAddress) {
         try {
-            return coinRestTemplate.exchange(coinsServerHost + coinsSpentPath,
+            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/buy/" + machineAddress,
                     HttpMethod.POST,
                     prepareRequest(principal, amount),
-                    TransactionDTO.class).getBody().getStatus().equals("SUCCESS");
+                    TransactionDTO.class);
+            if (response.getBody().getStatus().equals("SUCCESS")) {
+                return response.getBody().getRemain();
+            } else {
+                throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
+            }
         } catch (HttpClientErrorException hcee) {
             if (hcee.getStatusCode().equals(HttpStatus.CONFLICT)) {
                 throw new NotEnoughAmountException();

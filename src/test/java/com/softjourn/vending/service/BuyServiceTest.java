@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
@@ -146,6 +145,8 @@ public class BuyServiceTest {
         when(purchaseRepository.getAllByMachineId(anyInt())).thenReturn(purchases);
         when(purchaseRepository.getAllByUserAndMachine("user", 0)).thenReturn(purchases);
 
+        when(coinService.spent(any(), any(), anyString())).thenReturn(new BigDecimal(10));
+
 
     }
 
@@ -174,10 +175,10 @@ public class BuyServiceTest {
     public void buyTest() {
         Principal principal = () -> "user";
 
-        assertTrue(buyService.buy(1, "A0", principal));
+        assertEquals(buyService.buy(1, "A0", principal), new BigDecimal(10));
 
-        verify(vendingService, times(3)).get(1);
-        verify(coinService, times(1)).spent(principal, new BigDecimal(5));
+        verify(vendingService, times(4)).get(1);
+        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
         verify(machineService, times(1)).bye(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
@@ -187,10 +188,10 @@ public class BuyServiceTest {
     public void buyNotExistTest() {
         Principal principal = () -> "user";
 
-        assertFalse(buyService.buy(1, "B0", principal));
+        assertEquals(buyService.buy(1, "B0", principal), new BigDecimal(10));
 
         verify(vendingService, times(2)).get(1);
-        verify(coinService, times(0)).spent(principal, new BigDecimal(5));
+        verify(coinService, times(0)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
         verify(machineService, times(0)).bye(1, "B0");
         verify(fieldService, times(0)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(0)).save(any(Purchase.class));

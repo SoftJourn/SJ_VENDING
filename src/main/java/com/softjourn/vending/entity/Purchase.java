@@ -16,7 +16,7 @@ public class Purchase {
 
     @Id
     @GeneratedValue
-    private Double id;
+    private Long id;
 
     @Column
     private String account;

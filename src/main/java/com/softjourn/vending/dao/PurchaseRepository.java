@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface PurchaseRepository extends CrudRepository<Purchase, Double> {
+public interface PurchaseRepository extends CrudRepository<Purchase, Long> {
     @Query("SELECT p FROM Purchase p WHERE p.machine.id = ?1")
     List<Purchase> getAllByMachineId(Integer machineId);
 

@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface FavoritesRepository extends CrudRepository<Favorite, Double> {
+public interface FavoritesRepository extends CrudRepository<Favorite, Long> {
 
     @Query("SELECT f FROM Favorite f WHERE f.account = ?1")
     List<Favorite> getByAcount(String account);

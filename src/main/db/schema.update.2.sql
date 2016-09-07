@@ -1,4 +1,5 @@
 ALTER TABLE products ADD imageData MEDIUMBLOB;
+ALTER TABLE machines ADD address VARCHAR(255);
 
 CREATE TABLE favorites
 (

@@ -137,6 +137,7 @@ public class BuyService {
                 .getRows().stream()
                 .flatMap(row -> row.getFields().stream())
                 .filter(field -> field.getProduct() != null && field.getProduct().getId().equals(productId))
+                .filter(field -> field.getCount() > 0)
                 .findFirst()
                 .map(Field::getInternalId)
                 .orElse(null);

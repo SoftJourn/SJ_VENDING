@@ -1,22 +1,15 @@
 package com.softjourn.vending.config;
 
-
+import com.softjourn.vending.Vending;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -26,14 +19,8 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import java.io.IOException;
 import java.io.InputStream;
 
-
-@SpringBootApplication
-@ComponentScan(basePackages = "com.softjourn.vending")
-@EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao")
-@EntityScan(basePackages = "com.softjourn.vending.entity")
-public class VendingApplication extends ResourceServerConfigurerAdapter {
+@Configuration
+public class VendingConfiguration extends ResourceServerConfigurerAdapter {
 
     @Value("${auth.server.host}")
     private String authServerHost;
@@ -43,10 +30,6 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
 
     @Value("${auth.client.id}")
     private String clientId;
-
-    public static void main(String[] args) {
-        SpringApplication.run(VendingApplication.class, args);
-    }
 
     @Value("${authPublicKeyFile}")
     private String authPublicKeyFile;
@@ -82,21 +65,21 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-            .authorizeRequests()
+                .authorizeRequests()
                 .antMatchers("/admin").authenticated()
                 .antMatchers(HttpMethod.POST, "/v1/vending/**", "/v1/products/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/v1/vending/**", "/v1/products/**").authenticated()
                 .anyRequest().permitAll()
-            .and()
-            .sessionManagement()
+                .and()
+                .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-            .and()
-            .csrf()
+                .and()
+                .csrf()
                 .disable()
-            .exceptionHandling()
+                .exceptionHandling()
                 .authenticationEntryPoint((httpServletRequest, httpServletResponse, e) -> httpServletResponse
                         .sendRedirect(buildAuthRedirectURI())
-        );
+                );
     }
 
     private String buildAuthRedirectURI() {
@@ -107,13 +90,5 @@ public class VendingApplication extends ResourceServerConfigurerAdapter {
                 "response_type=code&" +
                 "scope=read&" +
                 "client_id=" + clientId;
-    }
-
-    public static class ServletInit extends SpringBootServletInitializer {
-
-        @Override
-        protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-            return application.sources(VendingApplication.class);
-        }
     }
 }

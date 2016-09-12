@@ -5,7 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -33,7 +40,7 @@ public class Product {
     private String imageUrl;
 
     @JsonIgnore
-    @Column(length = 2*1024*1024)
+    @Column(length = 2 * 1024 * 1024)
     private byte[] imageData;
 
     @Column
@@ -43,21 +50,7 @@ public class Product {
     @Column
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    public enum Category {
-        DRINK("Drink"),
-        SNACK("Snack");
-
-        private String readableName;
-
-        public String readableName() {
-            return readableName;
-        }
-
-        Category(String readableName) {
-            this.readableName = readableName;
-        }
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_categories")
+    private Categories category;
 }

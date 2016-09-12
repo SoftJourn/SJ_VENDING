@@ -2,7 +2,11 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.*;
+import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Purchase;
+import com.softjourn.vending.entity.Row;
+import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
@@ -18,12 +22,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuyServiceTest {
@@ -62,6 +71,7 @@ public class BuyServiceTest {
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
         product.setImageUrl("/image.jpg");
+        product.setCategory(drinks);
         product.setAddedTime(Instant.ofEpochMilli(1_000_000));
 
         product2 = new Product();
@@ -69,6 +79,7 @@ public class BuyServiceTest {
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
         product2.setImageUrl("/image2.jpg");
+        product2.setCategory(drinks);
         product2.setAddedTime(Instant.ofEpochMilli(2_000_000));
 
         field = new Field("A0", 0);

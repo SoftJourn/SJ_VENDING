@@ -57,7 +57,6 @@ public class ProductsControllerTest {
                 .apply(documentationConfiguration(restDocumentation)
                         .snippets()
                         .withTemplateFormat(TemplateFormats.asciidoctor()))
-
                 .build();
     }
 
@@ -76,7 +75,8 @@ public class ProductsControllerTest {
                                 fieldWithPath("[0].name").description("Product name."),
                                 fieldWithPath("[0].price").description("Product price."),
                                 fieldWithPath("[0].imageUrl").description("Relative path to product image."),
-                                fieldWithPath("[0].category").description("Product category."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
                                 fieldWithPath("[0].description").description("Product description.")
                         )));
     }
@@ -94,15 +94,15 @@ public class ProductsControllerTest {
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
                                 fieldWithPath("imageUrl").description("Relative path to product image."),
-                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("category.id").description("Category id."),
+                                fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
     }
 
 
-
     @Test
-    @WithMockUser(roles="ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void addProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -121,13 +121,14 @@ public class ProductsControllerTest {
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
                                 fieldWithPath("imageUrl").description("Relative path to product image."),
-                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("category.id").description("Category id."),
+                                fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
     }
 
     @Test
-    @WithMockUser(roles="ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void updateProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -146,13 +147,14 @@ public class ProductsControllerTest {
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
                                 fieldWithPath("imageUrl").description("Relative path to product image."),
-                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("category.id").description("Category id."),
+                                fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
     }
 
     @Test
-    @WithMockUser(roles="ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void updateImage() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -167,7 +169,7 @@ public class ProductsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles="ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void deleteProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -184,7 +186,8 @@ public class ProductsControllerTest {
                                 fieldWithPath("name").description("Product name."),
                                 fieldWithPath("price").description("Product price."),
                                 fieldWithPath("imageUrl").description("Relative path to product image."),
-                                fieldWithPath("category").description("Product category."),
+                                fieldWithPath("category.id").description("Category id."),
+                                fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
     }

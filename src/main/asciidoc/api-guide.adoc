@@ -206,6 +206,22 @@ include::{snippets}/delete-favorite/http-request.adoc[]
 include::{snippets}/delete-favorite/http-response.adoc[]
 
 
+== Administrative dashboard endpoints
+
+Make request to get all short information about products, vending machines, categories and purchases.
+
+[[dashboard]]
+=== Getting dashboard
+
+A `GET` request to get all short information about products, vending machines, categories and purchases.
+
+==== Example request
+
+include::{snippets}/dashboard/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/dashboard/http-response.adoc[]
 
 
 == Administrative product endpoints

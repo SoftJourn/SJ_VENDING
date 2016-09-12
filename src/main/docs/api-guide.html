@@ -499,42 +499,52 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_administrative_product_endpoints">Administrative product endpoints</a>
+<li><a href="#_administrative_dashboard_endpoints">Administrative dashboard endpoints</a>
 <ul class="sectlevel2">
-<li><a href="#resources-all-products">Getting all products</a>
+<li><a href="#dashboard">Getting dashboard</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_10">Example request</a></li>
 <li><a href="#_example_response_10">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-all-product">Getting one product registered in system by it&#8217;s id</a>
+</ul>
+</li>
+<li><a href="#_administrative_product_endpoints">Administrative product endpoints</a>
+<ul class="sectlevel2">
+<li><a href="#resources-all-products">Getting all products</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_11">Example request</a></li>
 <li><a href="#_example_response_11">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-add-product">Adding product into system</a>
+<li><a href="#resources-all-product">Getting one product registered in system by it&#8217;s id</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_12">Example request</a></li>
 <li><a href="#_example_response_12">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-product">Updating product&#8217;s fields</a>
+<li><a href="#resources-add-product">Adding product into system</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_13">Example request</a></li>
 <li><a href="#_example_response_13">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-product-image">Updating product&#8217;s image</a>
+<li><a href="#resources-update-product">Updating product&#8217;s fields</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_14">Example request</a></li>
 <li><a href="#_example_response_14">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-delete-product">Deleting product</a>
+<li><a href="#resources-update-product-image">Updating product&#8217;s image</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_15">Example request</a></li>
 <li><a href="#_example_response_15">Example response</a></li>
+</ul>
+</li>
+<li><a href="#resources-delete-product">Deleting product</a>
+<ul class="sectlevel3">
+<li><a href="#_example_request_16">Example request</a></li>
+<li><a href="#_example_response_16">Example response</a></li>
 </ul>
 </li>
 </ul>
@@ -543,26 +553,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#resources-add-machine">Adding machine</a>
 <ul class="sectlevel3">
-<li><a href="#_example_request_16">Example request</a></li>
-<li><a href="#_example_response_16">Example response</a></li>
-</ul>
-</li>
-<li><a href="#resources-delete-machine">Deleting machine</a>
-<ul class="sectlevel3">
 <li><a href="#_example_request_17">Example request</a></li>
 <li><a href="#_example_response_17">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-machine-field">Updating concrete machine field</a>
+<li><a href="#resources-delete-machine">Deleting machine</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_18">Example request</a></li>
 <li><a href="#_example_response_18">Example response</a></li>
 </ul>
 </li>
-<li><a href="#resources-update-machine-row">Updating concrete machine field</a>
+<li><a href="#resources-update-machine-field">Updating concrete machine field</a>
 <ul class="sectlevel3">
 <li><a href="#_example_request_19">Example request</a></li>
 <li><a href="#_example_response_19">Example response</a></li>
+</ul>
+</li>
+<li><a href="#resources-update-machine-row">Updating concrete machine field</a>
+<ul class="sectlevel3">
+<li><a href="#_example_request_20">Example request</a></li>
+<li><a href="#_example_response_20">Example response</a></li>
 </ul>
 </li>
 </ul>
@@ -725,6 +735,7 @@ that describes the problem. The error object has the following structure:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/machines HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -803,6 +814,7 @@ Content-Length: 98
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/machines/0 HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -881,6 +893,7 @@ Content-Length: 94
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/machines/0/features HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -891,7 +904,7 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1798
+Content-Length: 2032
 
 {
   "My lastPurchases" : [ {
@@ -900,14 +913,20 @@ Content-Length: 1798
     "name" : "Nuts",
     "imageUrl" : "/image2.jpg",
     "description" : "Energy bar with nuts.",
-    "category" : "SNACK"
+    "category" : {
+      "id" : 2,
+      "name" : "Snack"
+    }
   }, {
     "id" : 0,
     "price" : 5,
     "name" : "COLA",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
-    "category" : "DRINK"
+    "category" : {
+      "id" : 1,
+      "name" : "Drink"
+    }
   } ],
   "Drink" : [ {
     "id" : 0,
@@ -915,7 +934,7 @@ Content-Length: 1798
     "name" : "COLA",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
-    "category" : "DRINK",
+    "category" : "Drink",
     "position" : {
       "row" : 0,
       "column" : 0,
@@ -928,7 +947,7 @@ Content-Length: 1798
     "name" : "Nuts",
     "imageUrl" : "/image2.jpg",
     "description" : "Energy bar with nuts.",
-    "category" : "SNACK",
+    "category" : "Snack",
     "position" : {
       "row" : 0,
       "column" : 1,
@@ -940,7 +959,7 @@ Content-Length: 1798
     "name" : "Snickers",
     "imageUrl" : "/image3.jpg",
     "description" : "Energy bar with nuts.",
-    "category" : "SNACK",
+    "category" : "Snack",
     "position" : {
       "row" : 1,
       "column" : 1,
@@ -953,14 +972,20 @@ Content-Length: 1798
     "name" : "Nuts",
     "imageUrl" : "/image2.jpg",
     "description" : "Energy bar with nuts.",
-    "category" : "SNACK"
+    "category" : {
+      "id" : 2,
+      "name" : "Snack"
+    }
   }, {
     "id" : 0,
     "price" : 5,
     "name" : "COLA",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
-    "category" : "DRINK"
+    "category" : {
+      "id" : 1,
+      "name" : "Drink"
+    }
   } ],
   "Best sellers" : [ {
     "id" : 1,
@@ -968,14 +993,20 @@ Content-Length: 1798
     "name" : "Nuts",
     "imageUrl" : "/image2.jpg",
     "description" : "Energy bar with nuts.",
-    "category" : "SNACK"
+    "category" : {
+      "id" : 2,
+      "name" : "Snack"
+    }
   }, {
     "id" : 0,
     "price" : 5,
     "name" : "COLA",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
-    "category" : "DRINK"
+    "category" : {
+      "id" : 1,
+      "name" : "Drink"
+    }
   } ]
 }</code></pre>
 </div>
@@ -1061,6 +1092,7 @@ Content-Length: 1798
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/machines/0/products HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1079,7 +1111,7 @@ Content-Length: 444
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK",
+  "category" : "Drink",
   "position" : {
     "row" : 0,
     "column" : 0,
@@ -1091,7 +1123,7 @@ Content-Length: 444
   "name" : "Nuts",
   "imageUrl" : "/image2.jpg",
   "description" : "Energy bar with nuts.",
-  "category" : "SNACK",
+  "category" : "Snack",
   "position" : {
     "row" : 0,
     "column" : 1,
@@ -1112,7 +1144,7 @@ Content-Length: 444
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/machines/0/fields/A1 HTTP/1.1
-Authorization: Bearer [ACCESS_TOKEN_VALUE]
+Authorization: Bearer ACCESS_TOKEN_VALUE
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1121,7 +1153,13 @@ Host: localhost</code></pre>
 <h4 id="_example_response_5"><a class="link" href="#_example_response_5">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 18
+
+{
+  "amount" : 5
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1145,7 +1183,13 @@ Host: localhost</code></pre>
 <h4 id="_example_response_6"><a class="link" href="#_example_response_6">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 18
+
+{
+  "amount" : 5
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1160,7 +1204,7 @@ Host: localhost</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/favorites HTTP/1.1
-Authentication: Bearer ACCESS_TOKEN_VALUE
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1171,7 +1215,7 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 290
+Content-Length: 356
 
 [ {
   "id" : 0,
@@ -1179,14 +1223,20 @@ Content-Length: 290
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }, {
   "id" : 1,
   "price" : 50,
   "name" : "Nuts",
   "imageUrl" : "/image2.jpg",
   "description" : "Energy bar with nuts.",
-  "category" : "SNACK"
+  "category" : {
+    "id" : 2,
+    "name" : "Snack"
+  }
 } ]</code></pre>
 </div>
 </div>
@@ -1202,7 +1252,7 @@ Content-Length: 290
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/favorites/0 HTTP/1.1
-Authentication: Bearer ACCESS_TOKEN_VALUE
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1226,7 +1276,7 @@ Host: localhost</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/favorites/0 HTTP/1.1
-Authentication: Bearer ACCESS_TOKEN_VALUE
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
@@ -1236,6 +1286,47 @@ Host: localhost</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_administrative_dashboard_endpoints"><a class="link" href="#_administrative_dashboard_endpoints">Administrative dashboard endpoints</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Make request to get all short information about products, vending machines, categories and purchases.</p>
+</div>
+<div class="sect2">
+<h3 id="dashboard"><a class="link" href="#dashboard">Getting dashboard</a></h3>
+<div class="paragraph">
+<p>A <code>GET</code> request to get all short information about products, vending machines, categories and purchases.</p>
+</div>
+<div class="sect3">
+<h4 id="_example_request_10"><a class="link" href="#_example_request_10">Example request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/dashboard HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
+Host: localhost</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_response_10"><a class="link" href="#_example_response_10">Example response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 77
+
+{
+  "products" : 5,
+  "machines" : 5,
+  "categories" : 5,
+  "purchases" : 5
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1254,21 +1345,22 @@ Host: localhost</code></pre>
 <p>A <code>GET</code> request to get all products registered in system. Not depend on any machine.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_10"><a class="link" href="#_example_request_10">Example request</a></h4>
+<h4 id="_example_request_11"><a class="link" href="#_example_request_11">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/products HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_10"><a class="link" href="#_example_response_10">Example response</a></h4>
+<h4 id="_example_response_11"><a class="link" href="#_example_response_11">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 290
+Content-Length: 356
 
 [ {
   "id" : 0,
@@ -1276,14 +1368,20 @@ Content-Length: 290
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }, {
   "id" : 1,
   "price" : 50,
   "name" : "Nuts",
   "imageUrl" : "/image2.jpg",
   "description" : "Energy bar with nuts.",
-  "category" : "SNACK"
+  "category" : {
+    "id" : 2,
+    "name" : "Snack"
+  }
 } ]</code></pre>
 </div>
 </div>
@@ -1295,21 +1393,22 @@ Content-Length: 290
 <p>Make request to get product registered in system by id. Not depend on any machine.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_11"><a class="link" href="#_example_request_11">Example request</a></h4>
+<h4 id="_example_request_12"><a class="link" href="#_example_request_12">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /v1/products/0 HTTP/1.1
+Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_11"><a class="link" href="#_example_response_11">Example response</a></h4>
+<h4 id="_example_response_12"><a class="link" href="#_example_response_12">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 138
+Content-Length: 171
 
 {
   "id" : 0,
@@ -1317,7 +1416,10 @@ Content-Length: 138
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }</code></pre>
 </div>
 </div>
@@ -1329,26 +1431,26 @@ Content-Length: 138
 <p>Make request to add products into system. Not depend on any machine.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_12"><a class="link" href="#_example_request_12">Example request</a></h4>
+<h4 id="_example_request_13"><a class="link" href="#_example_request_13">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products HTTP/1.1
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 107
+Content-Length: 123
 
-{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":"DRINK"}</code></pre>
+{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_12"><a class="link" href="#_example_response_12">Example response</a></h4>
+<h4 id="_example_response_13"><a class="link" href="#_example_response_13">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 138
+Content-Length: 171
 
 {
   "id" : 0,
@@ -1356,7 +1458,10 @@ Content-Length: 138
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }</code></pre>
 </div>
 </div>
@@ -1368,26 +1473,26 @@ Content-Length: 138
 <p>Make request to update product in system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_13"><a class="link" href="#_example_request_13">Example request</a></h4>
+<h4 id="_example_request_14"><a class="link" href="#_example_request_14">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/0 HTTP/1.1
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 107
+Content-Length: 123
 
-{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":"DRINK"}</code></pre>
+{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_13"><a class="link" href="#_example_response_13">Example response</a></h4>
+<h4 id="_example_response_14"><a class="link" href="#_example_response_14">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 138
+Content-Length: 171
 
 {
   "id" : 0,
@@ -1395,7 +1500,10 @@ Content-Length: 138
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }</code></pre>
 </div>
 </div>
@@ -1407,7 +1515,7 @@ Content-Length: 138
 <p>Make request to update product image.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_14"><a class="link" href="#_example_request_14">Example request</a></h4>
+<h4 id="_example_request_15"><a class="link" href="#_example_request_15">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/0/image HTTP/1.1
@@ -1424,7 +1532,7 @@ imageFileContent
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_14"><a class="link" href="#_example_response_14">Example response</a></h4>
+<h4 id="_example_response_15"><a class="link" href="#_example_response_15">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
@@ -1438,7 +1546,7 @@ imageFileContent
 <p>Make request to delete product from system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_15"><a class="link" href="#_example_request_15">Example request</a></h4>
+<h4 id="_example_request_16"><a class="link" href="#_example_request_16">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/products/0 HTTP/1.1
@@ -1448,12 +1556,12 @@ Host: localhost</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_15"><a class="link" href="#_example_response_15">Example response</a></h4>
+<h4 id="_example_response_16"><a class="link" href="#_example_response_16">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 138
+Content-Length: 171
 
 {
   "id" : 0,
@@ -1461,7 +1569,10 @@ Content-Length: 138
   "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "DRINK"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
 }</code></pre>
 </div>
 </div>
@@ -1478,30 +1589,31 @@ Content-Length: 138
 <p>Make request to add new machine to system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_16"><a class="link" href="#_example_request_16">Example request</a></h4>
+<h4 id="_example_request_17"><a class="link" href="#_example_request_17">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 111
+Content-Length: 174
 
-{"name":"Machine","rowsCount":2,"columnsCount":2,"rowsNumbering":"ALPHABETICAL","columnsNumbering":"NUMERICAL"}</code></pre>
+{"name":"Machine","address":"45a45f89d62b15c2d5b74f51a2541264a2415b12d5fcd24542","rowsCount":2,"columnsCount":2,"rowsNumbering":"ALPHABETICAL","columnsNumbering":"NUMERICAL"}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_16"><a class="link" href="#_example_response_16">Example response</a></h4>
+<h4 id="_example_response_17"><a class="link" href="#_example_response_17">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1321
+Content-Length: 1545
 
 {
   "id" : 0,
   "name" : "Snack machine",
+  "address" : null,
   "rows" : [ {
     "id" : 0,
     "rowId" : "A",
@@ -1515,7 +1627,10 @@ Content-Length: 1321
         "name" : "COLA",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
-        "category" : "DRINK"
+        "category" : {
+          "id" : 1,
+          "name" : "Drink"
+        }
       }
     }, {
       "id" : 1,
@@ -1527,7 +1642,10 @@ Content-Length: 1321
         "name" : "Nuts",
         "imageUrl" : "/image2.jpg",
         "description" : "Energy bar with nuts.",
-        "category" : "SNACK"
+        "category" : {
+          "id" : 2,
+          "name" : "Snack"
+        }
       }
     } ]
   }, {
@@ -1543,7 +1661,10 @@ Content-Length: 1321
         "name" : "COLA",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
-        "category" : "DRINK"
+        "category" : {
+          "id" : 1,
+          "name" : "Drink"
+        }
       }
     }, {
       "id" : 3,
@@ -1555,7 +1676,10 @@ Content-Length: 1321
         "name" : "Nuts",
         "imageUrl" : "/image2.jpg",
         "description" : "Energy bar with nuts.",
-        "category" : "SNACK"
+        "category" : {
+          "id" : 2,
+          "name" : "Snack"
+        }
       }
     } ]
   } ],
@@ -1574,7 +1698,7 @@ Content-Length: 1321
 <p>Make request to delete machine from system.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_17"><a class="link" href="#_example_request_17">Example request</a></h4>
+<h4 id="_example_request_18"><a class="link" href="#_example_request_18">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /v1/vending/0 HTTP/1.1
@@ -1584,7 +1708,7 @@ Host: localhost</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_17"><a class="link" href="#_example_response_17">Example response</a></h4>
+<h4 id="_example_response_18"><a class="link" href="#_example_response_18">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK</code></pre>
@@ -1598,26 +1722,26 @@ Host: localhost</code></pre>
 <p>Make request to update machine field. Set new product, update products count, update internal machine field id.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_18"><a class="link" href="#_example_request_18">Example request</a></h4>
+<h4 id="_example_request_19"><a class="link" href="#_example_request_19">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending/0/fields/0 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 154
+Content-Length: 170
 
-{"id":0,"internalId":"A1","count":5,"product":{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":"DRINK"}}</code></pre>
+{"id":0,"internalId":"A1","count":5,"product":{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_18"><a class="link" href="#_example_response_18">Example response</a></h4>
+<h4 id="_example_response_19"><a class="link" href="#_example_response_19">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 220
+Content-Length: 259
 
 {
   "id" : 0,
@@ -1629,7 +1753,10 @@ Content-Length: 220
     "name" : "COLA",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
-    "category" : "DRINK"
+    "category" : {
+      "id" : 1,
+      "name" : "Drink"
+    }
   }
 }</code></pre>
 </div>
@@ -1642,7 +1769,7 @@ Content-Length: 220
 <p>Make request to update machine row. In body should be new count of fields in this row.</p>
 </div>
 <div class="sect3">
-<h4 id="_example_request_19"><a class="link" href="#_example_request_19">Example request</a></h4>
+<h4 id="_example_request_20"><a class="link" href="#_example_request_20">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/vending/0/rows/0 HTTP/1.1
@@ -1656,12 +1783,12 @@ Content-Length: 1
 </div>
 </div>
 <div class="sect3">
-<h4 id="_example_response_19"><a class="link" href="#_example_response_19">Example response</a></h4>
+<h4 id="_example_response_20"><a class="link" href="#_example_response_20">Example response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 548
+Content-Length: 638
 
 {
   "id" : 0,
@@ -1676,7 +1803,10 @@ Content-Length: 548
       "name" : "COLA",
       "imageUrl" : "/image.jpg",
       "description" : "Cola with coca.",
-      "category" : "DRINK"
+      "category" : {
+        "id" : 1,
+        "name" : "Drink"
+      }
     }
   }, {
     "id" : 1,
@@ -1688,7 +1818,10 @@ Content-Length: 548
       "name" : "Nuts",
       "imageUrl" : "/image2.jpg",
       "description" : "Energy bar with nuts.",
-      "category" : "SNACK"
+      "category" : {
+        "id" : 2,
+        "name" : "Snack"
+      }
     }
   } ]
 }</code></pre>
@@ -1701,7 +1834,7 @@ Content-Length: 548
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-08-29 11:12:53 EEST
+Last updated 2016-09-13 11:54:47 EEST
 </div>
 </div>
 </body>

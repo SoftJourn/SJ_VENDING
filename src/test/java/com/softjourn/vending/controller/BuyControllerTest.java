@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
+import static com.softjourn.vending.controller.ControllerTestConfig.snacks;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -129,8 +131,8 @@ public class BuyControllerTest {
                                 fieldWithPath("New products").description("Top 10 newest products."),
                                 fieldWithPath("My lastPurchases").description("Ten products that was purchased last time by user."),
                                 fieldWithPath("Best sellers").description("Top 10 best sellers products."),
-                                fieldWithPath("Drink").description("All drinks in machine. With positions."),
-                                fieldWithPath("Snack").description("All snacks in machine. With positions.")
+                                fieldWithPath(drinks.getName()).description("All drinks in machine. With positions."),
+                                fieldWithPath(snacks.getName()).description("All snacks in machine. With positions.")
                                 )));
     }
 

@@ -55,7 +55,7 @@ public class BuyService {
             List<Field> fields = rows.get(i).getFields();
             for (int j = 0; j < fields.size(); j++) {
                 Field field = fields.get(j);
-                if(field.getProduct() != null && field.getCount() > 0) {
+                if (field.getProduct() != null && field.getCount() > 0) {
                     Position position = new Position(i, j, field.getInternalId());
                     ProductDTO dto = new ProductDTO(field.getProduct(), position);
                     result.add(dto);
@@ -109,9 +109,9 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductDTO> getByCategory(Product.Category category, Integer machineId) {
+    public List<ProductDTO> getByCategory(Categories categories, Integer machineId) {
         return getAvailableProducts(machineId).stream()
-                .filter(p -> p.getCategory().equals(category))
+                .filter(p -> p.getCategory().equals(categories.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -145,7 +145,7 @@ public class BuyService {
 
     private Product getProductIfAvailable(Integer machineId, String fieldInternalId) {
         Field field = getByInternalId(machineId, fieldInternalId);
-        if(field.getCount() > 0 && field.getProduct() != null) {
+        if (field.getCount() > 0 && field.getProduct() != null) {
             return field.getProduct();
         } else {
             throw new NotFoundException("There is no products in this field.");

@@ -1,9 +1,22 @@
 package com.softjourn.vending.controller;
 
+import com.softjourn.vending.dto.DashboardDTO;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.*;
-import com.softjourn.vending.service.*;
+import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Row;
+import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.service.BuyService;
+import com.softjourn.vending.service.CategoriesService;
+import com.softjourn.vending.service.CoinService;
+import com.softjourn.vending.service.DashboardService;
+import com.softjourn.vending.service.FavoritesService;
+import com.softjourn.vending.service.FieldService;
+import com.softjourn.vending.service.MachineService;
+import com.softjourn.vending.service.ProductService;
+import com.softjourn.vending.service.VendingService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -20,11 +33,13 @@ import java.util.Collections;
 import static com.softjourn.vending.controller.ProductsControllerTest.product;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @Configuration
-@ComponentScan(basePackages = { "com.softjourn.vending"})
+@ComponentScan(basePackages = {"com.softjourn.vending"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @WebAppConfiguration
 public class ControllerTestConfig {
@@ -37,15 +52,29 @@ public class ControllerTestConfig {
     private Field field2;
     private Field field3;
 
-    private Row row1;
+    private static Row row1;
+
+    public static Categories drinks;
+    public static Categories snacks;
+
+    public static DashboardDTO dashboard;
 
     static {
+        dashboard = new DashboardDTO();
+        dashboard.setProducts(5L);
+        dashboard.setMachines(5L);
+        dashboard.setCategories(5L);
+        dashboard.setPurchases(5L);
+
+        drinks = new Categories(1L, "Drink");
+        snacks = new Categories(2L, "Snack");
+
         product = new Product();
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
         product.setImageUrl("/image.jpg");
-        product.setCategory(Product.Category.DRINK);
+        product.setCategory(drinks);
         product.setDescription("Cola with coca.");
 
 
@@ -54,7 +83,7 @@ public class ControllerTestConfig {
         product2.setName("Nuts");
         product2.setPrice(new BigDecimal(50));
         product2.setImageUrl("/image2.jpg");
-        product2.setCategory(Product.Category.SNACK);
+        product2.setCategory(snacks);
         product2.setDescription("Energy bar with nuts.");
 
         product3 = new Product();
@@ -62,8 +91,11 @@ public class ControllerTestConfig {
         product3.setName("Snickers");
         product3.setPrice(new BigDecimal(50));
         product3.setImageUrl("/image3.jpg");
-        product3.setCategory(Product.Category.SNACK);
+        product3.setCategory(snacks);
         product3.setDescription("Energy bar with nuts.");
+
+        row = new Row("A");
+        row1 = new Row("B");
     }
 
     @Bean
@@ -119,9 +151,6 @@ public class ControllerTestConfig {
         field1.setCount(5);
         field2.setCount(5);
         field3.setCount(5);
-
-        row = new Row("A");
-        row1 = new Row("B");
 
         row.setId(0);
         row1.setId(1);
@@ -186,13 +215,42 @@ public class ControllerTestConfig {
 
         when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(new BigDecimal(5));
         when(buyService.buy(anyInt(), anyString(), any())).thenReturn(new BigDecimal(5));
-        when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
-        when(buyService.getByCategory(Product.Category.DRINK, 0)).thenReturn(Collections.singletonList(productDTO));
-        when(buyService.getByCategory(Product.Category.SNACK, 0)).thenReturn(new ArrayList<ProductDTO>(){{add(productDTO1);add(productDTO2);}});
-        when(buyService.getNew(anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
-        when(buyService.lastPurchases(any(Principal.class), anyInt())).thenReturn(new ArrayList<Product>(){{add(product2);add(product);}});
+        when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Product>() {{
+            add(product2);
+            add(product);
+        }});
+        when(buyService.getByCategory(drinks, 0)).thenReturn(Collections.singletonList(productDTO));
+        when(buyService.getByCategory(snacks, 0)).thenReturn(new ArrayList<ProductDTO>() {{
+            add(productDTO1);
+            add(productDTO2);
+        }});
+        when(buyService.getNew(anyInt())).thenReturn(new ArrayList<Product>() {{
+            add(product2);
+            add(product);
+        }});
+        when(buyService.lastPurchases(any(Principal.class), anyInt())).thenReturn(new ArrayList<Product>() {{
+            add(product2);
+            add(product);
+        }});
 
         return buyService;
+    }
+
+    @Bean
+    public CategoriesService categoriesService() {
+        CategoriesService categoriesService = Mockito.mock(CategoriesService.class);
+        when(categoriesService.getAll()).thenReturn(new ArrayList<Categories>() {{
+            add(drinks);
+            add(snacks);
+        }});
+        return categoriesService;
+    }
+
+    @Bean
+    public DashboardService dashboardService(){
+        DashboardService dashboardService = Mockito.mock(DashboardService.class);
+        when(dashboardService.getDashboard()).thenReturn(dashboard);
+        return dashboardService;
     }
 
     @Bean

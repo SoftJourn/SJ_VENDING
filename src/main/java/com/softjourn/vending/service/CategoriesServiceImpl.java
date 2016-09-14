@@ -14,7 +14,22 @@ public class CategoriesServiceImpl implements CategoriesService {
     private CategoriesRepository categoriesRepository;
 
     @Override
+    public Categories save(Categories categories) {
+        return categoriesRepository.save(categories);
+    }
+
+    @Override
     public List<Categories> getAll() {
         return categoriesRepository.findAll();
+    }
+
+    @Override
+    public Categories get(Long id) {
+        return categoriesRepository.findOne(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        categoriesRepository.delete(id);
     }
 }

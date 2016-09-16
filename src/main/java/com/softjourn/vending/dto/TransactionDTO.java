@@ -2,7 +2,7 @@ package com.softjourn.vending.dto;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.softjourn.vending.utils.InstantJsondeserializer;
+import com.softjourn.vending.utils.InstantJsonDeserializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -21,7 +21,7 @@ public class TransactionDTO {
 
     private String comment;
 
-    @JsonDeserialize(using = InstantJsondeserializer.class)
+    @JsonDeserialize(using = InstantJsonDeserializer.class)
     private Instant created;
 
     private String status;

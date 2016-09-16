@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.time.Instant;
 
-public class InstantJsondeserializer extends JsonDeserializer<Instant> {
+public class InstantJsonDeserializer extends JsonDeserializer<Instant> {
 
     @Override
     public Instant deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {

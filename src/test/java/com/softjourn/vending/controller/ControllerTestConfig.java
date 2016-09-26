@@ -1,6 +1,7 @@
 package com.softjourn.vending.controller;
 
 import com.softjourn.vending.dto.DashboardDTO;
+import com.softjourn.vending.dto.ErrorDetail;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.entity.Categories;
@@ -17,6 +18,7 @@ import com.softjourn.vending.service.FieldService;
 import com.softjourn.vending.service.MachineService;
 import com.softjourn.vending.service.ProductService;
 import com.softjourn.vending.service.VendingService;
+import com.softjourn.vending.utils.Constants;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,7 @@ public class ControllerTestConfig {
 
     private static Product product2;
     private static Product product3;
+    public static Product product4;
 
     private Field field1;
     private Field field2;
@@ -94,6 +97,14 @@ public class ControllerTestConfig {
         product3.setCategory(snacks);
         product3.setDescription("Energy bar with nuts.");
 
+        product4 = new Product();
+        product4.setId(2);
+        product4.setName("Super Snickers");
+        product4.setPrice(new BigDecimal(50));
+        product4.setImageUrl("/image3.jpg");
+        product4.setCategory(snacks);
+        product4.setDescription("Energy bar with nuts.");
+
         row = new Row("A");
         row1 = new Row("B");
     }
@@ -106,11 +117,14 @@ public class ControllerTestConfig {
         when(productService.getProducts()).thenReturn(new ArrayList<Product>() {{
             add(product);
             add(product2);
+            add(product4);
         }});
         when(productService.getProduct(0)).thenReturn(product);
         when(productService.getProduct(1)).thenReturn(product2);
+        when(productService.getProduct(2)).thenReturn(product4);
         when(productService.add(product)).thenReturn(product);
         when(productService.add(product2)).thenReturn(product2);
+        when(productService.add(product4)).thenReturn(product4);
         when(productService.update(anyInt(), any())).thenReturn(product);
         when(productService.delete(anyInt())).thenReturn(product);
 
@@ -247,7 +261,7 @@ public class ControllerTestConfig {
     }
 
     @Bean
-    public DashboardService dashboardService(){
+    public DashboardService dashboardService() {
         DashboardService dashboardService = Mockito.mock(DashboardService.class);
         when(dashboardService.getDashboard()).thenReturn(dashboard);
         return dashboardService;

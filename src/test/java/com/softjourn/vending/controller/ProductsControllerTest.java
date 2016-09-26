@@ -23,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
+import static com.softjourn.vending.controller.ControllerTestConfig.product4;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -109,9 +110,9 @@ public class ProductsControllerTest {
                         .post("/v1/products")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(product)))
+                        .content(json(product4)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(json(product)))
+                .andExpect(content().json(json(product4)))
                 .andDo(document("add-product", preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
@@ -130,9 +131,10 @@ public class ProductsControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void updateProduct() throws Exception {
+        product.setName("Super Nuts");
         mockMvc
                 .perform(RestDocumentationRequestBuilders
-                        .post("/v1/products/{productId}", 0)
+                        .post("/v1/products/{productId}", 1)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(product)))

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,12 +28,12 @@ public class CategoriesController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Categories> addCategories(@RequestBody Categories categories) {
+    public ResponseEntity<Categories> addCategories(@Valid @RequestBody Categories categories) {
         return new ResponseEntity<>(categoriesService.save(categories), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Categories> updateCategories(@RequestBody Categories categories) {
+    public ResponseEntity<Categories> updateCategories(@Valid @RequestBody Categories categories) {
         return new ResponseEntity<>(categoriesService.save(categories), HttpStatus.OK);
     }
 

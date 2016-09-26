@@ -1,15 +1,29 @@
 package com.softjourn.vending.controller;
 
 
-import com.softjourn.vending.exceptions.*;
+import com.softjourn.vending.dto.ErrorDetail;
+import com.softjourn.vending.exceptions.AlreadyPresentedException;
+import com.softjourn.vending.exceptions.BadRequestException;
+import com.softjourn.vending.exceptions.NotEnoughAmountException;
+import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.PaymentProcessingException;
+import com.softjourn.vending.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import static com.softjourn.vending.utils.Constants.SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW;
+import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 
 @ControllerAdvice
 @Slf4j
@@ -50,9 +64,47 @@ public class GlobalExceptionHandler {
         return new ModelAndView("redirect:login.html");
     }
 
-    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Can't delete or update item becouse it's used somewhere else.")
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public void handleDataIntegrityViolationException(Exception e) {
+    public ResponseEntity<ErrorDetail> handleDataIntegrityViolationException(Exception e) {
+        if (e.getCause() instanceof ConstraintViolationException) {
+            ConstraintViolationException cause = (ConstraintViolationException) e.getCause();
+            if (cause.getSQLException().getErrorCode() == SQL_DUPLICATE_ENTRY) {
+                log.info(e.getMessage());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(cause,
+                        cause.getSQLException().getErrorCode(), "Duplicate entry"));
+            } else if (cause.getSQLException().getErrorCode() == SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW) {
+                log.info(e.getMessage());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(cause,
+                        cause.getSQLException().getErrorCode(), "Cannot delete or update a parent row"));
+            }
+        }
         log.info(e.getLocalizedMessage());
+        return null;
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDetail> handle(MethodArgumentNotValidException e) {
+        log.info(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
+                null, e.getBindingResult().getAllErrors().stream().findFirst().get().getDefaultMessage()));
+    }
+
+    private ErrorDetail buildErrorDetails(RuntimeException e, Integer code, String message) {
+        ErrorDetail errorDetail = new ErrorDetail();
+        errorDetail.setTitle("Error");
+        errorDetail.setDetail(message);
+        errorDetail.setCode(code);
+        errorDetail.setDeveloperMessage(e.getClass().getName());
+        return errorDetail;
+    }
+
+    private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {
+        ErrorDetail errorDetail = new ErrorDetail();
+        errorDetail.setTitle("Error");
+        errorDetail.setDetail(message);
+        errorDetail.setCode(code);
+        errorDetail.setDeveloperMessage(e.getClass().getName());
+        return errorDetail;
+    }
+
 }

@@ -81,7 +81,7 @@ public class ProductService {
         try {
             String resolution = FileUploadUtil.getResolution(image);
             product.setImageData(image.getBytes());
-            product.setImageUrl("v1/products/" + product.getId() + "/image." + resolution);
+            product.setImageUrl("products/" + product.getId() + "/image." + resolution);
             return product;
         } catch (IOException e) {
             throw new RuntimeException("Can't save image for product with id " + product.getId(), e);

@@ -28,7 +28,7 @@ public class Categories {
     @NotNull(message = "Category name should not be null")
     @NotBlank(message = "Category name should not be blank and starts with symbols")
     @NotEmpty(message = "Category name should not be empty and starts with symbols")
-    @Pattern(regexp = "^[a-zA-Z]+[ a-zA-Z]+", message = "Category name should not contain numbers and starts with symbols")
+    @Pattern(regexp = "^[a-zA-Z]+[ a-zA-Z]*[a-zA-Z]+$", message = "Category name should not contain numbers and starts with symbols")
     private String name;
 
     public Categories(Long id, String name) {

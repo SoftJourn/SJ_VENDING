@@ -44,7 +44,7 @@ public class Product {
     @NotNull(message = "Product name should not be null")
     @NotBlank(message = "Product name should not be blank and starts with symbols")
     @NotEmpty(message = "Product name should not be empty and starts with symbols")
-    @Pattern(regexp = "^[a-zA-Z0-9]+[ a-zA-Z0-9]*[a-zA-Z0-9]+", message = "Product name should't starts and ends with whitespaces and should't contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\u0400-\\u04FF]+[ a-zA-Z0-9\\u0400-\\u04FF]*[a-zA-Z0-9\\u0400-\\u04FF]+", message = "Product name should't starts and ends with whitespaces and should't contain special characters")
     private String name;
 
     @Column(name = "image_url")

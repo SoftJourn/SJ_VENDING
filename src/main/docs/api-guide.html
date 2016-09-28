@@ -904,7 +904,7 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 2032
+Content-Length: 2050
 
 {
   "My lastPurchases" : [ {
@@ -920,7 +920,7 @@ Content-Length: 2032
   }, {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -979,7 +979,7 @@ Content-Length: 2032
   }, {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -1000,7 +1000,7 @@ Content-Length: 2032
   }, {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -1360,12 +1360,12 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 356
+Content-Length: 553
 
 [ {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1377,6 +1377,16 @@ Content-Length: 356
   "price" : 50,
   "name" : "Nuts",
   "imageUrl" : "/image2.jpg",
+  "description" : "Energy bar with nuts.",
+  "category" : {
+    "id" : 2,
+    "name" : "Snack"
+  }
+}, {
+  "id" : 2,
+  "price" : 50,
+  "name" : "Super Snickers",
+  "imageUrl" : "/image3.jpg",
   "description" : "Energy bar with nuts.",
   "category" : {
     "id" : 2,
@@ -1408,12 +1418,12 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 171
+Content-Length: 177
 
 {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1438,9 +1448,9 @@ Content-Length: 171
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 123
+Content-Length: 141
 
-{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
+{"id":2,"price":50,"name":"Super Snickers","imageUrl":"/image3.jpg","description":"Energy bar with nuts.","category":{"id":2,"name":"Snack"}}</code></pre>
 </div>
 </div>
 </div>
@@ -1450,17 +1460,17 @@ Content-Length: 123
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 171
+Content-Length: 189
 
 {
-  "id" : 0,
-  "price" : 5,
-  "name" : "COLA",
-  "imageUrl" : "/image.jpg",
-  "description" : "Cola with coca.",
+  "id" : 2,
+  "price" : 50,
+  "name" : "Super Snickers",
+  "imageUrl" : "/image3.jpg",
+  "description" : "Energy bar with nuts.",
   "category" : {
-    "id" : 1,
-    "name" : "Drink"
+    "id" : 2,
+    "name" : "Snack"
   }
 }</code></pre>
 </div>
@@ -1476,13 +1486,13 @@ Content-Length: 171
 <h4 id="_example_request_14"><a class="link" href="#_example_request_14">Example request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/0 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /v1/products/1 HTTP/1.1
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 123
+Content-Length: 129
 
-{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
+{"id":0,"price":5,"name":"Super Nuts","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
 </div>
 </div>
 </div>
@@ -1492,12 +1502,12 @@ Content-Length: 123
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 171
+Content-Length: 177
 
 {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1561,12 +1571,12 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 171
+Content-Length: 177
 
 {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1608,7 +1618,7 @@ Content-Length: 174
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1545
+Content-Length: 1557
 
 {
   "id" : 0,
@@ -1624,7 +1634,7 @@ Content-Length: 1545
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -1658,7 +1668,7 @@ Content-Length: 1545
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -1729,9 +1739,9 @@ Host: localhost</code></pre>
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 170
+Content-Length: 176
 
-{"id":0,"internalId":"A1","count":5,"product":{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
+{"id":0,"internalId":"A1","count":5,"product":{"id":0,"price":5,"name":"Super Nuts","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
 </div>
 </div>
 </div>
@@ -1741,7 +1751,7 @@ Content-Length: 170
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 259
+Content-Length: 265
 
 {
   "id" : 0,
@@ -1750,7 +1760,7 @@ Content-Length: 259
   "product" : {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -1788,7 +1798,7 @@ Content-Length: 1
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 638
+Content-Length: 644
 
 {
   "id" : 0,
@@ -1800,7 +1810,7 @@ Content-Length: 638
     "product" : {
       "id" : 0,
       "price" : 5,
-      "name" : "COLA",
+      "name" : "Super Nuts",
       "imageUrl" : "/image.jpg",
       "description" : "Cola with coca.",
       "category" : {
@@ -1834,7 +1844,7 @@ Content-Length: 638
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-13 11:54:47 EEST
+Last updated 2016-09-13 15:43:12 EEST
 </div>
 </div>
 </body>

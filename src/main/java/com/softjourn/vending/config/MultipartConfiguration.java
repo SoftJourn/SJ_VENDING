@@ -1,4 +1,4 @@
-package com.softjourn.vending;
+package com.softjourn.vending.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

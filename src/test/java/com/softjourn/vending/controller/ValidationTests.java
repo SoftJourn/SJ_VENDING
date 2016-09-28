@@ -48,19 +48,19 @@ public class ValidationTests {
     private MockMvc mockMvc;
 
     private static Categories nameWithNumberCategory;
-    private static Product nameWithNumberProduct;
+    private static Product nameWithSpecialCharProduct;
     private static Product negativePriceProduct;
     private static Product nullCategoryProduct;
 
     private static ErrorDetail nameWithNumberCategoryError;
-    private static ErrorDetail nameWithNumberProductError;
+    private static ErrorDetail nameWithSpecialCharProductError;
     private static ErrorDetail negativePriceProductError;
     private static ErrorDetail nullCategoryProductError;
 
     static {
         // --- Entities---
         nameWithNumberCategory = new Categories(null, "Sn8ck");
-        nameWithNumberProduct = new Product(null, new BigDecimal(20), "Snickers999", "/image.jpg", new byte[10],
+        nameWithSpecialCharProduct = new Product(null, new BigDecimal(20), "Snickers999@", "/image.jpg", new byte[10],
                 Instant.ofEpochMilli(1_000_000), "Some thing", snacks);
 
         negativePriceProduct = new Product(null, new BigDecimal(-20), "Snickers", "/image.jpg", new byte[10],
@@ -74,8 +74,8 @@ public class ValidationTests {
                 "Category name should not contain numbers and starts with symbols",
                 null, "org.springframework.web.bind.MethodArgumentNotValidException");
 
-        nameWithNumberProductError = new ErrorDetail("Error",
-                "Product name should not contain numbers and starts with symbols",
+        nameWithSpecialCharProductError = new ErrorDetail("Error",
+                "Product name should't starts and ends with whitespaces and should't contain special characters",
                 null, "org.springframework.web.bind.MethodArgumentNotValidException");
 
         negativePriceProductError = new ErrorDetail("Error",
@@ -128,9 +128,9 @@ public class ValidationTests {
                         .post("/v1/products")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(nameWithNumberProduct)))
+                        .content(json(nameWithSpecialCharProduct)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json(json(nameWithNumberProductError)))
+                .andExpect(content().json(json(nameWithSpecialCharProductError)))
                 .andDo(document("product-name-validator", preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")

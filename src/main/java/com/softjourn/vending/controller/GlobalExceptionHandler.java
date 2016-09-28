@@ -7,7 +7,6 @@ import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.NotEnoughAmountException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.PaymentProcessingException;
-import com.softjourn.vending.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,10 +16,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import static com.softjourn.vending.utils.Constants.SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW;
 import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
@@ -87,6 +85,13 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
                 null, e.getBindingResult().getAllErrors().stream().findFirst().get().getDefaultMessage()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorDetail> handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
+        log.info(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
+                null, "Image size is too large"));
     }
 
     private ErrorDetail buildErrorDetails(RuntimeException e, Integer code, String message) {

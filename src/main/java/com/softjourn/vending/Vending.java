@@ -3,6 +3,7 @@ package com.softjourn.vending;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.orm.jpa.EntityScan;
@@ -12,7 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
 @ComponentScan(basePackages = "com.softjourn.vending")
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)

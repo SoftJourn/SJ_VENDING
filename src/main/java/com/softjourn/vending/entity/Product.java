@@ -22,6 +22,8 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,7 +51,7 @@ public class Product {
     private String imageUrl;
 
     @JsonIgnore
-    @Column(length = 2 * 1024 * 1024)
+    @Column(length = IMAGE_FILE_MAX_SIZE)
     private byte[] imageData;
 
     @Column

@@ -1,7 +1,6 @@
 package com.softjourn.vending.controller;
 
 import com.softjourn.vending.dto.DashboardDTO;
-import com.softjourn.vending.dto.ErrorDetail;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.entity.Categories;
@@ -18,7 +17,6 @@ import com.softjourn.vending.service.FieldService;
 import com.softjourn.vending.service.MachineService;
 import com.softjourn.vending.service.ProductService;
 import com.softjourn.vending.service.VendingService;
-import com.softjourn.vending.utils.Constants;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;

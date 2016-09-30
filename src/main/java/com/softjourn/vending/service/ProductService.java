@@ -4,6 +4,8 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.NotImageException;
+import com.softjourn.vending.exceptions.WrongImageDimensions;
 import com.softjourn.vending.utils.FileUploadUtil;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
 import lombok.NonNull;
@@ -12,13 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_HEIGHT;
+import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 
 @Service
 @Slf4j
@@ -65,7 +72,9 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized void updateImage(@NonNull MultipartFile file, Integer id) {
+    public synchronized void updateImage(@NonNull MultipartFile file, Integer id) throws IOException {
+        this.validateImageMimeType(file);
+        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
         Product product = getProduct(id);
         setImage(product, file);
         repository.save(product);
@@ -85,6 +94,19 @@ public class ProductService {
             return product;
         } catch (IOException e) {
             throw new RuntimeException("Can't save image for product with id " + product.getId(), e);
+        }
+    }
+
+    private void validateImageMimeType(MultipartFile file) {
+        if (file.getContentType().matches("image/(?:jpeg|png|jpg|apng|svg|bmp)")) {
+        } else {
+            throw new NotImageException("File is not image");
+        }
+    }
+
+    private void validateImageDimensions(BufferedImage image) {
+        if (image.getWidth() >= IMAGE_DIMENSIONS_MAX_WIDTH || image.getHeight() >= IMAGE_DIMENSIONS_MAX_HEIGHT) {
+            throw new WrongImageDimensions("Wrong image dimensions");
         }
     }
 

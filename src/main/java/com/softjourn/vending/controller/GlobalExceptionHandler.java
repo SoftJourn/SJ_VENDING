@@ -6,7 +6,9 @@ import com.softjourn.vending.exceptions.AlreadyPresentedException;
 import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.NotEnoughAmountException;
 import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.PaymentProcessingException;
+import com.softjourn.vending.exceptions.WrongImageDimensions;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -92,6 +94,20 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
                 null, "Image size is too large"));
+    }
+
+    @ExceptionHandler(NotImageException.class)
+    public ResponseEntity<ErrorDetail> handleNotImageException(NotImageException e) {
+        log.info(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
+                null, "This file is not image or this file format is not supported!"));
+    }
+
+    @ExceptionHandler(WrongImageDimensions.class)
+    public ResponseEntity<ErrorDetail> handleWrongImageDimensions(WrongImageDimensions e) {
+        log.info(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
+                null, "Image dimensions is too big, try to use 205*205px"));
     }
 
     private ErrorDetail buildErrorDetails(RuntimeException e, Integer code, String message) {

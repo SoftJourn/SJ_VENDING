@@ -29,8 +29,8 @@ public class FieldService {
 
         fieldMergeUtil = ReflectionMergeUtil
                 .forClass(Field.class)
-                .ignoreNull(true)
                 .ignoreField("id")
+                .ignoreField("position")
                 .build();
     }
 

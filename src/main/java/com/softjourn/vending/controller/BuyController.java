@@ -28,14 +28,15 @@ public class BuyController {
 
     private BuyService buyService;
     private VendingService vendingService;
+    private final CategoriesService categoriesService;
 
     @Autowired
-    private CategoriesService categoriesService;
-
-    @Autowired
-    public BuyController(BuyService buyService, VendingService vendingService) {
+    public BuyController(BuyService buyService,
+                         VendingService vendingService,
+                         CategoriesService categoriesService) {
         this.buyService = buyService;
         this.vendingService = vendingService;
+        this.categoriesService = categoriesService;
     }
 
     @JsonView(View.Client.class)

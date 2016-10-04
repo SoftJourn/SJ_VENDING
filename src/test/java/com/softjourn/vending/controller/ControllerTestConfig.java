@@ -1,6 +1,8 @@
 package com.softjourn.vending.controller;
 
+import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.DashboardDTO;
+import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.entity.Categories;
@@ -216,14 +218,25 @@ public class ControllerTestConfig {
     public BuyService buyService() {
         BuyService buyService = Mockito.mock(BuyService.class);
 
-        ProductDTO productDTO = new ProductDTO(product, new Position(0, 0, "A0"));
-        ProductDTO productDTO1 = new ProductDTO(product2, new Position(0, 1, "A1"));
-        ProductDTO productDTO2 = new ProductDTO(product3, new Position(1, 1, "B1"));
-
-        when(buyService.getAvailableProducts(anyInt())).thenReturn(new ArrayList<ProductDTO>() {{
-            add(productDTO);
-            add(productDTO1);
+        when(buyService.getAvailableProducts(anyInt())).thenReturn(new ArrayList<Product>() {{
+            add(product);
+            add(product2);
         }});
+
+        when(buyService.getFeatures(anyInt())).thenReturn(new FeatureDTO(new ArrayList<Integer>() {{
+            add(0);
+            add(1);
+        }}, new ArrayList<Integer>() {{
+            add(0);
+            add(1);
+        }}, new ArrayList<CategoryDTO>() {{
+            add(new CategoryDTO(drinks.getName(), new ArrayList<Product>() {{
+                add(product);
+            }}));
+            add(new CategoryDTO(snacks.getName(), new ArrayList<Product>() {{
+                add(product2);
+            }}));
+        }}));
 
         when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(new BigDecimal(5));
         when(buyService.buy(anyInt(), anyString(), any())).thenReturn(new BigDecimal(5));
@@ -231,10 +244,10 @@ public class ControllerTestConfig {
             add(product2);
             add(product);
         }});
-        when(buyService.getByCategory(drinks, 0)).thenReturn(Collections.singletonList(productDTO));
-        when(buyService.getByCategory(snacks, 0)).thenReturn(new ArrayList<ProductDTO>() {{
-            add(productDTO1);
-            add(productDTO2);
+        when(buyService.getByCategory(drinks, 0)).thenReturn(Collections.singletonList(product));
+        when(buyService.getByCategory(snacks, 0)).thenReturn(new ArrayList<Product>() {{
+            add(product);
+            add(product2);
         }});
         when(buyService.getNew(anyInt())).thenReturn(new ArrayList<Product>() {{
             add(product2);

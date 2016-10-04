@@ -110,11 +110,7 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].id").description("Product id."),
                                 fieldWithPath("[0].name").description("Product name."),
                                 fieldWithPath("[0].price").description("Product price."),
-                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
-                                fieldWithPath("[0].position").description("Position object that shows where product is located in vending machine."),
-                                fieldWithPath("[0].position.row").description("Number of row that contains product(Starts with 0)."),
-                                fieldWithPath("[0].position.column").description("Number of column that contains product(Starts with 0)."),
-                                fieldWithPath("[0].position.cellName").description("Name of cell where product is located.")
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image.")
                         )));
     }
 
@@ -128,11 +124,9 @@ public class BuyControllerTest {
                 .andDo(document("features",
                         preprocessResponse(prettyPrint()),
                         responseFields(
-                                fieldWithPath("New products").description("Top 10 newest products."),
-                                fieldWithPath("My lastPurchases").description("Ten products that was purchased last time by user."),
-                                fieldWithPath("Best sellers").description("Top 10 best sellers products."),
-                                fieldWithPath(drinks.getName()).description("All drinks in machine. With positions."),
-                                fieldWithPath(snacks.getName()).description("All snacks in machine. With positions.")
+                                fieldWithPath("lastAdded").description("Top 10 newest products."),
+                                fieldWithPath("bestSellers").description("Top 10 best sellers products."),
+                                fieldWithPath("categories").description("Products grouped by categories")
                                 )));
     }
 

@@ -2,6 +2,8 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.PurchaseRepository;
+import com.softjourn.vending.dto.CategoryDTO;
+import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
@@ -16,11 +18,16 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Setter
@@ -38,6 +45,9 @@ public class BuyService {
     private FieldService fieldService;
 
     @Autowired
+    private CategoriesService categoriesService;
+
+    @Autowired
     public BuyService(VendingService vendingService, MachineService machineService, PurchaseRepository purchaseRepository, CoinService coinService, FieldService fieldService) {
         this.vendingService = vendingService;
         this.machineService = machineService;
@@ -46,24 +56,20 @@ public class BuyService {
         this.fieldService = fieldService;
     }
 
-    public List<ProductDTO> getAvailableProducts(Integer machineId) {
+    public List<Product> getAvailableProducts(Integer machineId) {
         VendingMachine vendingMachine = vendingService.get(machineId);
-
-        List<ProductDTO> result = new ArrayList<>();
-
+        List<Product> result = new ArrayList<>();
         List<Row> rows = vendingMachine.getRows();
+
         for (int i = 0; i < rows.size(); i++) {
             List<Field> fields = rows.get(i).getFields();
             for (int j = 0; j < fields.size(); j++) {
                 Field field = fields.get(j);
                 if (field.getProduct() != null && field.getCount() > 0) {
-                    Position position = new Position(i, j, field.getInternalId());
-                    ProductDTO dto = new ProductDTO(field.getProduct(), position);
-                    result.add(dto);
+                    result.add(field.getProduct());
                 }
             }
         }
-
         return result;
     }
 
@@ -109,10 +115,27 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductDTO> getByCategory(Categories categories, Integer machineId) {
+    public List<Product> getByCategory(Categories categories, Integer machineId) {
         return getAvailableProducts(machineId).stream()
-                .filter(p -> p.getCategory().equals(categories.getName()))
+                .filter(p -> p.getCategory().getName().equals(categories.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public FeatureDTO getFeatures(Integer machineId) {
+        FeatureDTO dto = new FeatureDTO();
+        List<Integer> lastAdded = new ArrayList<>();
+        getNew(machineId).forEach(product -> lastAdded.add(product.getId()));
+        List<Integer> bestSellers = new ArrayList<>();
+        getBestSellers(machineId).forEach(product -> bestSellers.add(product.getId()));
+        dto.setLastAdded(lastAdded);
+        dto.setBestSellers(bestSellers);
+        List<CategoryDTO> categories = new ArrayList<>();
+        categoriesService.getAll()
+                .forEach(c -> {
+                    categories.add(new CategoryDTO(c.getName(), getByCategory(c, machineId)));
+                });
+        dto.setCategories(categories);
+        return dto;
     }
 
     private Stream<Product> getAvailableProductsStream(Integer machineId) {

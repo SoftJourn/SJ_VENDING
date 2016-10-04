@@ -188,17 +188,8 @@ public class BuyServiceTest {
 
     @Test
     public void getAvailableProducts() throws Exception {
-        List<ProductDTO> res=  buyService.getAvailableProducts(0);
+        List<Product> res=  buyService.getAvailableProducts(0);
         assertEquals(2, res.size());
-
-        assertEquals(0, res.get(0).getPosition().getRow());
-        assertEquals(0, res.get(0).getPosition().getColumn());
-
-        assertEquals(1, res.get(1).getPosition().getRow());
-        assertEquals(1, res.get(1).getPosition().getColumn());
-
-        assertEquals("A0", res.get(0).getPosition().getCellName());
-        assertEquals("B1", res.get(1).getPosition().getCellName());
 
         assertTrue(0 == res.get(0).getId());
         assertTrue(1 == res.get(1).getId());

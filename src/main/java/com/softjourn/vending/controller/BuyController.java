@@ -2,8 +2,8 @@ package com.softjourn.vending.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.softjourn.vending.dao.CategoriesRepository;
-import com.softjourn.vending.dto.ProductDTO;
+import com.softjourn.vending.dto.FeatureDTO;
+import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.service.BuyService;
 import com.softjourn.vending.service.CategoriesService;
@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,12 +26,10 @@ public class BuyController {
 
     private BuyService buyService;
     private VendingService vendingService;
-    private final CategoriesService categoriesService;
+    private CategoriesService categoriesService;
 
     @Autowired
-    public BuyController(BuyService buyService,
-                         VendingService vendingService,
-                         CategoriesService categoriesService) {
+    public BuyController(BuyService buyService, VendingService vendingService, CategoriesService categoriesService) {
         this.buyService = buyService;
         this.vendingService = vendingService;
         this.categoriesService = categoriesService;
@@ -52,19 +48,13 @@ public class BuyController {
     }
 
     @RequestMapping(value = "/{machineId}/products", method = RequestMethod.GET)
-    public Iterable<ProductDTO> getAvailableProducts(@PathVariable Integer machineId) {
+    public Iterable<Product> getAvailableProducts(@PathVariable Integer machineId) {
         return buyService.getAvailableProducts(machineId);
     }
 
     @RequestMapping(value = "/{machineId}/features", method = RequestMethod.GET)
-    public Map<String, List<?>> getFeatures(@PathVariable Integer machineId, Principal principal) {
-        Map<String, List<?>> result = new HashMap<>();
-        result.put("New products", buyService.getNew(machineId));
-        result.put("My lastPurchases", buyService.lastPurchases(principal, machineId));
-        result.put("Best sellers", buyService.getBestSellers(machineId));
-        categoriesService.getAll()
-                .forEach(c -> result.put(c.getName(), buyService.getByCategory(c, machineId)));
-        return result;
+    public FeatureDTO getFeatures(@PathVariable Integer machineId) {
+        return buyService.getFeatures(machineId);
     }
 
     @RequestMapping(value = "/{machineId}/fields/{fieldId}", method = RequestMethod.POST)

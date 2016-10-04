@@ -4,6 +4,7 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.Position;
 import com.softjourn.vending.dto.ProductDTO;
+import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
 import lombok.Setter;
@@ -103,8 +104,7 @@ public class BuyService {
     public List<Product> lastPurchases(Principal principal, Integer machineId) {
         return purchaseRepository.getAllByUserAndMachine(principal.getName(), machineId).stream()
                 .sorted((p1, p2) -> p2.getTime().compareTo(p1.getTime()))
-                .map(Purchase::getProduct)
-                .distinct()
+                .map(p -> new PurchaseProductDto(p.getProduct(), p.getTime()))
                 .limit(LAST_PURCHASES_LIMIT)
                 .collect(Collectors.toList());
     }

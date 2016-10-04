@@ -7,6 +7,8 @@ import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.dto.PurchaseProductDto;
+import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
@@ -61,6 +63,17 @@ public class BuyServiceTest {
 
     private Row row;
     private Row row1;
+
+    PurchaseProductDto purchaseProductDto0;
+    PurchaseProductDto purchaseProductDto1;
+    PurchaseProductDto purchaseProductDto2;
+    PurchaseProductDto purchaseProductDto3;
+    PurchaseProductDto purchaseProductDto4;
+    PurchaseProductDto purchaseProductDto5;
+    PurchaseProductDto purchaseProductDto6;
+    PurchaseProductDto purchaseProductDto7;
+    PurchaseProductDto purchaseProductDto8;
+    PurchaseProductDto purchaseProductDto9;
 
     @Before
     public void setUp() throws Exception {
@@ -136,6 +149,18 @@ public class BuyServiceTest {
         Purchase purchase8 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(9_000_000));
         Purchase purchase9 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(10_000_000));
         Purchase purchase10 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(11_000_000));
+
+
+        purchaseProductDto0 = new PurchaseProductDto(product, Instant.ofEpochSecond(11_000_000));
+        purchaseProductDto1 = new PurchaseProductDto(product, Instant.ofEpochSecond(10_000_000));
+        purchaseProductDto2 = new PurchaseProductDto(product, Instant.ofEpochSecond(9_000_000));
+        purchaseProductDto3 = new PurchaseProductDto(product2, Instant.ofEpochSecond(8_000_000));
+        purchaseProductDto4 = new PurchaseProductDto(product2, Instant.ofEpochSecond(7_000_000));
+        purchaseProductDto5 = new PurchaseProductDto(product2, Instant.ofEpochSecond(6_000_000));
+        purchaseProductDto6 = new PurchaseProductDto(product2, Instant.ofEpochSecond(5_000_000));
+        purchaseProductDto7 = new PurchaseProductDto(product2, Instant.ofEpochSecond(4_000_000));
+        purchaseProductDto8 = new PurchaseProductDto(product2, Instant.ofEpochSecond(3_000_000));
+        purchaseProductDto9 = new PurchaseProductDto(product2, Instant.ofEpochSecond(2_000_000));
 
         List<Purchase> purchases = new ArrayList<Purchase>(){{
             add(purchase);
@@ -220,6 +245,16 @@ public class BuyServiceTest {
 
     @Test
     public void getLastPurchasesTest() throws Exception {
-        assertThat(buyService.lastPurchases(() -> "user", 0), IsIterableContainingInOrder.contains(product, product2));
+        assertThat(buyService.lastPurchases(() -> "user", 0), IsIterableContainingInOrder.contains(
+                purchaseProductDto0,
+                purchaseProductDto1,
+                purchaseProductDto2,
+                purchaseProductDto3,
+                purchaseProductDto4,
+                purchaseProductDto5,
+                purchaseProductDto6,
+                purchaseProductDto7,
+                purchaseProductDto8,
+                purchaseProductDto9));
     }
 }

@@ -14,13 +14,14 @@ import javax.persistence.*;
 public class Favorite {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(name = "account")
     private String account;
 
     @ManyToOne
+    @JoinColumn(name = "product")
     private Product product;
 
     public Favorite(String account, Product product) {

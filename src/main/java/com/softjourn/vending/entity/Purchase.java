@@ -15,19 +15,21 @@ import java.time.Instant;
 public class Purchase {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     private String account;
 
     @ManyToOne
+    @JoinColumn(name = "product")
     private Product product;
 
     @Column
     private Instant time;
 
     @ManyToOne
+    @JoinColumn(name = "machine")
     private VendingMachine machine;
 
     public Purchase(String account, Product product, VendingMachine machine, Instant time) {

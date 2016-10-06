@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 public class Field {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name="internal_id")
@@ -31,6 +31,7 @@ public class Field {
     private Integer count;
 
     @ManyToOne
+    @JoinColumn(name = "product")
     private Product product;
 
     public Field() {

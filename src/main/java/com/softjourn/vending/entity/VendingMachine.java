@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class VendingMachine {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(View.Client.class)
     private Integer id;
 

@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 @Service
 public class CoinService {
@@ -35,6 +36,9 @@ public class CoinService {
 
     @Value("${coins.spent.path}")
     private String coinsSpentPath;
+
+    @Value("${coins.treasury.account}")
+    private String treasuryErisAccount;
 
     private RestTemplate coinRestTemplate;
 
@@ -54,7 +58,7 @@ public class CoinService {
 
     @PreAuthorize("isAuthenticated()")
     public BigDecimal spent(Principal principal, BigDecimal amount, String machineAddress) {
-        try {
+        return wrapExceptionHandling(() -> {
             ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/buy/" + machineAddress,
                     HttpMethod.POST,
                     prepareRequest(principal, amount),
@@ -64,6 +68,26 @@ public class CoinService {
             } else {
                 throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
             }
+        });
+    }
+
+    private BigDecimal distributeMoney(Principal adminPrincipal, BigDecimal amount) {
+        return wrapExceptionHandling(() ->  {
+            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/distribute",
+                    HttpMethod.POST,
+                    prepareRequest(adminPrincipal, amount),
+                    TransactionDTO.class);
+            if (response.getBody().getStatus().equals("SUCCESS")) {
+                return response.getBody().getRemain();
+            } else {
+                throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
+            }
+        });
+    }
+
+    private BigDecimal wrapExceptionHandling(Supplier<BigDecimal> function) {
+        try {
+            return function.get();
         } catch (HttpClientErrorException hcee) {
             if (hcee.getStatusCode().equals(HttpStatus.CONFLICT)) {
                 throw new NotEnoughAmountException();

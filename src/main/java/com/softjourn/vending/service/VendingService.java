@@ -44,16 +44,18 @@ public class VendingService {
         this.coinService = coinService;
     }
 
-    public void refill(Integer machineId, List<Field> fields, Principal principal) {
-        VendingMachine vendingMachine = Optional.ofNullable(repository.findOne(machineId))
-                .orElseThrow(() -> new NotFoundException("There is no machine with id " + machineId));
+    public void refill(VendingMachine refilled, Principal principal) {
+        List<Field> fields = refilled.getFields();
+
+        VendingMachine vendingMachine = Optional.ofNullable(repository.findOne(refilled.getId()))
+                .orElseThrow(() -> new NotFoundException("There is no machine with id " + refilled.getId()));
 
         BigDecimal loadedPrice = fields.stream()
                 .map(f -> getSummaryPriceForField(f, vendingMachine))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         coinService.refill(principal, loadedPrice, vendingMachine.getAddress());
-        fields.stream().forEach(f -> fieldService.update(f.getId(), f, machineId));
+        fields.stream().forEach(f -> fieldService.update(f.getId(), f, refilled.getId()));
     }
 
     private BigDecimal getSummaryPriceForField(Field field, VendingMachine machine) {

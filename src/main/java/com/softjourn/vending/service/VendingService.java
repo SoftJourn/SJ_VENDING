@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,13 +27,42 @@ public class VendingService {
     private MachineRepository repository;
     private RowRepository rowRepository;
     private FieldRepository fieldRepository;
+    private FieldService fieldService;
+    private CoinService coinService;
 
 
     @Autowired
-    public VendingService(MachineRepository repository, RowRepository rowRepository, FieldRepository fieldRepository) {
+    public VendingService(MachineRepository repository,
+                          RowRepository rowRepository,
+                          FieldRepository fieldRepository,
+                          FieldService fieldService,
+                          CoinService coinService) {
         this.repository = repository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
+        this.fieldService = fieldService;
+        this.coinService = coinService;
+    }
+
+    public void refill(Integer machineId, List<Field> fields, Principal principal) {
+        VendingMachine vendingMachine = Optional.ofNullable(repository.findOne(machineId))
+                .orElseThrow(() -> new NotFoundException("There is no machine with id " + machineId));
+
+        BigDecimal loadedPrice = fields.stream()
+                .map(f -> getSummaryPriceForField(f, vendingMachine))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        coinService.refill(principal, loadedPrice, vendingMachine.getAddress());
+        fields.stream().forEach(f -> fieldService.update(f.getId(), f, machineId));
+    }
+
+    private BigDecimal getSummaryPriceForField(Field field, VendingMachine machine) {
+        Field oldField = machine.getFields().stream()
+                .filter(f -> f.getId().equals(field.getId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("There is no field with id " + field.getId() + " in machine " + machine.getId()));
+
+        return field.getProduct().getPrice().multiply(new BigDecimal(field.getCount() - oldField.getCount()));
     }
 
     public Iterable<VendingMachine> getAll() {

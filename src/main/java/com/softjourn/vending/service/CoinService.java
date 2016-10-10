@@ -37,9 +37,6 @@ public class CoinService {
     @Value("${coins.spent.path}")
     private String coinsSpentPath;
 
-    @Value("${coins.treasury.account}")
-    private String treasuryErisAccount;
-
     private RestTemplate coinRestTemplate;
 
     public CoinService() {
@@ -71,17 +68,35 @@ public class CoinService {
         });
     }
 
-    private BigDecimal distributeMoney(Principal adminPrincipal, BigDecimal amount) {
-        return wrapExceptionHandling(() ->  {
+    @PreAuthorize("hasRole('INVENTORY_MANAGER')")
+    public void refill(Principal adminPrincipal, BigDecimal amount, String machineAddress) {
+        returnVendMoney(adminPrincipal, machineAddress);
+        distributeMoney(adminPrincipal, amount);
+    }
+
+    private void returnVendMoney(Principal adminPrincipal, String machineAddress) {
+        wrapExceptionHandling(() -> {
+            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/buy/" + machineAddress,
+                    HttpMethod.POST,
+                    prepareRequest(adminPrincipal, BigDecimal.ZERO),
+                    TransactionDTO.class);
+            if (!response.getBody().getStatus().equals("SUCCESS")) {
+                throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
+            }
+            return null;
+        });
+    }
+
+    private void distributeMoney(Principal adminPrincipal, BigDecimal amount) {
+        wrapExceptionHandling(() ->  {
             ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/distribute",
                     HttpMethod.POST,
                     prepareRequest(adminPrincipal, amount),
                     TransactionDTO.class);
-            if (response.getBody().getStatus().equals("SUCCESS")) {
-                return response.getBody().getRemain();
-            } else {
+            if (!response.getBody().getStatus().equals("SUCCESS")) {
                 throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
             }
+            return null;
         });
     }
 

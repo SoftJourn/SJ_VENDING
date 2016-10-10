@@ -30,6 +30,10 @@ public class VendingServiceTest {
     private RowRepository rowRepository;
     @Mock
     private FieldRepository fieldRepository;
+    @Mock
+    private FieldService fieldService;
+    @Mock
+    private CoinService coinService;
 
     VendingService service;
 
@@ -51,7 +55,7 @@ public class VendingServiceTest {
 
         when(repository.save(any(VendingMachine.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
 
-        service = new VendingService(repository, rowRepository, fieldRepository);
+        service = new VendingService(repository, rowRepository, fieldRepository, fieldService, coinService);
 
     }
 

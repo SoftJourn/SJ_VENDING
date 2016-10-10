@@ -76,7 +76,7 @@ public class CoinService {
 
     private void returnVendMoney(Principal adminPrincipal, String machineAddress) {
         wrapExceptionHandling(() -> {
-            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/buy/" + machineAddress,
+            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/refill/" + machineAddress,
                     HttpMethod.POST,
                     prepareRequest(adminPrincipal, BigDecimal.ZERO),
                     TransactionDTO.class);

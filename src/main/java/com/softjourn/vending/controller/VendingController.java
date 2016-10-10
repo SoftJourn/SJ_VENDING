@@ -10,6 +10,8 @@ import com.softjourn.vending.service.VendingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/v1/vending")
 public class VendingController {
@@ -38,6 +40,11 @@ public class VendingController {
     @RequestMapping(method = RequestMethod.POST)
     public VendingMachine add(@RequestBody VendingMachineBuilderDTO machineBuilder) {
         return vendingService.create(machineBuilder);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public void refill(@RequestBody VendingMachine machine, Principal principal) {
+        vendingService.refill(machine, principal);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

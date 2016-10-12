@@ -69,8 +69,8 @@ public class CoinService {
     }
 
     @PreAuthorize("hasRole('INVENTORY_MANAGER')")
-    public void refill(Principal adminPrincipal, BigDecimal amount, String machineAddress) {
-        returnVendMoney(adminPrincipal, machineAddress);
+    public void refill(Principal adminPrincipal, BigDecimal amount, String machineName) {
+        returnVendMoney(adminPrincipal, machineName);
         distributeMoney(adminPrincipal, amount);
     }
 

@@ -17,62 +17,47 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class VendingService {
 
-    private MachineRepository repository;
+    private MachineRepository machineRepository;
     private RowRepository rowRepository;
     private FieldRepository fieldRepository;
-    private FieldService fieldService;
     private CoinService coinService;
 
 
     @Autowired
-    public VendingService(MachineRepository repository,
+    public VendingService(MachineRepository machineRepository,
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
-                          FieldService fieldService,
                           CoinService coinService) {
-        this.repository = repository;
+        this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
-        this.fieldService = fieldService;
         this.coinService = coinService;
     }
 
-    public void refill(VendingMachine refilled, Principal principal) {
-        List<Field> fields = refilled.getFields();
-
-        VendingMachine vendingMachine = Optional.ofNullable(repository.findOne(refilled.getId()))
-                .orElseThrow(() -> new NotFoundException("There is no machine with id " + refilled.getId()));
+    public VendingMachine refill(VendingMachine machine, Principal principal) {
+        List<Field> fields = machine.getFields();
 
         BigDecimal loadedPrice = fields.stream()
-                .map(f -> getSummaryPriceForField(f, vendingMachine))
+                .filter(field -> field.getProduct() != null)
+                .map(field -> field.getProduct().getPrice().multiply(new BigDecimal(field.getCount())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        coinService.refill(principal, loadedPrice, vendingMachine.getAddress());
-        fields.stream().forEach(f -> fieldService.update(f.getId(), f, refilled.getId()));
-    }
-
-    private BigDecimal getSummaryPriceForField(Field field, VendingMachine machine) {
-        Field oldField = machine.getFields().stream()
-                .filter(f -> f.getId().equals(field.getId()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("There is no field with id " + field.getId() + " in machine " + machine.getId()));
-
-        return field.getProduct().getPrice().multiply(new BigDecimal(field.getCount() - oldField.getCount()));
+//        coinService.refill(principal, loadedPrice, machine.getName());
+        return machineRepository.save(machine);
     }
 
     public Iterable<VendingMachine> getAll() {
-        return repository.findAll();
+        return machineRepository.findAll();
     }
 
     public VendingMachine get(Integer id) {
-        VendingMachine machine = repository.findOne(id);
+        VendingMachine machine = machineRepository.findOne(id);
         if(machine == null) throw new NotFoundException("Machine with such id not found.");
         return machine;
     }
@@ -81,7 +66,6 @@ public class VendingService {
     public VendingMachine create(VendingMachineBuilderDTO builder) {
         VendingMachine machine = new VendingMachine();
         machine.setName(builder.getName());
-        machine.setAddress(builder.getAddress());
 
         List<Row> rows = getRows(builder);
 
@@ -90,11 +74,11 @@ public class VendingService {
                 .forEach(row -> rowRepository.save(row));
 
         machine.setRows(rows);
-        return repository.save(machine);
+        return machineRepository.save(machine);
     }
 
     public void delete(Integer id) {
-        repository.delete(id);
+        machineRepository.delete(id);
     }
 
     private List<Row> getRows(VendingMachineBuilderDTO builder) {

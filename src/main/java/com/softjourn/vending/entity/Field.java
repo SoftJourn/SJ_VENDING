@@ -1,7 +1,6 @@
 package com.softjourn.vending.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -22,7 +21,6 @@ public class Field {
     @NotBlank(message = "FieldId should be specified.")
     private String internalId;
 
-    @JsonIgnore
     private Integer position;
 
     @Column(name="count")

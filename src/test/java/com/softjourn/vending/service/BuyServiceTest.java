@@ -1,12 +1,6 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.PurchaseRepository;
-import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Purchase;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
@@ -30,11 +24,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuyServiceTest {
@@ -206,7 +196,7 @@ public class BuyServiceTest {
 
         verify(vendingService, times(4)).get(1);
         verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
-        verify(machineService, times(1)).bye(1, "A0");
+        verify(machineService, times(1)).buy(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
     }
@@ -219,7 +209,7 @@ public class BuyServiceTest {
 
         verify(vendingService, times(2)).get(1);
         verify(coinService, times(0)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
-        verify(machineService, times(0)).bye(1, "B0");
+        verify(machineService, times(0)).buy(1, "B0");
         verify(fieldService, times(0)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(0)).save(any(Purchase.class));
     }

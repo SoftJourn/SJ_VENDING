@@ -861,29 +861,19 @@ Content-Length: 94
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>New products</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lastAdded</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Top 10 newest products.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>My lastPurchases</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Ten products that was purchased last time by user.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Best sellers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bestSellers</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Top 10 best sellers products.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Drink</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>categories</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">All drinks in machine. With positions.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Snack</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">All snacks in machine. With positions.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Products grouped by categories</p></td>
 </tr>
 </tbody>
 </table>
@@ -904,109 +894,37 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 2050
+Content-Length: 615
 
 {
-  "My lastPurchases" : [ {
-    "id" : 1,
-    "price" : 50,
-    "name" : "Nuts",
-    "imageUrl" : "/image2.jpg",
-    "description" : "Energy bar with nuts.",
-    "category" : {
-      "id" : 2,
-      "name" : "Snack"
-    }
+  "lastAdded" : [ 0, 1 ],
+  "bestSellers" : [ 0, 1 ],
+  "categories" : [ {
+    "name" : "Drink",
+    "products" : [ {
+      "id" : 0,
+      "price" : 5,
+      "name" : "Super Nuts",
+      "imageUrl" : "/image.jpg",
+      "description" : "Cola with coca.",
+      "category" : {
+        "id" : 1,
+        "name" : "Drink"
+      }
+    } ]
   }, {
-    "id" : 0,
-    "price" : 5,
-    "name" : "Super Nuts",
-    "imageUrl" : "/image.jpg",
-    "description" : "Cola with coca.",
-    "category" : {
+    "name" : "Snack",
+    "products" : [ {
       "id" : 1,
-      "name" : "Drink"
-    }
-  } ],
-  "Drink" : [ {
-    "id" : 0,
-    "price" : 5,
-    "name" : "COLA",
-    "imageUrl" : "/image.jpg",
-    "description" : "Cola with coca.",
-    "category" : "Drink",
-    "position" : {
-      "row" : 0,
-      "column" : 0,
-      "cellName" : "A0"
-    }
-  } ],
-  "Snack" : [ {
-    "id" : 1,
-    "price" : 50,
-    "name" : "Nuts",
-    "imageUrl" : "/image2.jpg",
-    "description" : "Energy bar with nuts.",
-    "category" : "Snack",
-    "position" : {
-      "row" : 0,
-      "column" : 1,
-      "cellName" : "A1"
-    }
-  }, {
-    "id" : 1,
-    "price" : 50,
-    "name" : "Snickers",
-    "imageUrl" : "/image3.jpg",
-    "description" : "Energy bar with nuts.",
-    "category" : "Snack",
-    "position" : {
-      "row" : 1,
-      "column" : 1,
-      "cellName" : "B1"
-    }
-  } ],
-  "New products" : [ {
-    "id" : 1,
-    "price" : 50,
-    "name" : "Nuts",
-    "imageUrl" : "/image2.jpg",
-    "description" : "Energy bar with nuts.",
-    "category" : {
-      "id" : 2,
-      "name" : "Snack"
-    }
-  }, {
-    "id" : 0,
-    "price" : 5,
-    "name" : "Super Nuts",
-    "imageUrl" : "/image.jpg",
-    "description" : "Cola with coca.",
-    "category" : {
-      "id" : 1,
-      "name" : "Drink"
-    }
-  } ],
-  "Best sellers" : [ {
-    "id" : 1,
-    "price" : 50,
-    "name" : "Nuts",
-    "imageUrl" : "/image2.jpg",
-    "description" : "Energy bar with nuts.",
-    "category" : {
-      "id" : 2,
-      "name" : "Snack"
-    }
-  }, {
-    "id" : 0,
-    "price" : 5,
-    "name" : "Super Nuts",
-    "imageUrl" : "/image.jpg",
-    "description" : "Cola with coca.",
-    "category" : {
-      "id" : 1,
-      "name" : "Drink"
-    }
+      "price" : 50,
+      "name" : "Nuts",
+      "imageUrl" : "/image2.jpg",
+      "description" : "Energy bar with nuts.",
+      "category" : {
+        "id" : 2,
+        "name" : "Snack"
+      }
+    } ]
   } ]
 }</code></pre>
 </div>
@@ -1064,26 +982,6 @@ Content-Length: 2050
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Relative path to product image.</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[0].position</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Position object that shows where product is located in vending machine.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[0].position.row</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of row that contains product(Starts with 0).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[0].position.column</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number of column that contains product(Starts with 0).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[0].position.cellName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of cell where product is located.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1103,19 +1001,17 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 444
+Content-Length: 362
 
 [ {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
-  "category" : "Drink",
-  "position" : {
-    "row" : 0,
-    "column" : 0,
-    "cellName" : "A0"
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
   }
 }, {
   "id" : 1,
@@ -1123,11 +1019,9 @@ Content-Length: 444
   "name" : "Nuts",
   "imageUrl" : "/image2.jpg",
   "description" : "Energy bar with nuts.",
-  "category" : "Snack",
-  "position" : {
-    "row" : 0,
-    "column" : 1,
-    "cellName" : "A1"
+  "category" : {
+    "id" : 2,
+    "name" : "Snack"
   }
 } ]</code></pre>
 </div>
@@ -1606,9 +1500,9 @@ Content-Length: 177
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 174
+Content-Length: 111
 
-{"name":"Machine","address":"45a45f89d62b15c2d5b74f51a2541264a2415b12d5fcd24542","rowsCount":2,"columnsCount":2,"rowsNumbering":"ALPHABETICAL","columnsNumbering":"NUMERICAL"}</code></pre>
+{"name":"Machine","rowsCount":2,"columnsCount":2,"rowsNumbering":"ALPHABETICAL","columnsNumbering":"NUMERICAL"}</code></pre>
 </div>
 </div>
 </div>
@@ -1618,18 +1512,18 @@ Content-Length: 174
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1557
+Content-Length: 1625
 
 {
   "id" : 0,
   "name" : "Snack machine",
-  "address" : null,
   "rows" : [ {
     "id" : 0,
     "rowId" : "A",
     "fields" : [ {
       "id" : 0,
       "internalId" : "A1",
+      "position" : 0,
       "count" : 5,
       "product" : {
         "id" : 0,
@@ -1645,6 +1539,7 @@ Content-Length: 1557
     }, {
       "id" : 1,
       "internalId" : "A2",
+      "position" : 1,
       "count" : 5,
       "product" : {
         "id" : 1,
@@ -1664,6 +1559,7 @@ Content-Length: 1557
     "fields" : [ {
       "id" : 2,
       "internalId" : "B1",
+      "position" : 0,
       "count" : 5,
       "product" : {
         "id" : 0,
@@ -1679,6 +1575,7 @@ Content-Length: 1557
     }, {
       "id" : 3,
       "internalId" : "B2",
+      "position" : 1,
       "count" : 5,
       "product" : {
         "id" : 1,
@@ -1739,9 +1636,9 @@ Host: localhost</code></pre>
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 176
+Content-Length: 189
 
-{"id":0,"internalId":"A1","count":5,"product":{"id":0,"price":5,"name":"Super Nuts","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
+{"id":0,"internalId":"A1","position":0,"count":5,"product":{"id":0,"price":5,"name":"Super Nuts","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
 </div>
 </div>
 </div>
@@ -1751,11 +1648,12 @@ Content-Length: 176
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 265
+Content-Length: 283
 
 {
   "id" : 0,
   "internalId" : "A1",
+  "position" : 0,
   "count" : 5,
   "product" : {
     "id" : 0,
@@ -1798,7 +1696,7 @@ Content-Length: 1
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 644
+Content-Length: 684
 
 {
   "id" : 0,
@@ -1806,6 +1704,7 @@ Content-Length: 644
   "fields" : [ {
     "id" : 0,
     "internalId" : "A1",
+    "position" : 0,
     "count" : 5,
     "product" : {
       "id" : 0,
@@ -1821,6 +1720,7 @@ Content-Length: 644
   }, {
     "id" : 1,
     "internalId" : "A2",
+    "position" : 1,
     "count" : 5,
     "product" : {
       "id" : 1,
@@ -1844,7 +1744,7 @@ Content-Length: 644
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-13 15:43:12 EEST
+Last updated 2016-10-12 13:02:19 EEST
 </div>
 </div>
 </body>

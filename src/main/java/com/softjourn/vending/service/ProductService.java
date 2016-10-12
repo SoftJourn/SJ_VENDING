@@ -105,7 +105,7 @@ public class ProductService {
     }
 
     private void validateImageDimensions(BufferedImage image) {
-        if (image.getWidth() >= IMAGE_DIMENSIONS_MAX_WIDTH || image.getHeight() >= IMAGE_DIMENSIONS_MAX_HEIGHT) {
+        if (image.getWidth() > IMAGE_DIMENSIONS_MAX_WIDTH || image.getHeight() > IMAGE_DIMENSIONS_MAX_HEIGHT) {
             throw new WrongImageDimensions("Wrong image dimensions");
         }
     }

@@ -43,8 +43,8 @@ public class VendingController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public void refill(@RequestBody VendingMachine machine, Principal principal) {
-        vendingService.refill(machine, principal);
+    public VendingMachine refill(@RequestBody VendingMachine machine, Principal principal) {
+        return vendingService.refill(machine, principal);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

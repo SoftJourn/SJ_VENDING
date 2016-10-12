@@ -2,13 +2,7 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.dto.ErrorDetail;
-import com.softjourn.vending.exceptions.AlreadyPresentedException;
-import com.softjourn.vending.exceptions.BadRequestException;
-import com.softjourn.vending.exceptions.NotEnoughAmountException;
-import com.softjourn.vending.exceptions.NotFoundException;
-import com.softjourn.vending.exceptions.NotImageException;
-import com.softjourn.vending.exceptions.PaymentProcessingException;
-import com.softjourn.vending.exceptions.WrongImageDimensions;
+import com.softjourn.vending.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -108,15 +102,6 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
                 null, "Image dimensions is too big, try to use 205*205px"));
-    }
-
-    private ErrorDetail buildErrorDetails(RuntimeException e, Integer code, String message) {
-        ErrorDetail errorDetail = new ErrorDetail();
-        errorDetail.setTitle("Error");
-        errorDetail.setDetail(message);
-        errorDetail.setCode(code);
-        errorDetail.setDeveloperMessage(e.getClass().getName());
-        return errorDetail;
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

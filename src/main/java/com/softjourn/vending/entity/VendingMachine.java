@@ -21,14 +21,11 @@ public class VendingMachine {
     @JsonView(View.Client.class)
     private Integer id;
 
-    @Column
+    @Column(unique = true)
     @JsonView(View.Client.class)
     private String name;
 
-    @Column
-    private String address;
-
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "machine_rows",
             joinColumns = @JoinColumn(name = "machine"),

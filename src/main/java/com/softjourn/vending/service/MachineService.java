@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MachineService {
 
-    public void bye(Integer machineId, String fieldInternalId) {
+    public void buy(Integer machineId, String fieldInternalId) {
 
     }
 }

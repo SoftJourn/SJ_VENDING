@@ -4,8 +4,6 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.FeatureDTO;
-import com.softjourn.vending.dto.Position;
-import com.softjourn.vending.dto.ProductDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
@@ -18,16 +16,11 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Setter
@@ -81,8 +74,8 @@ public class BuyService {
     public synchronized BigDecimal buy(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
         VendingMachine machine = vendingService.get(machineId);
-        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getAddress());
-        machineService.bye(machineId, itemId);
+        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getName());
+        machineService.buy(machineId, itemId);
         decreaseProductsCount(machineId, itemId);
         savePurchase(machineId, product, principal);
         return remain;

@@ -3,22 +3,8 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.DashboardDTO;
 import com.softjourn.vending.dto.FeatureDTO;
-import com.softjourn.vending.dto.Position;
-import com.softjourn.vending.dto.ProductDTO;
-import com.softjourn.vending.entity.Categories;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
-import com.softjourn.vending.service.BuyService;
-import com.softjourn.vending.service.CategoriesService;
-import com.softjourn.vending.service.CoinService;
-import com.softjourn.vending.service.DashboardService;
-import com.softjourn.vending.service.FavoritesService;
-import com.softjourn.vending.service.FieldService;
-import com.softjourn.vending.service.MachineService;
-import com.softjourn.vending.service.ProductService;
-import com.softjourn.vending.service.VendingService;
+import com.softjourn.vending.entity.*;
+import com.softjourn.vending.service.*;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -35,9 +21,7 @@ import java.util.Collections;
 import static com.softjourn.vending.controller.ProductsControllerTest.product;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @Configuration
@@ -209,7 +193,7 @@ public class ControllerTestConfig {
     public MachineService machineService() {
         MachineService machineService = Mockito.mock(MachineService.class);
 
-        Mockito.doNothing().when(machineService).bye(anyInt(), anyString());
+        Mockito.doNothing().when(machineService).buy(anyInt(), anyString());
 
         return machineService;
     }

@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.security.Principal;
+
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -32,6 +34,8 @@ public class VendingServiceTest {
     private FieldRepository fieldRepository;
     @Mock
     private CoinService coinService;
+    @Mock
+    Principal principal;
 
     VendingService service;
 
@@ -59,8 +63,8 @@ public class VendingServiceTest {
 
     @Test
     public void testCreate() throws Exception {
-        VendingMachine machine1 = service.create(builder1);
-        VendingMachine machine2 = service.create(builder2);
+        VendingMachine machine1 = service.create(builder1, principal);
+        VendingMachine machine2 = service.create(builder2, principal);
 
         assertEquals(60, machine1.getFields().size());
         assertEquals("Machine1", machine1.getName());

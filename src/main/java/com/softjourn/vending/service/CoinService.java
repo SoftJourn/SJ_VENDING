@@ -68,32 +68,17 @@ public class CoinService {
         });
     }
 
-    @PreAuthorize("hasRole('INVENTORY_MANAGER')")
     public void refill(Principal adminPrincipal, BigDecimal amount, String machineName) {
-        returnVendMoney(adminPrincipal, machineName);
-        distributeMoney(adminPrincipal, amount);
+        distributeMoney(adminPrincipal, amount, machineName);
     }
 
-    private void returnVendMoney(Principal adminPrincipal, String machineAddress) {
-        wrapExceptionHandling(() -> {
-            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/refill/" + machineAddress,
-                    HttpMethod.POST,
-                    prepareRequest(adminPrincipal, BigDecimal.ZERO),
-                    TransactionDTO.class);
-            if (!response.getBody().getStatus().equals("SUCCESS")) {
-                throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
-            }
-            return null;
-        });
-    }
-
-    private void distributeMoney(Principal adminPrincipal, BigDecimal amount) {
+    private void distributeMoney(Principal adminPrincipal, BigDecimal amount, String machineName) {
         wrapExceptionHandling(() ->  {
-            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/distribute",
+            ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/distribute/" + machineName,
                     HttpMethod.POST,
                     prepareRequest(adminPrincipal, amount),
                     TransactionDTO.class);
-            if (!response.getBody().getStatus().equals("SUCCESS")) {
+            if (! (response.getStatusCode().is2xxSuccessful())) {
                 throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
             }
             return null;

@@ -38,8 +38,8 @@ public class VendingController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public VendingMachine add(@RequestBody VendingMachineBuilderDTO machineBuilder) {
-        return vendingService.create(machineBuilder);
+    public VendingMachine add(@RequestBody VendingMachineBuilderDTO machineBuilder, Principal principal) {
+        return vendingService.create(machineBuilder, principal);
     }
 
     @RequestMapping(method = RequestMethod.PUT)

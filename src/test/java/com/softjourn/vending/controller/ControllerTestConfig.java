@@ -173,7 +173,7 @@ public class ControllerTestConfig {
         VendingService vendingService = Mockito.mock(VendingService.class);
 
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
-        when(vendingService.create(any())).thenReturn(vendingMachine);
+        when(vendingService.create(any(), any())).thenReturn(vendingMachine);
         when(vendingService.getAll()).thenReturn(Collections.singletonList(vendingMachine));
 
         return vendingService;

@@ -100,8 +100,8 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public List<Product> lastPurchases(Principal principal, Integer machineId) {
-        return purchaseRepository.getAllByUserAndMachine(principal.getName(), machineId).stream()
+    public List<PurchaseProductDto> lastPurchases(Principal principal) {
+        return purchaseRepository.getAllByUser(principal.getName()).stream()
                 .sorted((p1, p2) -> p2.getTime().compareTo(p1.getTime()))
                 .map(p -> new PurchaseProductDto(p.getProduct(), p.getTime()))
                 .limit(LAST_PURCHASES_LIMIT)

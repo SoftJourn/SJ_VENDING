@@ -11,4 +11,8 @@ public interface Constants {
     int IMAGE_DIMENSIONS_MAX_WIDTH = 205;
     int IMAGE_DIMENSIONS_MAX_HEIGHT = 205;
 
+    // Dates
+    Integer LAST_WEEK = -7;
+    Integer LAST_MONTH = -30;
+
 }

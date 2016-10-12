@@ -2,6 +2,14 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.dto.ErrorDetail;
+import com.softjourn.vending.exceptions.AlreadyPresentedException;
+import com.softjourn.vending.exceptions.BadRequestException;
+import com.softjourn.vending.exceptions.NotEnoughAmountException;
+import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.NotImageException;
+import com.softjourn.vending.exceptions.PaymentProcessingException;
+import com.softjourn.vending.exceptions.WrongImageDimensions;
+import groovyjarjarcommonscli.ParseException;
 import com.softjourn.vending.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -102,6 +110,13 @@ public class GlobalExceptionHandler {
         log.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
                 null, "Image dimensions is too big, try to use 205*205px"));
+    }
+
+    @ExceptionHandler(ParseException.class)
+    public ResponseEntity<ErrorDetail> handleParseException(ParseException e) {
+        log.info(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
+                null, "Sent data could not be parsed"));
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

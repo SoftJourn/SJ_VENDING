@@ -18,6 +18,8 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Configuration
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
@@ -86,9 +88,15 @@ public class VendingConfiguration extends ResourceServerConfigurerAdapter {
         return authServerHost +
                 "/oauth/authorize?" +
                 "response_type=code&" +
-                "redirect_uri="+ authRedirectUri +"&" +
+                "redirect_uri=" + authRedirectUri + "&" +
                 "response_type=code&" +
                 "scope=read&" +
                 "client_id=" + clientId;
     }
+
+    @Bean
+    public DateFormat dateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+
 }

@@ -1,18 +1,16 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dto.PurchaseDTO;
+import com.softjourn.vending.dto.PurchaseFilterDTO;
+import com.softjourn.vending.entity.Purchase;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface PurchaseService {
 
-    List<PurchaseDTO> getAll(Integer machineId, Pageable pageable);
-
-    List<PurchaseDTO> getAllByTodaysDate(Integer machineId, Pageable pageable);
-
-//    List<PurchaseDTO> getAllByLastWeek(Integer machineId, Pageable pageable);
-//
-//    List<PurchaseDTO> getAllByLastMonth(Integer machineId, Pageable pageable);
+    Page<PurchaseDTO> getAllUsingFilter(PurchaseFilterDTO filter, Pageable pageable) throws ParseException;
 
 }

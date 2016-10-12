@@ -5,6 +5,23 @@ import com.softjourn.vending.dto.DashboardDTO;
 import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.service.*;
+import com.softjourn.vending.dto.Position;
+import com.softjourn.vending.dto.ProductDTO;
+import com.softjourn.vending.dto.PurchaseProductDto;
+import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Row;
+import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.service.BuyService;
+import com.softjourn.vending.service.CategoriesService;
+import com.softjourn.vending.service.CoinService;
+import com.softjourn.vending.service.DashboardService;
+import com.softjourn.vending.service.FavoritesService;
+import com.softjourn.vending.service.FieldService;
+import com.softjourn.vending.service.MachineService;
+import com.softjourn.vending.service.ProductService;
+import com.softjourn.vending.service.VendingService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -237,9 +255,9 @@ public class ControllerTestConfig {
             add(product2);
             add(product);
         }});
-        when(buyService.lastPurchases(any(Principal.class), anyInt())).thenReturn(new ArrayList<Product>() {{
-            add(product2);
-            add(product);
+        when(buyService.lastPurchases(any(Principal.class))).thenReturn(new ArrayList<PurchaseProductDto>() {{
+            add(new PurchaseProductDto(product.getId(), Instant.now()));
+            add(new PurchaseProductDto(product2.getId(), Instant.now()));
         }});
 
         return buyService;

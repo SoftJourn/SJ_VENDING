@@ -3,6 +3,7 @@ package com.softjourn.vending.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.softjourn.vending.dto.FeatureDTO;
+import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.service.BuyService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -55,6 +57,11 @@ public class BuyController {
     @RequestMapping(value = "/{machineId}/features", method = RequestMethod.GET)
     public FeatureDTO getFeatures(@PathVariable Integer machineId) {
         return buyService.getFeatures(machineId);
+    }
+
+    @RequestMapping(value = "/last", method = RequestMethod.GET)
+    public List<PurchaseProductDto> getLastPurchases(Principal principal) {
+        return buyService.lastPurchases(principal);
     }
 
     @RequestMapping(value = "/{machineId}/fields/{fieldId}", method = RequestMethod.POST)

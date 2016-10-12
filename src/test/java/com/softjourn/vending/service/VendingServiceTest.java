@@ -12,11 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.security.Principal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,12 +38,17 @@ public class VendingServiceTest {
     @Mock
     private CoinService coinService;
     @Mock
-    Principal principal;
+    OAuth2Authentication principal;
+
+    @Mock
+    OAuth2AuthenticationDetails authDetails;
 
     VendingService service;
 
     @Before
     public void setUp() throws Exception {
+        when(principal.getDetails()).thenReturn(authDetails);
+
         builder1 = new VendingMachineBuilderDTO();
         builder1.setColumnsCount(6);
         builder1.setColumnsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
@@ -58,6 +66,9 @@ public class VendingServiceTest {
         when(repository.save(any(VendingMachine.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
 
         service = new VendingService(repository, rowRepository, fieldRepository, coinService);
+
+        ReflectionTestUtils.setField(service, "coinsServerHost", "http://localhost");
+        ReflectionTestUtils.setField(service, "coinRestTemplate", mock(RestTemplate.class));
 
     }
 

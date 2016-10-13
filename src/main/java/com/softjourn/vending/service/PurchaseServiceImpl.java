@@ -5,7 +5,6 @@ import com.softjourn.vending.dto.PurchaseDTO;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.enums.PurchaseDateEnum;
-import com.softjourn.vending.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -48,8 +51,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                 return purchaseConverter(purchaseRepository.findAllByLastMonth(getPastDate(LAST_MONTH), pageable));
             } // by Start due
             else if (filter.getType().equals(PurchaseDateEnum.StartDue.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByStartDue(dateFormat.parse(filter.getStart()),
-                        dateFormat.parse(filter.getDue()), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(dateFormat.parse(filter.getStart()).toInstant(),
+                        getDueDate(filter.getDue()), pageable));
             }
         } // otherwise by specific machine
         else {
@@ -71,7 +74,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             } // by Start due
             else if (filter.getType().equals(PurchaseDateEnum.StartDue.getType())) {
                 return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(),
-                        dateFormat.parse(filter.getStart()), dateFormat.parse(filter.getDue()), pageable));
+                        dateFormat.parse(filter.getStart()).toInstant(), getDueDate(filter.getDue()), pageable));
             }
         }
         return null;
@@ -93,6 +96,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, dayBefore);
         return cal.getTime();
+    }
+
+    private Instant getDueDate(String due) {
+        LocalDateTime dueDate = LocalDate.parse(due).plusDays(1).atStartOfDay();
+        return Instant.from(dueDate.toInstant(ZoneOffset.UTC));
     }
 
 }

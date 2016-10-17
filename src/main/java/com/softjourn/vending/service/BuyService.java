@@ -51,19 +51,14 @@ public class BuyService {
 
     public List<Product> getAvailableProducts(Integer machineId) {
         VendingMachine vendingMachine = vendingService.get(machineId);
-        List<Product> result = new ArrayList<>();
         List<Row> rows = vendingMachine.getRows();
-
-        for (int i = 0; i < rows.size(); i++) {
-            List<Field> fields = rows.get(i).getFields();
-            for (int j = 0; j < fields.size(); j++) {
-                Field field = fields.get(j);
-                if (field.getProduct() != null && field.getCount() > 0) {
-                    result.add(field.getProduct());
-                }
-            }
-        }
-        return result;
+        return rows.stream()
+                .flatMap(r -> r.getFields().stream())
+                .filter(f -> f.getCount() > 0)
+                .map(Field::getProduct)
+                .filter(p -> p != null)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public BigDecimal buy(Integer machineId, Integer productId, Principal principal) {

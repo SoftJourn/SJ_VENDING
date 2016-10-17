@@ -256,8 +256,8 @@ public class ControllerTestConfig {
             add(product);
         }});
         when(buyService.lastPurchases(any(Principal.class))).thenReturn(new ArrayList<PurchaseProductDto>() {{
-            add(new PurchaseProductDto(product.getId(), Instant.now()));
-            add(new PurchaseProductDto(product2.getId(), Instant.now()));
+            add(new PurchaseProductDto(product, Instant.now()));
+            add(new PurchaseProductDto(product2, Instant.now()));
         }});
 
         return buyService;

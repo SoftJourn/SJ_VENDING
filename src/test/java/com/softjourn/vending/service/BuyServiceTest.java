@@ -101,7 +101,7 @@ public class BuyServiceTest {
         field3.setProduct(product2);
 
         field.setCount(5);
-        field1.setCount(0);
+        field1.setCount(5);
         field2.setCount(5);
         field3.setCount(5);
 

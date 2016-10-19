@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
@@ -95,8 +96,8 @@ public class VendingConfiguration extends ResourceServerConfigurerAdapter {
     }
 
     @Bean
-    public DateFormat dateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd");
+    public DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd");
     }
 
 }

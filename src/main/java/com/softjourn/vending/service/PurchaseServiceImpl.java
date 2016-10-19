@@ -11,14 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 import static com.softjourn.vending.utils.Constants.LAST_MONTH;
 import static com.softjourn.vending.utils.Constants.LAST_WEEK;
@@ -31,7 +29,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private PurchaseRepository purchaseRepository;
 
     @Autowired
-    private DateFormat dateFormat;
+    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public Page<PurchaseDTO> getAllUsingFilter(PurchaseFilterDTO filter, Pageable pageable) throws ParseException {
@@ -42,39 +40,42 @@ public class PurchaseServiceImpl implements PurchaseService {
                 return purchaseConverter(purchaseRepository.findAllByOrderByTimeDesc(pageable));
             } // by today's date
             else if (filter.getType().equals(PurchaseDateEnum.Today.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByTodaysDate(pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(getStartDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by last week
             else if (filter.getType().equals(PurchaseDateEnum.LastWeek.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByLastWeek(getPastDate(LAST_WEEK), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(getStartDate(getPastDate(LAST_WEEK), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by last month
             else if (filter.getType().equals(PurchaseDateEnum.LastMonth.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByLastMonth(getPastDate(LAST_MONTH), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(getStartDate(getPastDate(LAST_MONTH), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by Start due
             else if (filter.getType().equals(PurchaseDateEnum.StartDue.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByStartDue(dateFormat.parse(filter.getStart()).toInstant(),
-                        getDueDate(filter.getDue()), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(getStartDate(filter.getStart(), filter.getTimeZoneOffSet()),
+                        getDueDate(filter.getDue(), filter.getTimeZoneOffSet()), pageable));
             }
         } // otherwise by specific machine
         else {
+            // by any date
             if (filter.getType().equals(PurchaseDateEnum.Any.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByMachineIdOrderByTimeDesc(filter.getMachineId(),
-                        pageable));
+                return purchaseConverter(purchaseRepository.findAllByMachineIdOrderByTimeDesc(filter.getMachineId(), pageable));
             } // by today's date
             else if (filter.getType().equals(PurchaseDateEnum.Today.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByMachineIdByTodaysDate(filter.getMachineId(),
-                        pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(), getStartDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by last week
             else if (filter.getType().equals(PurchaseDateEnum.LastWeek.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByLastWeek(filter.getMachineId(),
-                        getPastDate(LAST_WEEK), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(), getStartDate(getPastDate(LAST_WEEK), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by last month
             else if (filter.getType().equals(PurchaseDateEnum.LastMonth.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByLastMonth(filter.getMachineId(),
-                        getPastDate(LAST_MONTH), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(), getStartDate(getPastDate(LAST_MONTH), filter.getTimeZoneOffSet()),
+                        getDueDate(LocalDate.now().toString(), filter.getTimeZoneOffSet()), pageable));
             } // by Start due
             else if (filter.getType().equals(PurchaseDateEnum.StartDue.getType())) {
-                return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(),
-                        dateFormat.parse(filter.getStart()).toInstant(), getDueDate(filter.getDue()), pageable));
+                return purchaseConverter(purchaseRepository.findAllByStartDue(filter.getMachineId(), getStartDate(filter.getStart(), filter.getTimeZoneOffSet()),
+                        getDueDate(filter.getDue(), filter.getTimeZoneOffSet()), pageable));
             }
         }
         return null;
@@ -92,15 +93,18 @@ public class PurchaseServiceImpl implements PurchaseService {
         });
     }
 
-    private Date getPastDate(Integer dayBefore) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, dayBefore);
-        return cal.getTime();
+    private String getPastDate(Integer dayBefore) {
+        return LocalDate.now().minusDays(dayBefore).toString();
     }
 
-    private Instant getDueDate(String due) {
-        LocalDateTime dueDate = LocalDate.parse(due).plusDays(1).atStartOfDay();
-        return Instant.from(dueDate.toInstant(ZoneOffset.UTC));
+    private Instant getStartDate(String start, Integer timeZoneOffSet) {
+        LocalDate localDate = LocalDate.parse(start, dateTimeFormatter);
+        return Instant.from(localDate.atStartOfDay(ZoneId.of(ZoneOffset.ofTotalSeconds(timeZoneOffSet * -1 * 60).getId())));
+    }
+
+    private Instant getDueDate(String due, Integer timeZoneOffSet) {
+        LocalDate localDate = LocalDate.parse(due, dateTimeFormatter);
+        return Instant.from(localDate.plusDays(1).atStartOfDay(ZoneId.of(ZoneOffset.ofTotalSeconds(timeZoneOffSet * -1 * 60).getId())));
     }
 
 }

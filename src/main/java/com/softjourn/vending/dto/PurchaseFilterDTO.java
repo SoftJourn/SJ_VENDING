@@ -23,6 +23,9 @@ public class PurchaseFilterDTO {
     @NotEmpty(message = "Type should not be empty")
     private String type;
 
+    @NotNull(message = "TimeZoneOffSet should not be null")
+    private Integer timeZoneOffSet;
+
     private String start;
 
     private String due;

@@ -87,6 +87,7 @@ public class VendingControllerTest {
                         responseFields(
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
+                                fieldWithPath("url").description("Vending machine url."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
                                 fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),

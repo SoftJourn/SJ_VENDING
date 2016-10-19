@@ -150,6 +150,7 @@ public class VendingService {
     public VendingMachine create(VendingMachineBuilderDTO builder, Principal principal) {
         VendingMachine machine = new VendingMachine();
         machine.setName(builder.getName());
+        machine.setUrl(builder.getUrl());
 
         List<Row> rows = getRows(builder);
 

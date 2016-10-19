@@ -82,13 +82,13 @@ public class VendingServiceTest {
         assertEquals(3, machine1.getFields()
                 .stream()
                 .map(Field::getInternalId)
-                .filter(s -> s.equals("A0") || s.equals("C4") || s.equals("J5"))
+                .filter(s -> s.equals("A1") || s.equals("C4") || s.equals("J5"))
                 .count());
 
         assertEquals(0, machine1.getFields()
                 .stream()
                 .map(Field::getInternalId)
-                .filter(s -> s.equals("A6") || s.equals("K4"))
+                .filter(s -> s.equals("A7") || s.equals("K4"))
                 .count());
 
         assertEquals(40, machine2.getFields().size());
@@ -96,13 +96,13 @@ public class VendingServiceTest {
         assertEquals(3, machine2.getFields()
                 .stream()
                 .map(Field::getInternalId)
-                .filter(s -> s.equals("00") || s.equals("74") || s.equals("32"))
+                .filter(s -> s.equals("11") || s.equals("74") || s.equals("32"))
                 .count());
 
         assertEquals(0, machine2.getFields()
                 .stream()
                 .map(Field::getInternalId)
-                .filter(s -> s.equals("06") || s.equals("84"))
+                .filter(s -> s.equals("17") || s.equals("94"))
                 .count());
     }
 

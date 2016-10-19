@@ -32,7 +32,7 @@ public class MachineService {
 
     public void buy(Integer machineId, String fieldInternalId) {
         Optional.ofNullable(vendingService.get(machineId))
-                .map(VendingMachine::getName)
+                .map(VendingMachine::getUrl)
                 .map(url -> post(url, fieldInternalId))
                 .ifPresent((result) -> {
                     if (result != 200) throw new VendingProcessingException("Error occurred while processing request. ");

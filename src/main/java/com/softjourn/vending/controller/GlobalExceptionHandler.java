@@ -61,6 +61,12 @@ public class GlobalExceptionHandler {
         log.info(e.getLocalizedMessage());
     }
 
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error occurred during processing request. Contact ADMIN.")
+    @ExceptionHandler(VendingProcessingException.class)
+    public void handleVendingProcessingException(Exception e) {
+        log.info(e.getLocalizedMessage());
+    }
+
     @ExceptionHandler(value = AccessDeniedException.class)
     public ModelAndView accessDenied() {
         return new ModelAndView("redirect:login.html");

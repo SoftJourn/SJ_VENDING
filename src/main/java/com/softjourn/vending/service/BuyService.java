@@ -52,7 +52,6 @@ public class BuyService {
     public List<Product> getAvailableProducts(Integer machineId) {
         VendingMachine vendingMachine = vendingService.get(machineId);
         List<Row> rows = vendingMachine.getRows();
-
         return rows.stream()
                 .flatMap(r -> r.getFields().stream())
                 .filter(f -> f.getCount() > 0)

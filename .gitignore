@@ -11,3 +11,4 @@ bower_components/
 
 # Logs
 *.log
+/src/main/resources/persistance.xml

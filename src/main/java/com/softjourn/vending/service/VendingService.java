@@ -202,7 +202,7 @@ public class VendingService {
         Stream<?> stream;
         switch (numbering) {
             case ALPHABETICAL:stream =  Stream.iterate('A', c -> (char)(c + 1));break;
-            case NUMERICAL: default: stream = Stream.iterate(0, i ->  i + 1);
+            case NUMERICAL: default: stream = Stream.iterate(1, i ->  i + 1);
         }
         return stream.map(String::valueOf).limit(count);
     }

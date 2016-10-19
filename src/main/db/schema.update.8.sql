@@ -1,0 +1,1 @@
+ALTER TABLE machines ADD url VARCHAR(255) NOT NULL; 

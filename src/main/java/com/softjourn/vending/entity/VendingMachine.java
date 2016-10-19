@@ -25,6 +25,9 @@ public class VendingMachine {
     @JsonView(View.Client.class)
     private String name;
 
+    @Column
+    private String url;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "machine_rows",

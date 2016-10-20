@@ -117,6 +117,23 @@ include::{snippets}/features/http-request.adoc[]
 
 include::{snippets}/features/http-response.adoc[]
 
+[[resources-lastPurchases]]
+=== Last purchases list
+
+A `GET` request will returns list of user purchase history ...
+
+==== Response structure
+
+include::{snippets}/lastPurchases/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/lastPurchases/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/lastPurchases/http-response.adoc[]
+
 [[resources-products-list]]
 === Listing products
 
@@ -361,3 +378,27 @@ include::{snippets}/update-machine-row/http-request.adoc[]
 ==== Example response
 
 include::{snippets}/update-machine-row/http-response.adoc[]
+
+== Administrative purchase endpoints
+
+Make request to get user purchase history
+
+=== Getting purchases
+
+A `POST` request to get user purchases with pagination.
+
+[[filtered-purchases-request]]
+==== Example request
+
+include::{snippets}/filtered-purchases-request/http-request.adoc[]
+include::{snippets}/filtered-purchases-request/request-fields.adoc[]
+
+[[filtered-purchases-response]]
+==== Example response
+include::{snippets}/filtered-purchases-response/http-response.adoc[]
+include::{snippets}/filtered-purchases-response/response-fields.adoc[]
+
+[[filtered-purchases-error]]
+==== Example error response
+include::{snippets}/filtered-purchases-error/http-response.adoc[]
+include::{snippets}/filtered-purchases-error/response-fields.adoc[]

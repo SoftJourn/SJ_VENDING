@@ -3,10 +3,8 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.DashboardDTO;
 import com.softjourn.vending.dto.FeatureDTO;
-import com.softjourn.vending.entity.*;
-import com.softjourn.vending.service.*;
-import com.softjourn.vending.dto.Position;
-import com.softjourn.vending.dto.ProductDTO;
+import com.softjourn.vending.dto.PurchaseDTO;
+import com.softjourn.vending.dto.PurchaseFilterDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.Categories;
 import com.softjourn.vending.entity.Field;
@@ -21,6 +19,7 @@ import com.softjourn.vending.service.FavoritesService;
 import com.softjourn.vending.service.FieldService;
 import com.softjourn.vending.service.MachineService;
 import com.softjourn.vending.service.ProductService;
+import com.softjourn.vending.service.PurchaseService;
 import com.softjourn.vending.service.VendingService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
@@ -28,10 +27,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +41,9 @@ import java.util.Collections;
 import static com.softjourn.vending.controller.ProductsControllerTest.product;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @Configuration
@@ -63,6 +67,9 @@ public class ControllerTestConfig {
     public static Categories snacks;
 
     public static DashboardDTO dashboard;
+
+    public static PurchaseFilterDTO purchaseFilter;
+    public static PurchaseFilterDTO purchaseWrongFilter;
 
     static {
         dashboard = new DashboardDTO();
@@ -109,6 +116,9 @@ public class ControllerTestConfig {
 
         row = new Row("A");
         row1 = new Row("B");
+
+        purchaseFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-08");
+        purchaseWrongFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-05");
     }
 
     @Bean
@@ -261,6 +271,19 @@ public class ControllerTestConfig {
         }});
 
         return buyService;
+    }
+
+    @Bean
+    public PurchaseService purchaseService() throws ParseException {
+        PurchaseService purchaseService = Mockito.mock(PurchaseService.class);
+
+        when(purchaseService.getAllUsingFilter(any(PurchaseFilterDTO.class), any(Pageable.class))).thenReturn(
+                new PageImpl<>(new ArrayList<PurchaseDTO>() {{
+                    add(new PurchaseDTO("ldap", Instant.now(), product.getName(), product.getPrice()));
+                    add(new PurchaseDTO("ldap", Instant.now(), product2.getName(), product2.getPrice()));
+                }}));
+
+        return purchaseService;
     }
 
     @Bean

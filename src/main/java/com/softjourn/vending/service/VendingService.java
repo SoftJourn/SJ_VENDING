@@ -2,11 +2,13 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.FieldRepository;
+import com.softjourn.vending.dao.LoadHistoryRepository;
 import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.RowRepository;
 import com.softjourn.vending.dto.AmountDTO;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
 import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.LoadHistory;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.NotFoundException;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,11 +31,11 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +48,7 @@ public class VendingService {
     private MachineRepository machineRepository;
     private RowRepository rowRepository;
     private FieldRepository fieldRepository;
+    private LoadHistoryRepository loadHistoryRepository;
     private CoinService coinService;
     private RestTemplate coinRestTemplate;
 
@@ -55,10 +57,12 @@ public class VendingService {
     public VendingService(MachineRepository machineRepository,
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
+                          LoadHistoryRepository loadHistoryRepository,
                           CoinService coinService) {
         this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
+        this.loadHistoryRepository = loadHistoryRepository;
         this.coinService = coinService;
 
         coinRestTemplate = new RestTemplate(new SimpleClientHttpRequestFactory() {
@@ -74,19 +78,14 @@ public class VendingService {
         });
     }
 
+    @Transactional
     public VendingMachine refill(VendingMachine machine, Principal principal) {
-        List<Field> fields = machine.getFields();
+        saveLoadHistory(machine, false);
 
-        BigDecimal loadedPrice = fields.stream()
-                .filter(field -> field.getProduct() != null)
-                .map(field -> field.getProduct().getPrice().multiply(new BigDecimal(field.getCount())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        coinService.refill(principal, loadedPrice, machine.getName());
         return machineRepository.save(machine);
     }
 
-    public Iterable<VendingMachine> getAll() {
+    public List<VendingMachine> getAll() {
         return machineRepository.findAll();
     }
 
@@ -109,10 +108,35 @@ public class VendingService {
                 .forEach(row -> rowRepository.save(row));
 
         machine.setRows(rows);
+
         coinRestTemplate.exchange(coinsServerHost + "/account/" + builder.getName(),
                 HttpMethod.POST,
                 prepareRequest(principal), Map.class);
-        return machineRepository.save(machine);
+
+        VendingMachine vendingMachine = machineRepository.save(machine);
+
+        saveLoadHistory(vendingMachine, true);
+
+        return vendingMachine;
+    }
+
+    private LoadHistory saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
+        VendingMachine oldMachineState = Optional
+                .ofNullable(machineRepository.findOne(vendingMachine.getId()))
+                .orElseThrow(() -> new NotFoundException(String.format(
+                        "Machine with id %d was not found",
+                        vendingMachine.getId())));
+
+        BigDecimal previousMachinePrice = getLoadedPrice(oldMachineState);
+        BigDecimal machinePrice = getLoadedPrice(vendingMachine);
+
+        LoadHistory loadHistory = new LoadHistory();
+        loadHistory.setPrice(machinePrice.subtract(previousMachinePrice));
+        loadHistory.setDateAdded(Instant.now());
+        loadHistory.setIsDistributed(isDistributed);
+        loadHistory.setVendingMachine(vendingMachine);
+
+        return loadHistoryRepository.save(loadHistory);
     }
 
     private HttpEntity<AmountDTO> prepareRequest(Principal principal) {
@@ -158,5 +182,30 @@ public class VendingService {
         return stream.map(String::valueOf).limit(count);
     }
 
+    public BigDecimal getLoadedPrice() {
+        return machineRepository.findAll().stream()
+                .map(this::getLoadedPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
+    public BigDecimal getLoadedPrice(Integer id) {
+        return Optional.ofNullable(machineRepository.findOne(id))
+                .map(this::getLoadedPrice)
+                .orElseThrow(() -> new NotFoundException(String.format("Machine with id %d was not found", id)));
+    }
+
+    private BigDecimal getLoadedPrice(VendingMachine vendingMachine) {
+        return vendingMachine.getFields().stream()
+                .filter(field -> field.getProduct() != null)
+                .map(field -> field.getProduct().getPrice().multiply(new BigDecimal(field.getCount())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getUndistributedPrice() {
+        return loadHistoryRepository.getUndistributedPrice().orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getUndistributedPriceFromMachine(Integer id) {
+        return loadHistoryRepository.getUndistributedPriceFromMachine(id).orElse(BigDecimal.ZERO);
+    }
 }

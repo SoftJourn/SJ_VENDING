@@ -117,6 +117,7 @@ public class ControllerTestConfig {
         row = new Row("A");
         row1 = new Row("B");
 
+        // Zone - Europe/Kiev
         purchaseFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-08");
         purchaseWrongFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-05");
     }

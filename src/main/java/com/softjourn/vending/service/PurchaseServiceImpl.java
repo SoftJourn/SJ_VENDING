@@ -5,6 +5,7 @@ import com.softjourn.vending.dto.PurchaseDTO;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.enums.PurchaseDateEnum;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Autowired
     private PurchaseRepository purchaseRepository;
 
+    @Setter
     @Autowired
     private DateTimeFormatter dateTimeFormatter;
 

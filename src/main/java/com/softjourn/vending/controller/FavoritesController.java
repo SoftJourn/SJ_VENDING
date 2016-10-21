@@ -28,13 +28,13 @@ public class FavoritesController {
     }
 
     @RequestMapping(value = "/{productId}", method = RequestMethod.POST)
-    public void add(@PathVariable Integer productId, Principal principal) {
-        favoritesService.add(principal.getName(), productId);
+    public Product add(@PathVariable Integer productId, Principal principal) {
+        return favoritesService.add(principal.getName(), productId);
     }
 
     @RequestMapping(value = "/{productId}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Integer productId, Principal principal) {
-        favoritesService.delete(principal.getName(), productId);
+    public Product delete(@PathVariable Integer productId, Principal principal) {
+        return favoritesService.delete(principal.getName(), productId);
     }
 
 }

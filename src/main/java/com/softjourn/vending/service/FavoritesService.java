@@ -28,15 +28,17 @@ public class FavoritesService {
                 .collect(Collectors.toList());
     }
 
-    public void add(String user, Integer productId) {
+    public Product add(String user, Integer productId) {
         Product product = productService.getProduct(productId);
         Favorite favorite = new Favorite(user, product);
         favoritesRepository.save(favorite);
+        return product;
     }
 
     @Transactional
-    public void delete(String user, Integer productId) {
+    public Product delete(String user, Integer productId) {
         favoritesRepository.delete(user, productId);
+        return productService.getProduct(productId);
     }
 
 

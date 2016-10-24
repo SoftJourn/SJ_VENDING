@@ -2,14 +2,6 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.dto.ErrorDetail;
-import com.softjourn.vending.exceptions.AlreadyPresentedException;
-import com.softjourn.vending.exceptions.BadRequestException;
-import com.softjourn.vending.exceptions.NotEnoughAmountException;
-import com.softjourn.vending.exceptions.NotFoundException;
-import com.softjourn.vending.exceptions.NotImageException;
-import com.softjourn.vending.exceptions.PaymentProcessingException;
-import com.softjourn.vending.exceptions.WrongImageDimensions;
-import groovyjarjarcommonscli.ParseException;
 import com.softjourn.vending.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -23,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.text.ParseException;
 
 import static com.softjourn.vending.utils.Constants.SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW;
 import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;

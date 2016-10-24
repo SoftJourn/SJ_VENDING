@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HttpsURLConnection;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,10 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,53 +40,6 @@ import java.util.stream.Stream;
 
 @Service
 public class VendingService {
-
-    /*
-     * TODO
-     * This method allow to ignore wrong certificates on testing.
-     * It trust all certificates what is insecure.
-     * Only for testing.
-     * Remove for using in production environment.
-     */
-    static {
-        disableSslVerification();
-    }
-    private static void disableSslVerification() {
-        try {
-            // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {}
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {}
-
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
-
-                    }
-            };
-
-            // Install the all-trusting trust manager
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-
-            // Install the all-trusting host verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Value("${coins.server.host}")
     private String coinsServerHost;

@@ -8,6 +8,7 @@ import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
@@ -199,6 +201,24 @@ public class BuyServiceTest {
         verify(machineService, times(1)).buy(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
+    }
+
+    @Test
+    public void buyLastItemTest() {
+        Principal principal = () -> "user";
+        ArgumentCaptor<Field> argumentCaptor = ArgumentCaptor.forClass(Field.class);
+        field.setCount(1);
+
+        assertEquals(buyService.buy(1, "A0", principal), new BigDecimal(10));
+
+        verify(vendingService, times(4)).get(1);
+        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
+        verify(machineService, times(1)).buy(1, "A0");
+        verify(fieldService, times(1)).update(anyInt(), argumentCaptor.capture(), anyInt());
+        verify(purchaseRepository, times(1)).save(any(Purchase.class));
+
+        assertEquals(0, Math.toIntExact(argumentCaptor.getValue().getCount()));
+        assertNull(argumentCaptor.getValue().getProduct());
     }
 
     @Test(expected = NotFoundException.class)

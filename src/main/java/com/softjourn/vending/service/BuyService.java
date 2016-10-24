@@ -174,6 +174,9 @@ public class BuyService {
     private void decreaseProductsCount(Integer machineId, String fieldInternalId) {
         Field field = getByInternalId(machineId, fieldInternalId);
         field.setCount(field.getCount() - 1);
+        if (field.getCount() == 0) {
+            field.setProduct(null);
+        }
         fieldService.update(field.getId(), field, machineId);
     }
 

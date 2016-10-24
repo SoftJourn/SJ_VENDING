@@ -1,9 +1,7 @@
 package com.softjourn.vending.config;
 
-import com.softjourn.vending.Vending;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -18,18 +16,10 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
-
-    @Value("${auth.server.host}")
-    private String authServerHost;
-
-    @Value("${auth.redirect.url}")
-    private String authRedirectUri;
 
     @Value("${auth.client.id}")
     private String clientId;
@@ -78,21 +68,7 @@ public class VendingConfiguration extends ResourceServerConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                 .and()
                 .csrf()
-                .disable()
-                .exceptionHandling()
-                .authenticationEntryPoint((httpServletRequest, httpServletResponse, e) -> httpServletResponse
-                        .sendRedirect(buildAuthRedirectURI())
-                );
-    }
-
-    private String buildAuthRedirectURI() {
-        return authServerHost +
-                "/oauth/authorize?" +
-                "response_type=code&" +
-                "redirect_uri=" + authRedirectUri + "&" +
-                "response_type=code&" +
-                "scope=read&" +
-                "client_id=" + clientId;
+                .disable();
     }
 
     @Bean

@@ -6,4 +6,7 @@ public class VendingProcessingException extends RuntimeException {
         super(message);
     }
 
+    public VendingProcessingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

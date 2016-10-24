@@ -31,12 +31,17 @@ public class MachineService {
     }
 
     public void buy(Integer machineId, String fieldInternalId) {
-        Optional.ofNullable(vendingService.get(machineId))
-                .map(VendingMachine::getUrl)
-                .map(url -> post(url, fieldInternalId))
-                .ifPresent((result) -> {
-                    if (result != 200) throw new VendingProcessingException("Error occurred while processing request. ");
-                });
+        try {
+            Optional.ofNullable(vendingService.get(machineId))
+                    .map(VendingMachine::getUrl)
+                    .map(url -> post(url, fieldInternalId))
+                    .ifPresent((result) -> {
+                        if (result != 200) throw new RuntimeException("Error response from server \"" + result + "\".");
+                    });
+        } catch (Exception e) {
+            throw new VendingProcessingException("Error occurred while processing vending request. " + e.getMessage(), e);
+        }
+
     }
 
     private int post(String url, String fieldInternalId) {

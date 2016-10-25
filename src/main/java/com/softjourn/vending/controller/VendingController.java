@@ -10,6 +10,7 @@ import com.softjourn.vending.service.VendingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 
 @RestController
@@ -66,4 +67,23 @@ public class VendingController {
         return fieldService.updateFieldsCountInRow(rowId, count);
     }
 
+    @RequestMapping(value = "/price", method = RequestMethod.GET)
+    public BigDecimal getAllMachinesLoadedPrice() {
+        return vendingService.getLoadedPrice();
+    }
+
+    @RequestMapping(value = "/{id}/price", method = RequestMethod.GET)
+    public BigDecimal getMachineLoadedPrice(@PathVariable Integer id) {
+        return vendingService.getLoadedPrice(id);
+    }
+
+    @RequestMapping(value = "{id}/price/undistributed", method = RequestMethod.GET)
+    public BigDecimal getUndistributedPriceFromMachine(@PathVariable Integer id) {
+        return vendingService.getUndistributedPriceFromMachine(id);
+    }
+
+    @RequestMapping(value = "/price/undistributed", method = RequestMethod.GET)
+    public BigDecimal getUndistributedPrice() {
+        return vendingService.getUndistributedPrice();
+    }
 }

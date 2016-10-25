@@ -13,6 +13,9 @@ import com.softjourn.vending.exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -51,7 +54,11 @@ public class VendingServiceTest {
     @Mock
     OAuth2AuthenticationDetails authDetails;
 
+    @InjectMocks
     VendingService service;
+
+    @Captor
+    ArgumentCaptor<VendingMachine> machineCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -84,8 +91,6 @@ public class VendingServiceTest {
             return vendingMachine;
         });
         when(machineRepository.findOne(1)).thenReturn(machine);
-
-        service = new VendingService(machineRepository, rowRepository, fieldRepository, loadHistoryRepository, coinService);
 
         ReflectionTestUtils.setField(service, "coinsServerHost", "http://localhost");
         ReflectionTestUtils.setField(service, "coinRestTemplate", mock(RestTemplate.class));
@@ -139,7 +144,7 @@ public class VendingServiceTest {
     @Test
     public void getLoadedPriceWhenMachinePresentTest() throws Exception {
         BigDecimal price = service.getLoadedPrice(2);
-        BigDecimal expectedPrice = new BigDecimal(4000);
+        BigDecimal expectedPrice = new BigDecimal(500);
 
         assertEquals(expectedPrice, price);
     }
@@ -164,7 +169,7 @@ public class VendingServiceTest {
         product1.setPrice(new BigDecimal(100));
 
         VendingMachine vendingMachine = service.create(builder2, principal);
-        vendingMachine.getFields().forEach(field -> {
+        vendingMachine.getRows().get(0).getFields().forEach(field -> {
             field.setProduct(product1);
             field.setCount(1);
         });

@@ -17,22 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.*;
@@ -49,7 +40,6 @@ public class VendingService {
     private RowRepository rowRepository;
     private FieldRepository fieldRepository;
     private LoadHistoryRepository loadHistoryRepository;
-    private CoinService coinService;
     private RestTemplate coinRestTemplate;
 
 
@@ -63,19 +53,8 @@ public class VendingService {
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
         this.loadHistoryRepository = loadHistoryRepository;
-        this.coinService = coinService;
 
-        coinRestTemplate = new RestTemplate(new SimpleClientHttpRequestFactory() {
-            @Override
-            protected HttpURLConnection openConnection(URL url, Proxy proxy) throws IOException {
-                URLConnection urlConnection = (proxy != null ? url.openConnection(proxy) : url.openConnection());
-                Assert.isInstanceOf(HttpURLConnection.class, urlConnection);
-                if(urlConnection instanceof HttpsURLConnection) {
-                    ((HttpsURLConnection)urlConnection).setHostnameVerifier((s, sslSession) -> true);
-                }
-                return (HttpURLConnection) urlConnection;
-            }
-        });
+        coinRestTemplate = new RestTemplate();
     }
 
     @Transactional

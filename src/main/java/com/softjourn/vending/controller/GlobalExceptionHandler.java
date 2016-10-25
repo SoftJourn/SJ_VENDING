@@ -25,7 +25,7 @@ import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Not enough amount of coins in account to by this item.")
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Not enough coins.")
     @ExceptionHandler(NotEnoughAmountException.class)
     public void handlePaymentNotEnoughAmount(Exception e) {
         log.info(e.getLocalizedMessage());

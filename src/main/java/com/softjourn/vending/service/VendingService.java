@@ -11,6 +11,7 @@ import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.LoadHistory;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
@@ -88,9 +90,13 @@ public class VendingService {
 
         machine.setRows(rows);
 
-        coinRestTemplate.exchange(coinsServerHost + "/account/" + builder.getName(),
-                HttpMethod.POST,
-                prepareRequest(principal), Map.class);
+        try {
+            coinRestTemplate.exchange(coinsServerHost + "/account/" + builder.getName(),
+                    HttpMethod.POST,
+                    prepareRequest(principal), Map.class);
+        } catch (RestClientException e) {
+            throw new ErisAccountNotFoundException(machine.getName());
+        }
 
         VendingMachine vendingMachine = machineRepository.save(machine);
 

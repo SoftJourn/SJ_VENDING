@@ -119,6 +119,12 @@ public class GlobalExceptionHandler {
                 null, "Sent data could not be parsed"));
     }
 
+    @ExceptionHandler(ErisAccountNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleErisAccountNotFound(Exception e) {
+        log.info("Request for create machine and assign Eris account. " + e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, null, e.getLocalizedMessage()));
+    }
+
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTitle("Error");

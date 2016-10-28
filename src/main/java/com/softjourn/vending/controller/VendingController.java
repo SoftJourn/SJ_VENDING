@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/vending")
@@ -68,22 +70,22 @@ public class VendingController {
     }
 
     @RequestMapping(value = "/price", method = RequestMethod.GET)
-    public BigDecimal getAllMachinesLoadedPrice() {
-        return vendingService.getLoadedPrice();
+    public Map<String, BigDecimal> getAllMachinesLoadedPrice() {
+        return Collections.singletonMap("amount", vendingService.getLoadedPrice());
     }
 
     @RequestMapping(value = "/{id}/price", method = RequestMethod.GET)
-    public BigDecimal getMachineLoadedPrice(@PathVariable Integer id) {
-        return vendingService.getLoadedPrice(id);
+    public Map<String, BigDecimal> getMachineLoadedPrice(@PathVariable Integer id) {
+        return Collections.singletonMap("amount", vendingService.getLoadedPrice(id));
     }
 
     @RequestMapping(value = "{id}/price/undistributed", method = RequestMethod.GET)
-    public BigDecimal getUndistributedPriceFromMachine(@PathVariable Integer id) {
-        return vendingService.getUndistributedPriceFromMachine(id);
+    public Map<String, BigDecimal> getUndistributedPriceFromMachine(@PathVariable Integer id) {
+        return Collections.singletonMap("amount", vendingService.getUndistributedPriceFromMachine(id));
     }
 
     @RequestMapping(value = "/price/undistributed", method = RequestMethod.GET)
-    public BigDecimal getUndistributedPrice() {
-        return vendingService.getUndistributedPrice();
+    public Map<String, BigDecimal> getUndistributedPrice() {
+        return Collections.singletonMap("amount", vendingService.getUndistributedPrice());
     }
 }

@@ -72,7 +72,7 @@ public class VendingService {
 
     public VendingMachine get(Integer id) {
         VendingMachine machine = machineRepository.findOne(id);
-        if(machine == null) throw new NotFoundException("Machine with such id not found.");
+        if (machine == null) throw new NotFoundException("Machine with such id not found.");
         return machine;
     }
 
@@ -105,6 +105,13 @@ public class VendingService {
         return vendingMachine;
     }
 
+    public VendingMachine update(VendingMachine machine) {
+        VendingMachine machineToUpdate = this.machineRepository.getOne(machine.getId());
+        machineToUpdate.setName(machine.getName());
+        machineToUpdate.setUrl(machine.getUrl());
+        return this.machineRepository.save(machineToUpdate);
+    }
+
     private LoadHistory saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
         VendingMachine oldMachineState = Optional
                 .ofNullable(machineRepository.findOne(vendingMachine.getId()))
@@ -125,14 +132,14 @@ public class VendingService {
     }
 
     private HttpEntity<AmountDTO> prepareRequest(Principal principal) {
-        return new HttpEntity<>(new HttpHeaders(){{
+        return new HttpEntity<>(new HttpHeaders() {{
             put("Authorization", Collections.singletonList(getTokenHeader(principal)));
         }});
     }
 
     private String getTokenHeader(Principal principal) {
-        if(principal instanceof OAuth2Authentication) {
-            OAuth2AuthenticationDetails authenticationDetails = (OAuth2AuthenticationDetails) ((OAuth2Authentication)principal).getDetails();
+        if (principal instanceof OAuth2Authentication) {
+            OAuth2AuthenticationDetails authenticationDetails = (OAuth2AuthenticationDetails) ((OAuth2Authentication) principal).getDetails();
             return authenticationDetails.getTokenType() + " " + authenticationDetails.getTokenValue();
         } else {
             throw new IllegalStateException("Unsupported autentication type.");
@@ -154,15 +161,25 @@ public class VendingService {
         return numberingGenerator(numbering, count)
                 .map(s -> rowId + s)
                 .reduce(new ArrayList<>(),
-                        (l, s) -> {l.add(l.size(), new Field(s, l.size()));return l;},
-                        (l1, l2) -> {l1.addAll(l2); return l1;});
+                        (l, s) -> {
+                            l.add(l.size(), new Field(s, l.size()));
+                            return l;
+                        },
+                        (l1, l2) -> {
+                            l1.addAll(l2);
+                            return l1;
+                        });
     }
 
     private Stream<String> numberingGenerator(VendingMachineBuilderDTO.Numbering numbering, int count) {
         Stream<?> stream;
         switch (numbering) {
-            case ALPHABETICAL:stream =  Stream.iterate('A', c -> (char)(c + 1));break;
-            case NUMERICAL: default: stream = Stream.iterate(1, i ->  i + 1);
+            case ALPHABETICAL:
+                stream = Stream.iterate('A', c -> (char) (c + 1));
+                break;
+            case NUMERICAL:
+            default:
+                stream = Stream.iterate(1, i -> i + 1);
         }
         return stream.map(String::valueOf).limit(count);
     }

@@ -45,6 +45,11 @@ public class VendingController {
         return vendingService.create(machineBuilder, principal);
     }
 
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public VendingMachine update(@RequestBody VendingMachine machine) {
+        return vendingService.update(machine);
+    }
+
     @RequestMapping(method = RequestMethod.PUT)
     public VendingMachine refill(@RequestBody VendingMachine machine, Principal principal) {
         return vendingService.refill(machine, principal);
@@ -57,15 +62,15 @@ public class VendingController {
 
     @RequestMapping(value = "/{id}/fields/{fieldId}", method = RequestMethod.POST)
     public Field updateField(@PathVariable Integer id,
-                            @PathVariable Integer fieldId,
-                            @RequestBody Field field) {
+                             @PathVariable Integer fieldId,
+                             @RequestBody Field field) {
         return fieldService.update(fieldId, field, id);
     }
 
     @RequestMapping(value = "/{id}/rows/{rowId}", method = RequestMethod.POST)
     public Row updateRow(@PathVariable Integer id,
-                             @PathVariable Integer rowId,
-                             @RequestBody Integer count) {
+                         @PathVariable Integer rowId,
+                         @RequestBody Integer count) {
         return fieldService.updateFieldsCountInRow(rowId, count);
     }
 

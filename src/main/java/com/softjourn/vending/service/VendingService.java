@@ -146,7 +146,9 @@ public class VendingService {
         }
     }
 
+    @Transactional
     public void delete(Integer id) {
+        loadHistoryRepository.deleteByMachineId(id);
         machineRepository.delete(id);
     }
 

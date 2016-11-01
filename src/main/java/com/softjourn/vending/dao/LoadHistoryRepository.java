@@ -23,4 +23,8 @@ public interface LoadHistoryRepository extends JpaRepository<LoadHistory, Long> 
     @Modifying
     @Query("UPDATE LoadHistory lh SET lh.isDistributed = TRUE WHERE lh.isDistributed = FALSE")
     public int updateHistoriesAfterDistribution();
+
+    @Modifying
+    @Query("DELETE FROM LoadHistory lh WHERE lh.vendingMachine.id = :id")
+    public int deleteByMachineId(@Param("id") Integer id);
 }

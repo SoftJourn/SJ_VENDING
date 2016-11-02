@@ -10,9 +10,9 @@ CREATE TABLE products
     image_url VARCHAR(255),
     name VARCHAR(255) NOT NULL,
     price DECIMAL(19,2) NOT NULL,
-    addedTime TINYBLOB,
+    added_time TINYBLOB,
     description VARCHAR(255),
-    imageData MEDIUMBLOB,
+    image_data MEDIUMBLOB,
     id_categories BIGINT(20),
     CONSTRAINT FK_8l3my8ls6adnevblpj5twva2e FOREIGN KEY (id_categories) REFERENCES categories (id)
 );

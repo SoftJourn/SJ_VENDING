@@ -28,6 +28,9 @@ public class VendingMachine {
     @Column
     private String url;
 
+    @Column(unique = true)
+    private String uniqueId;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "machine_rows",

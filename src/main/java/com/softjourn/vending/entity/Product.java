@@ -19,7 +19,7 @@ import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(suppressConstructorProperties = true)
 @Entity
 @Table(name = "products")
 public class Product {
@@ -28,12 +28,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
     @NotNull
     @DecimalMin(value = "0", message = "Price should be positive")
     private BigDecimal price;
 
-    @Column
     @NotNull(message = "Product name should not be null")
     @NotBlank(message = "Product name should not be blank and starts with symbols")
     @NotEmpty(message = "Product name should not be empty and starts with symbols")
@@ -47,7 +45,6 @@ public class Product {
     @Column(length = IMAGE_FILE_MAX_SIZE)
     private byte[] imageData;
 
-    @Column
     @JsonIgnore
     private Instant addedTime;
 

@@ -58,8 +58,8 @@ public class VendingController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Integer id) {
-        vendingService.delete(id);
+    public void delete(@PathVariable Integer id, Principal principal) {
+        vendingService.delete(id, principal);
     }
 
     @RequestMapping(value = "/{id}/fields/{fieldId}", method = RequestMethod.POST)

@@ -918,7 +918,7 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 609
+Content-Length: 615
 
 {
   "lastAdded" : [ 0, 1 ],
@@ -928,7 +928,7 @@ Content-Length: 609
     "products" : [ {
       "id" : 0,
       "price" : 5,
-      "name" : "COLA",
+      "name" : "Super Nuts",
       "imageUrl" : "/image.jpg",
       "description" : "Cola with coca.",
       "category" : {
@@ -1015,16 +1015,16 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 157
+Content-Length: 161
 
 [ {
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "price" : 5,
-  "time" : "2016-11-08T16:09:41.854Z"
+  "time" : "2016-11-11T16:07:14.32Z"
 }, {
   "name" : "Nuts",
   "price" : 50,
-  "time" : "2016-11-08T16:09:41.854Z"
+  "time" : "2016-11-11T16:07:14.32Z"
 } ]</code></pre>
 </div>
 </div>
@@ -1100,12 +1100,12 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 356
+Content-Length: 362
 
 [ {
   "id" : 0,
   "price" : 5,
-  "name" : "COLA",
+  "name" : "Super Nuts",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1208,12 +1208,12 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 362
+Content-Length: 356
 
 [ {
   "id" : 0,
   "price" : 5,
-  "name" : "Super Nuts",
+  "name" : "COLA",
   "imageUrl" : "/image.jpg",
   "description" : "Cola with coca.",
   "category" : {
@@ -1311,7 +1311,7 @@ Host: localhost</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Content-Length: 77
 
 {
@@ -1550,9 +1550,19 @@ Content-Length: 177
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 141
+Content-Length: 189
 
-{"id":2,"price":50,"name":"Super Snickers","imageUrl":"/image3.jpg","description":"Energy bar with nuts.","category":{"id":2,"name":"Snack"}}</code></pre>
+{
+  "id" : 2,
+  "price" : 50,
+  "name" : "Super Snickers",
+  "imageUrl" : "/image3.jpg",
+  "description" : "Energy bar with nuts.",
+  "category" : {
+    "id" : 2,
+    "name" : "Snack"
+  }
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1592,9 +1602,19 @@ Content-Length: 189
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Content-Type: application/json
 Host: localhost
-Content-Length: 129
+Content-Length: 177
 
-{"id":0,"price":5,"name":"Super Nuts","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}</code></pre>
+{
+  "id" : 0,
+  "price" : 5,
+  "name" : "Super Nuts",
+  "imageUrl" : "/image.jpg",
+  "description" : "Cola with coca.",
+  "category" : {
+    "id" : 1,
+    "name" : "Drink"
+  }
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1708,9 +1728,16 @@ Content-Length: 177
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 122
+Content-Length: 153
 
-{"name":"Machine","url":null,"rowsCount":2,"columnsCount":2,"rowsNumbering":"ALPHABETICAL","columnsNumbering":"NUMERICAL"}</code></pre>
+{
+  "name" : "Machine",
+  "url" : null,
+  "rowsCount" : 2,
+  "columnsCount" : 2,
+  "rowsNumbering" : "ALPHABETICAL",
+  "columnsNumbering" : "NUMERICAL"
+}</code></pre>
 </div>
 </div>
 </div>
@@ -1720,12 +1747,13 @@ Content-Length: 122
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1629
+Content-Length: 1714
 
 {
   "id" : 0,
   "name" : "Snack machine",
-  "url" : null,
+  "url" : "https://192.168.0.53",
+  "uniqueId" : "e289977d-a7d7-4373-a95c-3ba927403f08",
   "rows" : [ {
     "id" : 0,
     "rowId" : "A",
@@ -1737,7 +1765,7 @@ Content-Length: 1629
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -1773,7 +1801,7 @@ Content-Length: 1629
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -1845,19 +1873,7 @@ Host: localhost</code></pre>
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 183
-
-{"id":0,"internalId":"A1","position":0,"count":5,"product":{"id":0,"price":5,"name":"COLA","imageUrl":"/image.jpg","description":"Cola with coca.","category":{"id":1,"name":"Drink"}}}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_example_response_21"><a class="link" href="#_example_response_21">Example response</a></h4>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json;charset=UTF-8
-Content-Length: 277
+Content-Length: 283
 
 {
   "id" : 0,
@@ -1867,7 +1883,35 @@ Content-Length: 277
   "product" : {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
+    "imageUrl" : "/image.jpg",
+    "description" : "Cola with coca.",
+    "category" : {
+      "id" : 1,
+      "name" : "Drink"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_response_21"><a class="link" href="#_example_response_21">Example response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 283
+
+{
+  "id" : 0,
+  "internalId" : "A1",
+  "position" : 0,
+  "count" : 5,
+  "product" : {
+    "id" : 0,
+    "price" : 5,
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -1905,7 +1949,7 @@ Content-Length: 1
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 678
+Content-Length: 684
 
 {
   "id" : 0,
@@ -1918,7 +1962,7 @@ Content-Length: 678
     "product" : {
       "id" : 0,
       "price" : 5,
-      "name" : "COLA",
+      "name" : "Super Nuts",
       "imageUrl" : "/image.jpg",
       "description" : "Cola with coca.",
       "category" : {
@@ -2027,18 +2071,18 @@ Content-Length: 122
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 396
+Content-Type: application/json;charset=UTF-8
+Content-Length: 402
 
 {
   "content" : [ {
     "account" : "ldap",
-    "date" : "2016-11-08T16:09:42.191Z",
-    "product" : "COLA",
+    "date" : "2016-11-11T16:07:12.847Z",
+    "product" : "Super Nuts",
     "price" : 5
   }, {
     "account" : "ldap",
-    "date" : "2016-11-08T16:09:42.191Z",
+    "date" : "2016-11-11T16:07:12.847Z",
     "product" : "Nuts",
     "price" : 50
   } ],
@@ -2140,7 +2184,7 @@ Content-Length: 396
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 400 Bad Request
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Content-Length: 234
 
 {
@@ -2194,7 +2238,7 @@ Content-Length: 234
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-11-08 18:09:30 EET
+Last updated 2016-11-09 19:06:10 EET
 </div>
 </div>
 </body>

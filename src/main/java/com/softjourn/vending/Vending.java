@@ -5,20 +5,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.boot.orm.jpa.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
 @SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
-@ComponentScan(basePackages = "com.softjourn.vending")
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao")
-@EntityScan(basePackages = "com.softjourn.vending.entity")
 public class Vending {
 
     public static void main(String[] args) {

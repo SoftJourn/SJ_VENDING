@@ -1,53 +1,57 @@
 package com.softjourn.vending.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
 import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.Row;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static com.softjourn.vending.controller.ProductsControllerTest.json;
+import java.io.IOException;
+
 import static com.softjourn.vending.dto.VendingMachineBuilderDTO.Numbering.ALPHABETICAL;
 import static com.softjourn.vending.dto.VendingMachineBuilderDTO.Numbering.NUMERICAL;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ControllerTestConfig.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@Import(ControllerTestConfig.class)
+@WebMvcTest(VendingController.class)
+@AutoConfigureRestDocs("target/generated-snippets")
+@AutoConfigureMockMvc(secure = false)
 public class VendingControllerTest {
 
     static Field field;
     static Row row;
-    @Rule
-    public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
+
     @Autowired
-    private WebApplicationContext context;
     private MockMvc mockMvc;
     private VendingMachineBuilderDTO vendingMachineBuilder;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    private String json(Object o) throws IOException {
+        return mapper.writeValueAsString(o);
+    }
 
     @Before
     public synchronized void setUp() {
@@ -58,14 +62,6 @@ public class VendingControllerTest {
         vendingMachineBuilder.setRowsNumbering(ALPHABETICAL);
         vendingMachineBuilder.setColumnsCount(2);
         vendingMachineBuilder.setColumnsNumbering(NUMERICAL);
-
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .snippets()
-                        .withTemplateFormat(TemplateFormats.asciidoctor()))
-
-                .build();
     }
 
     @Test
@@ -79,11 +75,14 @@ public class VendingControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rows", is(notNullValue())))
-                .andDo(document("add-machine", preprocessResponse(prettyPrint()),
+                .andDo(document("add-machine",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("url").description("Vending machine url."),
+                                fieldWithPath("uniqueId").description("Vending machine unique Id used in Coins server."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
                                 fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),
@@ -120,7 +119,9 @@ public class VendingControllerTest {
                         .content(json(field))
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
-                .andDo(document("update-machine-field", preprocessResponse(prettyPrint()),
+                .andDo(document("update-machine-field",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("id").description("Field id."),
                                 fieldWithPath("internalId").description("Field id in machine(usually contains row and column number)."),
@@ -140,7 +141,9 @@ public class VendingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
-                .andDo(document("update-machine-row", preprocessResponse(prettyPrint()),
+                .andDo(document("update-machine-row",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("id").description("Row id in db."),
                                 fieldWithPath("rowId").description("Row id in machine(usually ALPHABETICAL character)."),

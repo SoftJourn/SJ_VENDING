@@ -5,7 +5,7 @@ import com.softjourn.vending.dao.FieldRepository;
 import com.softjourn.vending.dao.LoadHistoryRepository;
 import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.RowRepository;
-import com.softjourn.vending.dto.AmountDTO;
+import com.softjourn.vending.dto.MerchantDTO;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
 import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.LoadHistory;
@@ -79,6 +79,7 @@ public class VendingService {
     @Transactional
     public VendingMachine create(VendingMachineBuilderDTO builder, Principal principal) {
         VendingMachine machine = new VendingMachine();
+        machine.setUniqueId(UUID.randomUUID().toString());
         machine.setName(builder.getName());
         machine.setUrl(builder.getUrl());
 
@@ -90,10 +91,12 @@ public class VendingService {
 
         machine.setRows(rows);
 
+        MerchantDTO merchantDTO = new MerchantDTO(machine.getName(), machine.getUniqueId());
+
         try {
-            coinRestTemplate.exchange(coinsServerHost + "/account/" + builder.getName(),
+            coinRestTemplate.exchange(coinsServerHost + "/account/merchant",
                     HttpMethod.POST,
-                    prepareRequest(principal), Map.class);
+                    prepareRequest(merchantDTO, principal), Map.class);
         } catch (RestClientException e) {
             throw new ErisAccountNotFoundException(machine.getName());
         }
@@ -131,8 +134,14 @@ public class VendingService {
         return loadHistoryRepository.save(loadHistory);
     }
 
-    private HttpEntity<AmountDTO> prepareRequest(Principal principal) {
+    private HttpEntity<Object> prepareRequest(Principal principal) {
         return new HttpEntity<>(new HttpHeaders() {{
+            put("Authorization", Collections.singletonList(getTokenHeader(principal)));
+        }});
+    }
+
+    private HttpEntity<Object> prepareRequest(Object body, Principal principal) {
+        return new HttpEntity<>(body, new HttpHeaders() {{
             put("Authorization", Collections.singletonList(getTokenHeader(principal)));
         }});
     }
@@ -142,14 +151,24 @@ public class VendingService {
             OAuth2AuthenticationDetails authenticationDetails = (OAuth2AuthenticationDetails) ((OAuth2Authentication) principal).getDetails();
             return authenticationDetails.getTokenType() + " " + authenticationDetails.getTokenValue();
         } else {
-            throw new IllegalStateException("Unsupported autentication type.");
+            throw new IllegalStateException("Unsupported authentication type.");
         }
     }
 
     @Transactional
-    public void delete(Integer id) {
-        loadHistoryRepository.deleteByMachineId(id);
-        machineRepository.delete(id);
+    public void delete(Integer id, Principal principal) {
+        VendingMachine machine = machineRepository.findOne(id);
+
+        try {
+            coinRestTemplate.exchange(coinsServerHost + "/account/" + machine.getUniqueId(),
+                    HttpMethod.DELETE,
+                    prepareRequest(principal), Map.class);
+        } catch (RestClientException e) {
+            throw new ErisAccountNotFoundException(machine.getUniqueId());
+        }
+
+        loadHistoryRepository.deleteByMachineId(machine.getId());
+        machineRepository.delete(machine);
     }
 
     private List<Row> getRows(VendingMachineBuilderDTO builder) {

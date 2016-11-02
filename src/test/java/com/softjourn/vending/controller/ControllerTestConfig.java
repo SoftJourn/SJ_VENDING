@@ -1,35 +1,15 @@
 package com.softjourn.vending.controller;
 
-import com.softjourn.vending.dto.CategoryDTO;
-import com.softjourn.vending.dto.DashboardDTO;
-import com.softjourn.vending.dto.FeatureDTO;
-import com.softjourn.vending.dto.PurchaseDTO;
-import com.softjourn.vending.dto.PurchaseFilterDTO;
-import com.softjourn.vending.dto.PurchaseProductDto;
-import com.softjourn.vending.entity.Categories;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
-import com.softjourn.vending.service.BuyService;
-import com.softjourn.vending.service.CategoriesService;
-import com.softjourn.vending.service.CoinService;
-import com.softjourn.vending.service.DashboardService;
-import com.softjourn.vending.service.FavoritesService;
-import com.softjourn.vending.service.FieldService;
-import com.softjourn.vending.service.MachineService;
-import com.softjourn.vending.service.ProductService;
-import com.softjourn.vending.service.PurchaseService;
-import com.softjourn.vending.service.VendingService;
+import com.softjourn.vending.dto.*;
+import com.softjourn.vending.entity.*;
+import com.softjourn.vending.service.*;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -37,20 +17,17 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.softjourn.vending.controller.ProductsControllerTest.product;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @Configuration
-@ComponentScan(basePackages = {"com.softjourn.vending"})
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@WebAppConfiguration
-public class ControllerTestConfig {
+@EnableSpringDataWebSupport
+public abstract class ControllerTestConfig {
 
 
     private static Product product2;
@@ -198,6 +175,8 @@ public class ControllerTestConfig {
         VendingMachine vendingMachine = new VendingMachine();
         vendingMachine.setId(0);
         vendingMachine.setName("Snack machine");
+        vendingMachine.setUrl("https://192.168.0.53");
+        vendingMachine.setUniqueId(UUID.randomUUID().toString());
         vendingMachine.setRows(new ArrayList<Row>() {{
             add(row);
             add(row1);

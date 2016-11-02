@@ -1,25 +1,20 @@
 package com.softjourn.vending.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.softjourn.vending.entity.Product;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
@@ -27,40 +22,29 @@ import static com.softjourn.vending.controller.ControllerTestConfig.product4;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ControllerTestConfig.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@Import(ControllerTestConfig.class)
+@WebMvcTest(ProductsController.class)
+@AutoConfigureMockMvc(secure = false)
+@AutoConfigureRestDocs("target/generated-snippets")
 public class ProductsControllerTest {
 
     static Product product;
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static ObjectWriter writer = mapper.writer();
-    @Rule
-    public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
+
     @Autowired
-    private WebApplicationContext context;
+    ObjectMapper mapper;
+
+    @Autowired
     private MockMvc mockMvc;
 
-    public static String json(Object o) throws IOException {
-        return writer.writeValueAsString(o);
-    }
-
-    @Before
-    public synchronized void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .snippets()
-                        .withTemplateFormat(TemplateFormats.asciidoctor()))
-                .build();
+    private String json(Object o) throws IOException {
+        return mapper.writeValueAsString(o);
     }
 
     @Test
@@ -71,7 +55,9 @@ public class ProductsControllerTest {
                         .get("/v1/products")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
-                .andDo(document("all-products", preprocessResponse(prettyPrint()),
+                .andDo(document("all-products",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("[]").description("All products registered in system."),
                                 fieldWithPath("[0]").description("Product."),
@@ -94,7 +80,9 @@ public class ProductsControllerTest {
                         .param("name", "Snickers")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
-                .andDo(document("all-products-by-name", preprocessResponse(prettyPrint()),
+                .andDo(document("all-products-by-name",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("[]").description("Products that has being found"),
                                 fieldWithPath("[0]").description("Product."),
@@ -116,7 +104,9 @@ public class ProductsControllerTest {
                         .get("/v1/products/{productId}", 0)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
-                .andDo(document("all-product", preprocessResponse(prettyPrint()),
+                .andDo(document("all-product",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("id").description("Product id."),
                                 fieldWithPath("name").description("Product name."),
@@ -139,7 +129,9 @@ public class ProductsControllerTest {
                         .content(json(product4)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json(product4)))
-                .andDo(document("add-product", preprocessResponse(prettyPrint()),
+                .andDo(document("add-product",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
                         ),
@@ -166,7 +158,9 @@ public class ProductsControllerTest {
                         .content(json(product)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json(product)))
-                .andDo(document("update-product", preprocessResponse(prettyPrint()),
+                .andDo(document("update-product",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
                         ),
@@ -190,7 +184,9 @@ public class ProductsControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
-                .andDo(document("update-product-image", preprocessResponse(prettyPrint()),
+                .andDo(document("update-product-image",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
                         )));
@@ -205,7 +201,9 @@ public class ProductsControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json(product)))
-                .andDo(document("delete-product", preprocessResponse(prettyPrint()),
+                .andDo(document("delete-product",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
                         ),

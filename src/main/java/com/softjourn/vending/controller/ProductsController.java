@@ -4,6 +4,7 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/products")
+@PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
 public class ProductsController {
 
     private ProductService productService;

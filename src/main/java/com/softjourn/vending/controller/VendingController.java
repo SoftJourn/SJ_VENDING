@@ -8,6 +8,7 @@ import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.service.FieldService;
 import com.softjourn.vending.service.VendingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/vending")
+@PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
 public class VendingController {
 
     private VendingService vendingService;

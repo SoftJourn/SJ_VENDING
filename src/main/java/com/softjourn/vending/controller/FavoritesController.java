@@ -3,6 +3,7 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.FavoritesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/favorites")
+@PreAuthorize("authenticated")
 public class FavoritesController {
 
     private FavoritesService favoritesService;

@@ -76,6 +76,7 @@ public class VendingController {
         return fieldService.updateFieldsCountInRow(rowId, count);
     }
 
+    @PreAuthorize("authenticated")
     @RequestMapping(value = "/price", method = RequestMethod.GET)
     public Map<String, BigDecimal> getAllMachinesLoadedPrice() {
         return Collections.singletonMap("amount", vendingService.getLoadedPrice());

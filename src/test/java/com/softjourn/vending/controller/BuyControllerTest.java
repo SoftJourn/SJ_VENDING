@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
-import static com.softjourn.vending.controller.ControllerTestConfig.snacks;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -59,6 +57,7 @@ public class BuyControllerTest {
 
 
     @Test
+    @WithMockUser()
     public void testGetMachines() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -79,6 +78,7 @@ public class BuyControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testGetMachine() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -96,6 +96,7 @@ public class BuyControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     public void testGetAvailableProducts() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -115,6 +116,7 @@ public class BuyControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testGetFeatures() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -131,6 +133,7 @@ public class BuyControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void testGetLastPurchases() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders

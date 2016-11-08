@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.templates.TemplateFormats;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,14 +34,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class FavoritesControllerTest {
 
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectWriter writer = mapper.writer();
     @Rule
     public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;
 
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static ObjectWriter writer = mapper.writer();
+    public static String json(Object o) throws IOException {
+        return writer.writeValueAsString(o);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -54,6 +58,7 @@ public class FavoritesControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void get() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -68,6 +73,7 @@ public class FavoritesControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void add() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -79,6 +85,7 @@ public class FavoritesControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void delete() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -87,10 +94,6 @@ public class FavoritesControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
                 .andExpect(status().isOk())
                 .andDo(document("delete-favorite", preprocessResponse(prettyPrint())));
-    }
-
-    public static String json(Object o) throws IOException {
-        return writer.writeValueAsString(o);
     }
 
 }

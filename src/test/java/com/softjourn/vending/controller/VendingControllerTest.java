@@ -40,18 +40,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class VendingControllerTest {
 
-    @Rule
-    public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
-
-    @Autowired
-    private WebApplicationContext context;
-
-    private MockMvc mockMvc;
-
-    private VendingMachineBuilderDTO vendingMachineBuilder;
-
     static Field field;
     static Row row;
+    @Rule
+    public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
+    @Autowired
+    private WebApplicationContext context;
+    private MockMvc mockMvc;
+    private VendingMachineBuilderDTO vendingMachineBuilder;
 
     @Before
     public synchronized void setUp() {
@@ -73,7 +69,7 @@ public class VendingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void add() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -104,7 +100,7 @@ public class VendingControllerTest {
 
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void delete() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -115,7 +111,7 @@ public class VendingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void updateField() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -135,7 +131,7 @@ public class VendingControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void updateRow() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders

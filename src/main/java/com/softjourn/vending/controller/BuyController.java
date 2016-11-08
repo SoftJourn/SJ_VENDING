@@ -7,7 +7,6 @@ import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.service.BuyService;
-import com.softjourn.vending.service.CategoriesService;
 import com.softjourn.vending.service.VendingService;
 import com.softjourn.vending.utils.jsonview.View;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +29,11 @@ public class BuyController {
 
     private BuyService buyService;
     private VendingService vendingService;
-    private CategoriesService categoriesService;
 
     @Autowired
-    public BuyController(BuyService buyService, VendingService vendingService, CategoriesService categoriesService) {
+    public BuyController(BuyService buyService, VendingService vendingService) {
         this.buyService = buyService;
         this.vendingService = vendingService;
-        this.categoriesService = categoriesService;
     }
 
     @JsonView(View.Client.class)

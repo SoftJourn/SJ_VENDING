@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.templates.TemplateFormats;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,6 +50,7 @@ public class DashboardControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"INVENTORY", "SUPER_ADMIN"})
     public void testGetDashboard() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders

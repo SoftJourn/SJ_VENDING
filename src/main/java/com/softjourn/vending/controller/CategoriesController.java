@@ -7,11 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,8 +17,12 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
 public class CategoriesController {
 
+    private final CategoriesService categoriesService;
+
     @Autowired
-    private CategoriesService categoriesService;
+    public CategoriesController(CategoriesService categoriesService) {
+        this.categoriesService = categoriesService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Categories>> getCategories() {

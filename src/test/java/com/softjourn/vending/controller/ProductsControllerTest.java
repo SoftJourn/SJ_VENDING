@@ -40,16 +40,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ProductsControllerTest {
 
+    static Product product;
+    private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectWriter writer = mapper.writer();
     @Rule
     public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;
 
-    private static ObjectMapper mapper = new ObjectMapper();
-    private static ObjectWriter writer = mapper.writer();
-
-    static Product product;
+    public static String json(Object o) throws IOException {
+        return writer.writeValueAsString(o);
+    }
 
     @Before
     public synchronized void setUp() {
@@ -62,6 +64,7 @@ public class ProductsControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void getProducts() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -83,6 +86,7 @@ public class ProductsControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void getProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -101,9 +105,8 @@ public class ProductsControllerTest {
                         )));
     }
 
-
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void addProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -129,7 +132,7 @@ public class ProductsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void updateProduct() throws Exception {
         product.setName("Super Nuts");
         mockMvc
@@ -156,7 +159,7 @@ public class ProductsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void updateImage() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -171,7 +174,7 @@ public class ProductsControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void deleteProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders
@@ -192,10 +195,5 @@ public class ProductsControllerTest {
                                 fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
-    }
-
-
-    public static String json(Object o) throws IOException {
-        return writer.writeValueAsString(o);
     }
 }

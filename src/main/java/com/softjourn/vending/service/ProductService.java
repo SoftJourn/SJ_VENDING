@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -49,6 +50,10 @@ public class ProductService {
     public Collection<Product> getProducts() {
         Iterable<Product> res = repository.findAll();
         return StreamSupport.stream(res.spliterator(), false).collect(Collectors.toList());
+    }
+
+    public List<Product> getProductsByNameThatContain(String name) {
+        return repository.getProductsByNameThatContain(name);
     }
 
     public Product getProduct(@NonNull Integer id) {

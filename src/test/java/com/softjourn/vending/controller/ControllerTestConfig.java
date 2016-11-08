@@ -132,6 +132,10 @@ public class ControllerTestConfig {
             add(product2);
             add(product4);
         }});
+        when(productService.getProductsByNameThatContain("Snickers")).thenReturn(new ArrayList<Product>() {{
+            add(product3);
+            add(product4);
+        }});
         when(productService.getProduct(0)).thenReturn(product);
         when(productService.getProduct(1)).thenReturn(product2);
         when(productService.getProduct(2)).thenReturn(product4);

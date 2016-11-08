@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/products")
@@ -36,6 +37,11 @@ public class ProductsController {
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<Product> getProducts() {
         return productService.getProducts();
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public List<Product> getProductsByNameThatContain(@RequestParam("name") String name) {
+        return productService.getProductsByNameThatContain(name);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

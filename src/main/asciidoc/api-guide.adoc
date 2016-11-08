@@ -259,6 +259,21 @@ include::{snippets}/all-products/http-request.adoc[]
 
 include::{snippets}/all-products/http-response.adoc[]
 
+[[resources-all-products-by-name]]
+=== Getting all products which name contains search text
+
+A `GET` request to get all products registered in system. Not depend on any machine.
+
+
+==== Example request
+
+include::{snippets}/all-products-by-name/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/all-products-by-name/http-response.adoc[]
+include::{snippets}/all-products-by-name/response-fields.adoc[]
+
 [[resources-all-product]]
 === Getting one product registered in system by it's id
 

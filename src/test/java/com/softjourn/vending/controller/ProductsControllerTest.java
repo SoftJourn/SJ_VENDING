@@ -87,6 +87,29 @@ public class ProductsControllerTest {
 
     @Test
     @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
+    public void getProductsByNameThatContain() throws Exception {
+        mockMvc
+                .perform(RestDocumentationRequestBuilders
+                        .get("/v1/products/search")
+                        .param("name", "Snickers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
+                .andExpect(status().isOk())
+                .andDo(document("all-products-by-name", preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("[]").description("Products that has being found"),
+                                fieldWithPath("[0]").description("Product."),
+                                fieldWithPath("[0].id").description("Product id."),
+                                fieldWithPath("[0].name").description("Product name."),
+                                fieldWithPath("[0].price").description("Product price."),
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
+                                fieldWithPath("[0].description").description("Product description.")
+                        )));
+    }
+
+    @Test
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
     public void getProduct() throws Exception {
         mockMvc
                 .perform(RestDocumentationRequestBuilders

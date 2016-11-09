@@ -5,12 +5,7 @@ import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -34,6 +29,7 @@ public class ProductsController {
         return productService.add(product);
     }
 
+    @PreAuthorize("authenticated")
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<Product> getProducts() {
         return productService.getProducts();
@@ -44,6 +40,7 @@ public class ProductsController {
         return productService.getProductsByNameThatContain(name);
     }
 
+    @PreAuthorize("authenticated")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Product getProduct(@PathVariable Integer id) {
         return productService.getProduct(id);
@@ -54,6 +51,7 @@ public class ProductsController {
         return productService.update(id, updater);
     }
 
+    @PreAuthorize("permitAll")
     @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer id) {
         return productService.getProduct(id).getImageData();

@@ -69,7 +69,7 @@ public class BuyService {
     public synchronized BigDecimal buy(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
         VendingMachine machine = vendingService.get(machineId);
-        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getName());
+        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
         machineService.buy(machineId, itemId);
         decreaseProductsCount(machineId, itemId);
         savePurchase(machineId, product, principal);

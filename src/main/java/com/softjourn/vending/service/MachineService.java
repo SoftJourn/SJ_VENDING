@@ -2,6 +2,7 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.exceptions.MachineBusyException;
 import com.softjourn.vending.exceptions.VendingProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,11 @@ public class MachineService {
                     .map(VendingMachine::getUrl)
                     .map(url -> post(url, fieldInternalId))
                     .ifPresent((result) -> {
-                        if (result != 200) throw new RuntimeException("Error response from server \"" + result + "\".");
+                        if (result == 509) {
+                            throw new MachineBusyException(machineId);
+                        } else if (result != 200) {
+                            throw new RuntimeException("Error response from server \"" + result + "\"" + ".");
+                        }
                     });
         } catch (Exception e) {
             throw new VendingProcessingException("Error occurred while processing vending request. " + e.getMessage(), e);

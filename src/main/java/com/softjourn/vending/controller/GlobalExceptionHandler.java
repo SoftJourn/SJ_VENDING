@@ -5,6 +5,7 @@ import com.softjourn.vending.dto.ErrorDetail;
 import com.softjourn.vending.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.ParseException;
+import java.util.Objects;
 
 import static com.softjourn.vending.utils.Constants.SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW;
 import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
@@ -87,42 +89,62 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetail> handle(MethodArgumentNotValidException e) {
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
-                null, e.getBindingResult().getAllErrors().stream().findFirst().get().getDefaultMessage()));
+        String message = e.getBindingResult().getAllErrors().stream()
+                .findFirst()
+                .filter(Objects::nonNull)
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("");
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorDetails(e, null, message));
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorDetail> handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
-                null, "Image size is too large"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorDetails(e, null, "Image size is too large"));
     }
 
     @ExceptionHandler(NotImageException.class)
     public ResponseEntity<ErrorDetail> handleNotImageException(NotImageException e) {
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
-                null, "This file is not image or this file format is not supported!"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorDetails(e, null, "This file is not image or this file format is not supported!"));
     }
 
     @ExceptionHandler(WrongImageDimensions.class)
     public ResponseEntity<ErrorDetail> handleWrongImageDimensions(WrongImageDimensions e) {
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
-                null, "Image dimensions is too big, try to use 205*205px"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorDetails(e, null, "Image dimensions is too big, try to use 205*205px"));
     }
 
     @ExceptionHandler(ParseException.class)
     public ResponseEntity<ErrorDetail> handleParseException(ParseException e) {
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e,
-                null, "Sent data could not be parsed"));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorDetails(e, null, "Sent data could not be parsed"));
     }
 
     @ExceptionHandler(ErisAccountNotFoundException.class)
     public ResponseEntity<ErrorDetail> handleErisAccountNotFound(Exception e) {
         log.info("Request for create machine and assign Eris account. " + e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, null, e.getLocalizedMessage()));
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(buildErrorDetails(e, null, e.getLocalizedMessage()));
+    }
+
+    @ExceptionHandler(MachineBusyException.class)
+    public ResponseEntity<ErrorDetail> handleMachineBusyException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
+                .body(buildErrorDetails(e, null, e.getLocalizedMessage()));
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

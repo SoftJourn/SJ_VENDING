@@ -159,6 +159,9 @@ public class VendingService {
     public void delete(Integer id, Principal principal) {
         VendingMachine machine = machineRepository.findOne(id);
 
+        loadHistoryRepository.deleteByMachineId(machine.getId());
+        machineRepository.delete(machine);
+
         try {
             coinRestTemplate.exchange(coinsServerHost + "/account/" + machine.getUniqueId(),
                     HttpMethod.DELETE,
@@ -166,9 +169,6 @@ public class VendingService {
         } catch (RestClientException e) {
             throw new ErisAccountNotFoundException(machine.getUniqueId());
         }
-
-        loadHistoryRepository.deleteByMachineId(machine.getId());
-        machineRepository.delete(machine);
     }
 
     private List<Row> getRows(VendingMachineBuilderDTO builder) {

@@ -61,7 +61,7 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public BigDecimal buy(Integer machineId, Integer productId, Principal principal) {
+    public synchronized BigDecimal buy(Integer machineId, Integer productId, Principal principal) {
         return buy(machineId, getFieldByProduct(machineId, productId), principal);
     }
 

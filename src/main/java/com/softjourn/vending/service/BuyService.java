@@ -6,6 +6,7 @@ import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
+import com.softjourn.vending.exceptions.MachineBusyException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +38,7 @@ public class BuyService {
     private PurchaseRepository purchaseRepository;
     private CoinService coinService;
     private FieldService fieldService;
+    private ReentrantLock lock = new ReentrantLock();
 
     @Autowired
     private CategoriesService categoriesService;
@@ -61,12 +64,17 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized BigDecimal buy(Integer machineId, Integer productId, Principal principal) {
-        return buy(machineId, getFieldByProduct(machineId, productId), principal);
+    @Transactional
+    public BigDecimal buy(Integer machineId, String itemId, Principal principal) {
+        return buyIfNotLocked(machineId, itemId, principal, this::buyProduct);
     }
 
     @Transactional
-    public synchronized BigDecimal buy(Integer machineId, String itemId, Principal principal) {
+    public BigDecimal buy(Integer machineId, Integer productId, Principal principal) {
+        return buyIfNotLocked(machineId, getFieldByProduct(machineId, productId), principal, this::buyProduct);
+    }
+
+    private BigDecimal buyProduct(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
         VendingMachine machine = vendingService.get(machineId);
         BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
@@ -74,6 +82,26 @@ public class BuyService {
         decreaseProductsCount(machineId, itemId);
         savePurchase(machineId, product, principal);
         return remain;
+    }
+
+    @FunctionalInterface
+    interface TriFunction<A, B, C, R> {
+        R apply(A a, B b, C c);
+    }
+
+    private BigDecimal buyIfNotLocked(Integer machineId,
+                                      String itemId,
+                                      Principal principal,
+                                      TriFunction<Integer, String, Principal, BigDecimal> function) {
+        if (lock.tryLock()) {
+            try {
+                return function.apply(machineId, itemId, principal);
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            throw new MachineBusyException(machineId);
+        }
     }
 
     public List<Product> getBestSellers(Integer machineId) {

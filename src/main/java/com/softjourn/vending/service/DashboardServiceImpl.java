@@ -5,7 +5,6 @@ import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.DashboardDTO;
-import com.softjourn.vending.entity.Categories;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

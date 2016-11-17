@@ -1,7 +1,6 @@
 package com.softjourn.vending.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.softjourn.vending.entity.Product;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import static com.softjourn.vending.controller.ControllerTestConfig.product;
 import static com.softjourn.vending.controller.ControllerTestConfig.product4;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -34,8 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(secure = false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class ProductsControllerTest {
-
-    static Product product;
 
     @Autowired
     ObjectMapper mapper;
@@ -216,5 +215,32 @@ public class ProductsControllerTest {
                                 fieldWithPath("category.name").description("Category name."),
                                 fieldWithPath("description").description("Product description.")
                         )));
+    }
+
+    @Test
+    @WithMockUser
+    public void getProductsByCategory() throws Exception {
+        mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/v1/products/category/{categoryName}", "Drink")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json(Collections.singletonList(product))))
+                .andDo(document("product-by-category",
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
+                        ),
+                        responseFields(
+                                fieldWithPath("[]").description("Products that has being found by category name"),
+                                fieldWithPath("[0]").description("Product."),
+                                fieldWithPath("[0].id").description("Product id."),
+                                fieldWithPath("[0].name").description("Product name."),
+                                fieldWithPath("[0].price").description("Product price."),
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
+                                fieldWithPath("[0].description").description("Product description.")
+                        )
+                ));
     }
 }

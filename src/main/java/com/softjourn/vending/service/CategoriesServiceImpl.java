@@ -1,7 +1,8 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.CategoriesRepository;
-import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Category;
+import com.softjourn.vending.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,26 +11,41 @@ import java.util.List;
 @Service
 public class CategoriesServiceImpl implements CategoriesService {
 
-    @Autowired
-    private CategoriesRepository categoriesRepository;
+    private final CategoriesRepository categoriesRepository;
 
-    @Override
-    public Categories save(Categories categories) {
-        return categoriesRepository.save(categories);
+    @Autowired
+    public CategoriesServiceImpl(CategoriesRepository categoriesRepository) {
+        this.categoriesRepository = categoriesRepository;
     }
 
     @Override
-    public List<Categories> getAll() {
+    public Category save(Category category) {
+        return categoriesRepository.save(category);
+    }
+
+    @Override
+    public List<Category> getAll() {
         return categoriesRepository.findAll();
     }
 
     @Override
-    public Categories get(Long id) {
+    public Category get(Long id) {
         return categoriesRepository.findOne(id);
     }
 
     @Override
     public void delete(Long id) {
         categoriesRepository.delete(id);
+    }
+
+    @Override
+    public Category getByName(String categoryName) throws NotFoundException {
+        return categoriesRepository.findOneByName(categoryName)
+                .orElseThrow(() -> {
+                    String message = String.format(
+                            "Category with name %s not found",
+                            categoryName);
+                    return new NotFoundException(message);
+                });
     }
 }

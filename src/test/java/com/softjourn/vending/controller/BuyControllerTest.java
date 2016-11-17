@@ -1,6 +1,8 @@
 package com.softjourn.vending.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
+
+import static com.softjourn.vending.controller.ControllerTestConfig.product;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -23,8 +28,9 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
@@ -34,6 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BuyControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private String generateJsonString(Object obj) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(obj);
+    }
 
     @Test
     @WithMockUser
@@ -92,6 +105,32 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].price").description("Product price."),
                                 fieldWithPath("[0].imageUrl").description("Relative path to product image.")
                         )));
+    }
+
+    @Test
+    @WithMockUser
+    public void getAvailableProductsByCategory() throws Exception {
+        mockMvc.perform(RestDocumentationRequestBuilders
+                    .get("/v1/machines/{machineId}/products/{categoryName}", 0, "Drink")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(generateJsonString(Collections.singletonList(product))))
+                .andDo(document("vm-products-by-category",
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("machineId").description("Machine ID"),
+                                parameterWithName("categoryName").description("Category name")
+                        ),
+                        responseFields(
+                                fieldWithPath("[]")
+                                        .description("All available products in this vending machine by category."),
+                                fieldWithPath("[0]").description("Product."),
+                                fieldWithPath("[0].id").description("Product id."),
+                                fieldWithPath("[0].name").description("Product name."),
+                                fieldWithPath("[0].price").description("Product price."),
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image.")
+                        )
+                ));
     }
 
     @Test

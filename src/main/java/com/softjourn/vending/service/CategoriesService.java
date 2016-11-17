@@ -1,16 +1,19 @@
 package com.softjourn.vending.service;
 
-import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Category;
+import com.softjourn.vending.exceptions.NotFoundException;
 
 import java.util.List;
 
 public interface CategoriesService {
 
-    Categories save(Categories categories);
+    Category save(Category category);
 
-    List<Categories> getAll();
+    List<Category> getAll();
 
-    Categories get(Long id);
+    Category get(Long id);
 
     void delete(Long id);
+
+    Category getByName(String categoryName) throws NotFoundException;
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.softjourn.vending.controller.ProductsControllerTest.product;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
 import static org.mockito.Matchers.*;
@@ -29,7 +28,7 @@ import static org.mockito.Mockito.when;
 @EnableSpringDataWebSupport
 public abstract class ControllerTestConfig {
 
-
+    public static Product product;
     private static Product product2;
     private static Product product3;
     public static Product product4;
@@ -40,8 +39,8 @@ public abstract class ControllerTestConfig {
 
     private static Row row1;
 
-    public static Categories drinks;
-    public static Categories snacks;
+    public static Category drinks;
+    public static Category snacks;
 
     public static DashboardDTO dashboard;
 
@@ -55,8 +54,8 @@ public abstract class ControllerTestConfig {
         dashboard.setCategories(5L);
         dashboard.setPurchases(5L);
 
-        drinks = new Categories(1L, "Drink");
-        snacks = new Categories(2L, "Snack");
+        drinks = new Category(1L, "Drink");
+        snacks = new Category(2L, "Snack");
 
         product = new Product();
         product.setId(0);
@@ -121,6 +120,7 @@ public abstract class ControllerTestConfig {
         when(productService.add(product4)).thenReturn(product4);
         when(productService.update(anyInt(), any())).thenReturn(product);
         when(productService.delete(anyInt())).thenReturn(product);
+        when(productService.getProductsByCategory(anyString())).thenReturn(Collections.singletonList(product));
 
         return productService;
     }
@@ -253,6 +253,7 @@ public abstract class ControllerTestConfig {
             add(new PurchaseProductDto(product, Instant.now()));
             add(new PurchaseProductDto(product2, Instant.now()));
         }});
+        when(buyService.getByCategoryName(anyString(), anyInt())).thenReturn(Collections.singletonList(product));
 
         return buyService;
     }
@@ -273,7 +274,7 @@ public abstract class ControllerTestConfig {
     @Bean
     public CategoriesService categoriesService() {
         CategoriesService categoriesService = Mockito.mock(CategoriesService.class);
-        when(categoriesService.getAll()).thenReturn(new ArrayList<Categories>() {{
+        when(categoriesService.getAll()).thenReturn(new ArrayList<Category>() {{
             add(drinks);
             add(snacks);
         }});

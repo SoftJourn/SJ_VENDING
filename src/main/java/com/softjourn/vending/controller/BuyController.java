@@ -11,10 +11,7 @@ import com.softjourn.vending.service.VendingService;
 import com.softjourn.vending.utils.jsonview.View;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -51,6 +48,12 @@ public class BuyController {
     @RequestMapping(value = "/{machineId}/products", method = RequestMethod.GET)
     public Iterable<Product> getAvailableProducts(@PathVariable Integer machineId) {
         return buyService.getAvailableProducts(machineId);
+    }
+
+    @GetMapping("/{machineId}/products/{categoryName}")
+    public List<Product> getAvailableProductsByCategory(@PathVariable Integer machineId,
+                                                        @PathVariable String categoryName) {
+        return buyService.getByCategoryName(categoryName, machineId);
     }
 
     @RequestMapping(value = "/{machineId}/features", method = RequestMethod.GET)

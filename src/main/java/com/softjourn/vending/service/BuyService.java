@@ -38,18 +38,22 @@ public class BuyService {
     private PurchaseRepository purchaseRepository;
     private CoinService coinService;
     private FieldService fieldService;
+    private CategoriesService categoriesService;
     private ReentrantLock lock = new ReentrantLock();
 
     @Autowired
-    private CategoriesService categoriesService;
-
-    @Autowired
-    public BuyService(VendingService vendingService, MachineService machineService, PurchaseRepository purchaseRepository, CoinService coinService, FieldService fieldService) {
+    public BuyService(VendingService vendingService,
+                      MachineService machineService,
+                      PurchaseRepository purchaseRepository,
+                      CoinService coinService,
+                      FieldService fieldService,
+                      CategoriesService categoriesService) {
         this.vendingService = vendingService;
         this.machineService = machineService;
         this.purchaseRepository = purchaseRepository;
         this.coinService = coinService;
         this.fieldService = fieldService;
+        this.categoriesService = categoriesService;
     }
 
     public List<Product> getAvailableProducts(Integer machineId) {
@@ -131,10 +135,16 @@ public class BuyService {
                 .collect(Collectors.toList());
     }
 
-    public List<Product> getByCategory(Categories categories, Integer machineId) {
+    public List<Product> getByCategory(Category category, Integer machineId) {
         return getAvailableProducts(machineId).stream()
-                .filter(p -> p.getCategory().getName().equals(categories.getName()))
+                .filter(p -> p.getCategory().getName().equals(category.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public List<Product> getByCategoryName(String categoryName, Integer machineId) {
+        Category category = categoriesService.getByName(categoryName);
+
+        return getByCategory(category, machineId);
     }
 
     public FeatureDTO getFeatures(Integer machineId) {

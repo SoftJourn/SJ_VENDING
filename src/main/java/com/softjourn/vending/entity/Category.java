@@ -5,12 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -18,7 +13,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @Entity
 @Table(name = "categories")
-public class Categories {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +26,7 @@ public class Categories {
     @Pattern(regexp = "^[a-zA-Z\\u0400-\\u04FF]+[ a-zA-Z\\u0400-\\u04FF]*[a-zA-Z\\u0400-\\u04FF]+$", message = "Category name should not contain numbers and starts with symbols")
     private String name;
 
-    public Categories(Long id, String name) {
+    public Category(Long id, String name) {
         this.id = id;
         this.name = name;
     }

@@ -12,4 +12,5 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
     @Query("Select p from Product p where p.name like %?1%")
     List<Product> getProductsByNameThatContain(String name);
 
+    List<Product> getProductByCategory_Name(String name);
 }

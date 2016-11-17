@@ -2,6 +2,7 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.ProductRepository;
+import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.junit.Before;
@@ -15,7 +16,9 @@ import javax.servlet.ServletContext;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.*;
@@ -59,6 +62,7 @@ public class ProductServiceTest {
         product.setName("Cola");
         product.setPrice(new BigDecimal(10));
         product.setImageUrl("/products/1/image.jpg");
+        product.setCategory(new Category(1L, "Drink"));
 
         updated = new Product();
         updated.setName("Pepsi");
@@ -68,6 +72,7 @@ public class ProductServiceTest {
 
         when(repository.findOne(1)).thenReturn(product);
         when(repository.findAll()).thenReturn(Collections.singletonList(product));
+        when(repository.getProductByCategory_Name(anyString())).thenReturn(Collections.singletonList(product));
 
         when(imagePng.getContentType()).thenReturn("image/png");
         when(imageJpg.getContentType()).thenReturn("image/jpeg");
@@ -129,5 +134,14 @@ public class ProductServiceTest {
         assertEquals(product, productService.delete(1));
 
         verify(repository, times(1)).delete(1);
+    }
+
+    @Test
+    public void getProductsByCategory() throws Exception {
+        String categoryName = "Drink";
+        List<Product> drinks = productService.getProductsByCategory(categoryName);
+
+        assertNotNull(drinks);
+        assertEquals(categoryName, drinks.get(0).getCategory().getName());
     }
 }

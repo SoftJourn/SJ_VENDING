@@ -32,13 +32,13 @@ import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 @Slf4j
 public class ProductService {
 
-    private ProductRepository repository;
+    private ProductRepository productRepository;
 
     private ReflectionMergeUtil<Product> mergeUtil;
 
     @Autowired
-    public ProductService(@NonNull ProductRepository repository, ServletContext servletContext) {
-        this.repository = repository;
+    public ProductService(@NonNull ProductRepository productRepository, ServletContext servletContext) {
+        this.productRepository = productRepository;
 
         mergeUtil = ReflectionMergeUtil
                 .forClass(Product.class)
@@ -48,16 +48,16 @@ public class ProductService {
     }
 
     public Collection<Product> getProducts() {
-        Iterable<Product> res = repository.findAll();
+        Iterable<Product> res = productRepository.findAll();
         return StreamSupport.stream(res.spliterator(), false).collect(Collectors.toList());
     }
 
     public List<Product> getProductsByNameThatContain(String name) {
-        return repository.getProductsByNameThatContain(name);
+        return productRepository.getProductsByNameThatContain(name);
     }
 
     public Product getProduct(@NonNull Integer id) {
-        Product product = repository.findOne(id);
+        Product product = productRepository.findOne(id);
         if (product == null) {
             throw new NotFoundException("Product with id " + id + " not found.");
         }
@@ -66,13 +66,13 @@ public class ProductService {
 
     public synchronized Product add(@NonNull Product product) {
         product.setAddedTime(Instant.now());
-        return repository.save(product);
+        return productRepository.save(product);
     }
 
     public synchronized Product update(@NonNull Integer id, @NonNull Product product) {
         Product old = getProduct(id);
         Product newProduct = mergeUtil.merge(old, product);
-        repository.save(newProduct);
+        productRepository.save(newProduct);
         return newProduct;
     }
 
@@ -82,12 +82,12 @@ public class ProductService {
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
         Product product = getProduct(id);
         setImage(product, file);
-        repository.save(product);
+        productRepository.save(product);
     }
 
     public synchronized Product delete(@NonNull Integer id) {
         Product product = getProduct(id);
-        repository.delete(id);
+        productRepository.delete(id);
         return product;
     }
 
@@ -115,4 +115,7 @@ public class ProductService {
         }
     }
 
+    public List<Product> getProductsByCategory(String categoryName) {
+        return productRepository.getProductByCategory_Name(categoryName);
+    }
 }

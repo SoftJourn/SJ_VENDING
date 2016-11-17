@@ -152,6 +152,28 @@ include::{snippets}/products/http-request.adoc[]
 include::{snippets}/products/http-response.adoc[]
 
 
+[[resources-vm-products-list-by-category]]
+=== Listing products by category
+
+A `GET` request will list all of the available in selected machine products by category.
+
+==== Path parameters
+
+include::{snippets}/vm-products-by-category/path-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/vm-products-by-category/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/vm-products-by-category/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/vm-products-by-category/http-response.adoc[]
+
+
 [[resources-buy-by-id]]
 === Buying item by field name
 
@@ -273,6 +295,24 @@ include::{snippets}/all-products-by-name/http-request.adoc[]
 
 include::{snippets}/all-products-by-name/http-response.adoc[]
 include::{snippets}/all-products-by-name/response-fields.adoc[]
+
+
+[[resources-products-list-by-category]]
+=== Getting all products by category
+
+A `GET` request will list all of the products by category.
+
+==== Response structure
+
+include::{snippets}/product-by-category/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/product-by-category/http-request.adoc[]
+
+==== Example response
+
+include::{snippets}/product-by-category/http-response.adoc[]
 
 [[resources-all-product]]
 === Getting one product registered in system by it's id

@@ -2,7 +2,7 @@ package com.softjourn.vending.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softjourn.vending.dto.ErrorDetail;
-import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.entity.Product;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ public class ValidationTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private static Categories nameWithNumberCategory;
+    private static Category nameWithNumberCategory;
     private static Product nameWithSpecialCharProduct;
     private static Product negativePriceProduct;
     private static Product nullCategoryProduct;
@@ -53,7 +53,7 @@ public class ValidationTests {
 
     static {
         // --- Entities---
-        nameWithNumberCategory = new Categories(null, "Sn8ck");
+        nameWithNumberCategory = new Category(null, "Sn8ck");
         nameWithSpecialCharProduct = new Product(null, new BigDecimal(20), "Snickers999@", "/image.jpg", new byte[10],
                 Instant.ofEpochMilli(1_000_000), "Some thing", snacks);
 

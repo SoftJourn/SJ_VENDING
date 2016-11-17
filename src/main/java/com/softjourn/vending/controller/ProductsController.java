@@ -51,6 +51,12 @@ public class ProductsController {
         return productService.update(id, updater);
     }
 
+    @PreAuthorize("authenticated")
+    @GetMapping("/category/{categoryName}")
+    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
+        return productService.getProductsByCategory(categoryName);
+    }
+
     @PreAuthorize("permitAll")
     @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer id) {

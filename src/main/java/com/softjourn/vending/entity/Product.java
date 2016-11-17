@@ -54,5 +54,5 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categories")
     @NotNull(message = "Product category is required")
-    private Categories category;
+    private Category category;
 }

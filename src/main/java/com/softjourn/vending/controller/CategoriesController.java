@@ -1,6 +1,6 @@
 package com.softjourn.vending.controller;
 
-import com.softjourn.vending.entity.Categories;
+import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.service.CategoriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,22 +25,22 @@ public class CategoriesController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Categories>> getCategories() {
+    public ResponseEntity<List<Category>> getCategories() {
         return new ResponseEntity<>(categoriesService.getAll(), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Categories> addCategories(@Valid @RequestBody Categories categories) {
-        return new ResponseEntity<>(categoriesService.save(categories), HttpStatus.OK);
+    public ResponseEntity<Category> addCategories(@Valid @RequestBody Category category) {
+        return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Categories> updateCategories(@Valid @RequestBody Categories categories) {
-        return new ResponseEntity<>(categoriesService.save(categories), HttpStatus.OK);
+    public ResponseEntity<Category> updateCategories(@Valid @RequestBody Category category) {
+        return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Categories> getCategory(@PathVariable Long id) {
+    public ResponseEntity<Category> getCategory(@PathVariable Long id) {
         return new ResponseEntity<>(categoriesService.get(id), HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.FavoritesRepository;
 import com.softjourn.vending.entity.Favorite;
 import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.exceptions.ProductIsNotInFavoritesException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +72,7 @@ public class FavoritesServiceTest {
         favorite1 = new Favorite(userName, product1);
         favorite2 = new Favorite(userName, product2);
 
-        List<Favorite> favorites = new ArrayList<Favorite>(){{
+        List<Favorite> favorites = new ArrayList<Favorite>() {{
             add(favorite);
             add(favorite1);
             add(favorite2);
@@ -97,7 +98,7 @@ public class FavoritesServiceTest {
         verify(favoritesRepository, times(1)).save(favorite);
     }
 
-    @Test
+    @Test(expected = ProductIsNotInFavoritesException.class)
     public void delete() throws Exception {
         favoritesService.delete(userName, 0);
         verify(favoritesRepository, times(1)).delete(userName, 0);

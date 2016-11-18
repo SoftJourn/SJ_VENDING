@@ -12,6 +12,7 @@ import com.softjourn.vending.entity.LoadHistory;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
+import com.softjourn.vending.exceptions.MachineNotFoundException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,8 @@ public class VendingService {
 
     public VendingMachine get(Integer id) {
         VendingMachine machine = machineRepository.findOne(id);
-        if (machine == null) throw new NotFoundException("Machine with such id not found.");
+        if (machine == null)
+            throw new MachineNotFoundException(String.format("There is not such machine with id %d", id));
         return machine;
     }
 

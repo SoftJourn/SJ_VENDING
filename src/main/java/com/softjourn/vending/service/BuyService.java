@@ -8,6 +8,7 @@ import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.MachineBusyException;
 import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -197,7 +198,7 @@ public class BuyService {
         if (field.getCount() > 0 && field.getProduct() != null) {
             return field.getProduct();
         } else {
-            throw new NotFoundException("There is no products in this field.");
+            throw new ProductNotFoundInMachineException(String.format("Product not found in machine with id %d", machineId));
         }
     }
 

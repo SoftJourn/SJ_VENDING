@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.text.ParseException;
 import java.util.Objects;
@@ -27,28 +28,73 @@ import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Not enough coins.")
     @ExceptionHandler(NotEnoughAmountException.class)
-    public void handlePaymentNotEnoughAmount(Exception e) {
+    public ResponseEntity<ErrorDetail> handlePaymentNotEnoughAmount(NotEnoughAmountException e) {
         log.info(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40901,
+                "Not enough money to buy product"));
     }
 
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error during processing payment.")
     @ExceptionHandler(PaymentProcessingException.class)
-    public void handlePaymentProcessingException(Exception e) {
+    public ResponseEntity<ErrorDetail> handlePaymentProcessingException(PaymentProcessingException e) {
         log.warn("Error during processing payment. " + e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorDetails(e, 50902,
+                "Error during processing payment."));
     }
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public void handleNotFoundException(Exception e) {
         log.warn(e.getLocalizedMessage());
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Bad request.")
-    @ExceptionHandler(BadRequestException.class)
-    public void handleBadRequestException(Exception e) {
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ErrorDetail> handleNoHandlerFoundException(NoHandlerFoundException e) {
         log.warn(e.getLocalizedMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildErrorDetails(e, 40401, String.format("Endpoint %s not found", e.getRequestURL())));
+    }
+
+    @ExceptionHandler(MachineNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleMachineNotFoundException(MachineNotFoundException e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40402,
+                e.getMessage()));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorDetail> handleProductNotFoundException(ProductNotFoundException e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40403,
+                e.getMessage()));
+    }
+
+    @ExceptionHandler(ProductNotFoundInMachineException.class)
+    public ResponseEntity<ErrorDetail> handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40404,
+                e.getMessage()));
+    }
+
+    @ExceptionHandler(ProductAlreadyInFavoritesException.class)
+    public ResponseEntity<ErrorDetail> handleProductAlreadyInFavoritesException(ProductAlreadyInFavoritesException e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40902,
+                e.getMessage()));
+    }
+
+    @ExceptionHandler(ProductIsNotInFavoritesException.class)
+    public ResponseEntity<ErrorDetail> handleProductIsNotInFavoritesException(ProductIsNotInFavoritesException e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40903,
+                e.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorDetail> handleBadRequestException(Exception e) {
+        log.warn(e.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e, 40000,
+                e.getMessage()));
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Such item already presented.")
@@ -144,7 +190,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetail> handleMachineBusyException(Exception e) {
         return ResponseEntity
                 .status(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
-                .body(buildErrorDetails(e, null, e.getLocalizedMessage()));
+                .body(buildErrorDetails(e, 50901, "Machine is locked by queue. Try again later."));
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

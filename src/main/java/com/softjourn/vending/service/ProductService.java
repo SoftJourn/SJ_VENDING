@@ -5,6 +5,7 @@ import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.NotImageException;
+import com.softjourn.vending.exceptions.ProductNotFoundException;
 import com.softjourn.vending.exceptions.WrongImageDimensions;
 import com.softjourn.vending.utils.FileUploadUtil;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
@@ -59,7 +60,7 @@ public class ProductService {
     public Product getProduct(@NonNull Integer id) {
         Product product = productRepository.findOne(id);
         if (product == null) {
-            throw new NotFoundException("Product with id " + id + " not found.");
+            throw new ProductNotFoundException(String.format("Product with id %d not found.", id));
         }
         return product;
     }

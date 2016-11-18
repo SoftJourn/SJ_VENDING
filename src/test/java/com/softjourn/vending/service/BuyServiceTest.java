@@ -4,6 +4,8 @@ import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.ProductNotFoundException;
+import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
 import org.junit.Test;
@@ -221,7 +223,7 @@ public class BuyServiceTest {
         assertNull(argumentCaptor.getValue().getProduct());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = ProductNotFoundInMachineException.class)
     public void buyNotExistTest() {
         Principal principal = () -> "user";
 

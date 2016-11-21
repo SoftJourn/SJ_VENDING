@@ -119,6 +119,7 @@ public class VendingService {
         VendingMachine machineToUpdate = this.machineRepository.getOne(machine.getId());
         machineToUpdate.setName(machine.getName());
         machineToUpdate.setUrl(machine.getUrl());
+        machineToUpdate.setActive(machine.isActive());
         return this.machineRepository.save(machineToUpdate);
     }
 

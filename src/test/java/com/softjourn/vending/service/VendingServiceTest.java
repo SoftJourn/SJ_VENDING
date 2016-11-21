@@ -34,10 +34,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class VendingServiceTest {
 
+    @Mock
+    OAuth2Authentication principal;
+    @Mock
+    OAuth2AuthenticationDetails authDetails;
+    @InjectMocks
+    VendingService service;
+    @Captor
+    ArgumentCaptor<VendingMachine> machineCaptor;
     private VendingMachineBuilderDTO builder1;
-
     private VendingMachineBuilderDTO builder2;
-
     @Mock
     private MachineRepository machineRepository;
     @Mock
@@ -48,17 +54,6 @@ public class VendingServiceTest {
     private LoadHistoryRepository loadHistoryRepository;
     @Mock
     private CoinService coinService;
-    @Mock
-    OAuth2Authentication principal;
-
-    @Mock
-    OAuth2AuthenticationDetails authDetails;
-
-    @InjectMocks
-    VendingService service;
-
-    @Captor
-    ArgumentCaptor<VendingMachine> machineCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -69,6 +64,7 @@ public class VendingServiceTest {
         builder1.setColumnsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
         builder1.setRowsCount(10);
         builder1.setRowsNumbering(VendingMachineBuilderDTO.Numbering.ALPHABETICAL);
+        builder1.setIsActive(true);
         builder1.setName("Machine1");
 
         builder2 = new VendingMachineBuilderDTO();
@@ -76,6 +72,7 @@ public class VendingServiceTest {
         builder2.setColumnsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
         builder2.setRowsCount(8);
         builder2.setRowsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
+        builder2.setIsActive(true);
         builder2.setName("Machine2");
 
         VendingMachine machine = new VendingMachine();

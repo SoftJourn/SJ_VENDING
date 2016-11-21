@@ -11,7 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -47,10 +46,7 @@ public class MachineService {
     @Autowired
     public MachineService(VendingService vendingService) {
         this.vendingService = vendingService;
-        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        httpRequestFactory.setConnectTimeout(5000);
-        httpRequestFactory.setReadTimeout(20000);
-        this.template = new RestTemplate(httpRequestFactory);
+        this.template = new RestTemplate();
     }
 
     public void buy(Integer machineId, String fieldInternalId) {

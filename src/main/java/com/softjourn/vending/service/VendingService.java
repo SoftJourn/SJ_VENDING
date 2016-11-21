@@ -71,6 +71,10 @@ public class VendingService {
         return machineRepository.findAll();
     }
 
+    public List<VendingMachine> getAllAvailable() {
+        return machineRepository.findByIsActive(true);
+    }
+
     public VendingMachine get(Integer id) {
         VendingMachine machine = machineRepository.findOne(id);
         if (machine == null)

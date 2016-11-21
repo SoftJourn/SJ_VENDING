@@ -29,23 +29,15 @@ import static org.mockito.Mockito.when;
 public abstract class ControllerTestConfig {
 
     public static Product product;
-    private static Product product2;
-    private static Product product3;
     public static Product product4;
-
-    private Field field1;
-    private Field field2;
-    private Field field3;
-
-    private static Row row1;
-
     public static Category drinks;
     public static Category snacks;
-
     public static DashboardDTO dashboard;
-
     public static PurchaseFilterDTO purchaseFilter;
     public static PurchaseFilterDTO purchaseWrongFilter;
+    private static Product product2;
+    private static Product product3;
+    private static Row row1;
 
     static {
         dashboard = new DashboardDTO();
@@ -97,6 +89,10 @@ public abstract class ControllerTestConfig {
         purchaseFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-08");
         purchaseWrongFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-05");
     }
+
+    private Field field1;
+    private Field field2;
+    private Field field3;
 
     @Bean
     public ProductService productService() {
@@ -181,12 +177,14 @@ public abstract class ControllerTestConfig {
             add(row);
             add(row1);
         }});
+        vendingMachine.setActive(true);
 
         VendingService vendingService = Mockito.mock(VendingService.class);
 
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
         when(vendingService.create(any(), any())).thenReturn(vendingMachine);
         when(vendingService.getAll()).thenReturn(Collections.singletonList(vendingMachine));
+        when(vendingService.getAllAvailable()).thenReturn(Collections.singletonList(vendingMachine));
 
         return vendingService;
     }

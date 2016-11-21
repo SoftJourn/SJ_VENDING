@@ -36,7 +36,7 @@ public class BuyController {
     @JsonView(View.Client.class)
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<VendingMachine> getMachines() {
-        return vendingService.getAll();
+        return vendingService.getAllAvailable();
     }
 
     @JsonView(View.Client.class)

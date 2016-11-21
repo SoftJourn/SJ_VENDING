@@ -96,7 +96,7 @@ public class VendingService {
                 .forEach(row -> rowRepository.save(row));
 
         machine.setRows(rows);
-        machine.setActive(builder.getIsActive());
+        machine.setIsActive(builder.getIsActive());
 
         MerchantDTO merchantDTO = new MerchantDTO(machine.getName(), machine.getUniqueId());
 
@@ -119,7 +119,7 @@ public class VendingService {
         VendingMachine machineToUpdate = this.machineRepository.getOne(machine.getId());
         machineToUpdate.setName(machine.getName());
         machineToUpdate.setUrl(machine.getUrl());
-        machineToUpdate.setActive(machine.isActive());
+        machineToUpdate.setIsActive(machine.getIsActive());
         return this.machineRepository.save(machineToUpdate);
     }
 

@@ -2,7 +2,6 @@ package com.softjourn.vending.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.softjourn.vending.dto.Size;
 import com.softjourn.vending.utils.jsonview.View;
@@ -39,7 +38,6 @@ public class VendingMachine {
             inverseJoinColumns = @JoinColumn(name = "row"))
     private List<Row> rows;
 
-    @JsonProperty("isActive")
     private boolean isActive;
 
     @JsonIgnore
@@ -55,5 +53,14 @@ public class VendingMachine {
         int rowsCount = rows.size();
         int columnsCount = rows.get(0).getFields().size();
         return new Size(rowsCount, columnsCount);
+    }
+
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean active) {
+        isActive = active;
     }
 }

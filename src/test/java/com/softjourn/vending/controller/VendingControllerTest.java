@@ -82,7 +82,7 @@ public class VendingControllerTest {
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("url").description("Vending machine url."),
-                                fieldWithPath("active").description("Vending machine is active."),
+                                fieldWithPath("isActive").description("Vending machine is active."),
                                 fieldWithPath("uniqueId").description("Vending machine unique Id used in Coins server."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),

@@ -92,6 +92,7 @@ public class VendingService {
                 .forEach(row -> rowRepository.save(row));
 
         machine.setRows(rows);
+        machine.setActive(builder.getIsActive());
 
         MerchantDTO merchantDTO = new MerchantDTO(machine.getName(), machine.getUniqueId());
 

@@ -37,6 +37,7 @@ public class VendingMachine {
             joinColumns = @JoinColumn(name = "machine"),
             inverseJoinColumns = @JoinColumn(name = "row"))
     private List<Row> rows;
+    private boolean isActive;
 
     @JsonIgnore
     public List<Field> getFields() {

@@ -190,7 +190,10 @@ public class BuyService {
                 .filter(field -> field.getCount() > 0)
                 .findFirst()
                 .map(Field::getInternalId)
-                .orElse(null);
+                .orElseThrow(() -> new ProductNotFoundInMachineException(String.format(
+                        "Product not found in machine with id %d",
+                        machineId))
+                );
     }
 
     private Product getProductIfAvailable(Integer machineId, String fieldInternalId) {

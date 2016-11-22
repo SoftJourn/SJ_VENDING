@@ -11,6 +11,7 @@ import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.LoadHistory;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
 import com.softjourn.vending.exceptions.MachineNotFoundException;
 import com.softjourn.vending.exceptions.NotFoundException;
@@ -85,18 +86,22 @@ public class VendingService {
     @Transactional
     public VendingMachine create(VendingMachineBuilderDTO builder, Principal principal) {
         VendingMachine machine = new VendingMachine();
-        machine.setUniqueId(UUID.randomUUID().toString());
-        machine.setName(builder.getName());
-        machine.setUrl(builder.getUrl());
 
-        List<Row> rows = getRows(builder);
+        try {
+            machine.setUniqueId(UUID.randomUUID().toString());
+            machine.setName(builder.getName());
+            machine.setUrl(builder.getUrl());
+            machine.setProductsInCellLimit(builder.getProductsInCellLimit());
+            machine.setIsActive(builder.getIsActive());
+            List<Row> rows = getRows(builder);
+            rows.stream()
+                    .peek(r -> fieldRepository.save(r.getFields()))
+                    .forEach(row -> rowRepository.save(row));
 
-        rows.stream()
-                .peek(r -> fieldRepository.save(r.getFields()))
-                .forEach(row -> rowRepository.save(row));
-
-        machine.setRows(rows);
-        machine.setIsActive(builder.getIsActive());
+            machine.setRows(rows);
+        } catch (NullPointerException e) {
+            throw new BadRequestException("Request has null values");
+        }
 
         MerchantDTO merchantDTO = new MerchantDTO(machine.getName(), machine.getUniqueId());
 

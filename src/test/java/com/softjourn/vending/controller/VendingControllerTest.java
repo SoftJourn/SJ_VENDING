@@ -82,6 +82,7 @@ public class VendingControllerTest {
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("url").description("Vending machine url."),
+                                fieldWithPath("productsInCellLimit").description("Vending machine product limitation in a cell"),
                                 fieldWithPath("isActive").description("Vending machine is active."),
                                 fieldWithPath("uniqueId").description("Vending machine unique Id used in Coins server."),
                                 fieldWithPath("size").description("Vending machine size."),

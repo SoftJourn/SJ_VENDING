@@ -18,6 +18,8 @@ public class VendingMachineBuilderDTO {
 
     private Numbering columnsNumbering;
 
+    private Integer productsInCellLimit;
+
     private Boolean isActive;
 
     public enum Numbering {

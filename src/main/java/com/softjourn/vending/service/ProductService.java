@@ -1,9 +1,9 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.vending.dao.FavoritesRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Product;
-import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.ProductNotFoundException;
 import com.softjourn.vending.exceptions.WrongImageDimensions;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
@@ -33,13 +34,18 @@ import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 @Slf4j
 public class ProductService {
 
+    private FavoritesRepository favoritesRepository;
+
     private ProductRepository productRepository;
 
     private ReflectionMergeUtil<Product> mergeUtil;
 
     @Autowired
-    public ProductService(@NonNull ProductRepository productRepository, ServletContext servletContext) {
+    public ProductService(@NonNull ProductRepository productRepository,
+                          @NotNull FavoritesRepository favoritesRepository,
+                          ServletContext servletContext) {
         this.productRepository = productRepository;
+        this.favoritesRepository = favoritesRepository;
 
         mergeUtil = ReflectionMergeUtil
                 .forClass(Product.class)
@@ -86,8 +92,10 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @Transactional
     public synchronized Product delete(@NonNull Integer id) {
         Product product = getProduct(id);
+        favoritesRepository.deleteByProduct(id);
         productRepository.delete(id);
         return product;
     }

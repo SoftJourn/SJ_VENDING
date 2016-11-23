@@ -1,6 +1,7 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.vending.dao.FavoritesRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.entity.Product;
@@ -29,6 +30,9 @@ public class ProductServiceTest {
     @Mock
     ProductRepository repository;
 
+    @Mock
+    FavoritesRepository favoritesRepository;
+
     ProductService productService;
 
     @Mock
@@ -55,7 +59,7 @@ public class ProductServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(repository, servletContext);
+        productService = new ProductService(repository, favoritesRepository, servletContext);
 
         product = new Product();
         product.setId(1);

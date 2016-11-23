@@ -16,7 +16,11 @@ public interface FavoritesRepository extends CrudRepository<Favorite, Long> {
     @Query("DELETE FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
     void delete(String account, Integer productId);
 
+    @Modifying
+    @Query("DELETE FROM Favorite f WHERE f.product.id = ?1")
+    void deleteByProduct(Integer productId);
+
     @Query("SELECT f FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
-    Favorite getByAcountAndProduct(String account, Integer productId);
+    Favorite getByAccountAndProduct(String account, Integer productId);
 
 }

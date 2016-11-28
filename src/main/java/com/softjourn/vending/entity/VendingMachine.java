@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.softjourn.vending.dto.Size;
 import com.softjourn.vending.utils.jsonview.View;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +39,9 @@ public class VendingMachine {
             inverseJoinColumns = @JoinColumn(name = "row"))
     private List<Row> rows;
 
-    @NotBlank
-    private Integer productsInCellLimit;
+    @NotNull
+    @JsonIgnore
+    private Integer cellLimit;
 
     private boolean isActive;
 
@@ -56,7 +57,7 @@ public class VendingMachine {
     public Size getSize() {
         int rowsCount = rows.size();
         int columnsCount = rows.get(0).getFields().size();
-        return new Size(rowsCount, columnsCount);
+        return new Size(rowsCount, columnsCount, cellLimit);
     }
 
 

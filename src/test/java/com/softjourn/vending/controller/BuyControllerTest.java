@@ -83,7 +83,8 @@ public class BuyControllerTest {
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
-                                fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines).")
+                                fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),
+                                fieldWithPath("size.cellLimit").description("Vending machine should have products limit in a cell")
                         )));
     }
 

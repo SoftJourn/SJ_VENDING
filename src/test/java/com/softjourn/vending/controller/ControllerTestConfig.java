@@ -178,6 +178,7 @@ public abstract class ControllerTestConfig {
             add(row1);
         }});
         vendingMachine.setIsActive(true);
+        vendingMachine.setCellLimit(2);
 
         VendingService vendingService = Mockito.mock(VendingService.class);
 

@@ -18,9 +18,9 @@ public class VendingMachineBuilderDTO {
 
     private Numbering columnsNumbering;
 
-    private Integer productsInCellLimit;
-
     private Boolean isActive;
+
+    private Integer cellLimit;
 
     public enum Numbering {
         NUMERICAL, ALPHABETICAL, CUSTOM

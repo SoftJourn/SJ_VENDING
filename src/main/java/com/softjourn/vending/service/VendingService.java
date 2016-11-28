@@ -91,7 +91,7 @@ public class VendingService {
             machine.setUniqueId(UUID.randomUUID().toString());
             machine.setName(builder.getName());
             machine.setUrl(builder.getUrl());
-            machine.setProductsInCellLimit(builder.getProductsInCellLimit());
+            machine.setCellLimit(builder.getCellLimit());
             machine.setIsActive(builder.getIsActive());
             List<Row> rows = getRows(builder);
             rows.stream()

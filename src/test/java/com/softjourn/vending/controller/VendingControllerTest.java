@@ -62,6 +62,9 @@ public class VendingControllerTest {
         vendingMachineBuilder.setRowsNumbering(ALPHABETICAL);
         vendingMachineBuilder.setColumnsCount(2);
         vendingMachineBuilder.setColumnsNumbering(NUMERICAL);
+        vendingMachineBuilder.setCellLimit(2);
+        vendingMachineBuilder.setIsActive(false);
+        vendingMachineBuilder.setUrl("http://url.com");
     }
 
     @Test
@@ -82,12 +85,12 @@ public class VendingControllerTest {
                                 fieldWithPath("id").description("Vending machine id."),
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("url").description("Vending machine url."),
-                                fieldWithPath("productsInCellLimit").description("Vending machine product limitation in a cell"),
                                 fieldWithPath("isActive").description("Vending machine is active."),
                                 fieldWithPath("uniqueId").description("Vending machine unique Id used in Coins server."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),
                                 fieldWithPath("size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),
+                                fieldWithPath("size.cellLimit").description("Vending machine product limitation in a cell"),
                                 fieldWithPath("rows").description("Array of vending machine rows of fields."),
                                 fieldWithPath("rows[0]").description("Vending machine row."),
                                 fieldWithPath("rows[0].fields").description("Array of fields in row."),

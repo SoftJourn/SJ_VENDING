@@ -61,11 +61,27 @@ public class VendingService {
         coinRestTemplate = new RestTemplate();
     }
 
+    static boolean checkCellLimit(VendingMachine machine) {
+        return machine.getRows().stream().allMatch(row ->
+                row.getFields().stream().allMatch(cell ->
+                        cell.getCount() <= machine.getCellLimit() && cell.getCount() > -1));
+    }
+
     @Transactional
     public VendingMachine refill(VendingMachine machine, Principal principal) {
-        saveLoadHistory(machine, false);
 
-        return machineRepository.save(machine);
+        VendingMachine machineToUpdate = machineRepository.findOne(machine.getId());
+        if (machineToUpdate == null) {
+            throw new BadRequestException("Requested machine does not exists");
+        }
+        machineToUpdate.setRows(machine.getRows());
+        if (!VendingService.checkCellLimit(machineToUpdate)) {
+            throw new BadRequestException("Requested machine cell out of limit '"
+                    + machineToUpdate.getCellLimit() + "'");
+        }
+        saveLoadHistory(machineToUpdate, false);
+
+        return machineRepository.save(machineToUpdate);
     }
 
     public List<VendingMachine> getAll() {

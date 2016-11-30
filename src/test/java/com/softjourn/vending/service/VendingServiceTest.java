@@ -8,7 +8,9 @@ import com.softjourn.vending.dao.RowRepository;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
 import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,9 +26,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,6 +67,7 @@ public class VendingServiceTest {
         builder1.setColumnsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
         builder1.setRowsCount(10);
         builder1.setRowsNumbering(VendingMachineBuilderDTO.Numbering.ALPHABETICAL);
+        builder1.setCellLimit(5);
         builder1.setIsActive(true);
         builder1.setName("Machine1");
 
@@ -102,6 +106,48 @@ public class VendingServiceTest {
         when(machineRepository.findOne(machine2.getId())).thenReturn(null);
 
         when(loadHistoryRepository.getUndistributedPrice()).thenReturn(Optional.of(new BigDecimal(3000)));
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void refill_notExistedMachine_BadRequestException() throws Exception {
+        VendingMachine notExistedMachine = new VendingMachine();
+        notExistedMachine.setId(Integer.MAX_VALUE);
+        service.refill(notExistedMachine, principal);
+    }
+
+
+    @Test
+    public void checkCellLimit_validRefillMachine_true() throws Exception {
+        VendingMachine validRefillMachine = new VendingMachine();
+        validRefillMachine.setCellLimit(3);
+        validRefillMachine.setRows(new ArrayList<Row>() {{
+            Row r1 = new Row();
+            r1.setFields(new ArrayList<Field>() {{
+                Field f1 = new Field();
+                f1.setCount(2);
+                add(f1);
+            }});
+            add(r1);
+        }});
+
+        assertTrue(VendingService.checkCellLimit(validRefillMachine));
+    }
+
+    @Test
+    public void checkCellLimit_notValidRefillMachine_false() throws Exception {
+        VendingMachine notValidMachine = new VendingMachine();
+        notValidMachine.setCellLimit(1);
+        notValidMachine.setRows(new ArrayList<Row>() {{
+            Row r1 = new Row();
+            r1.setFields(new ArrayList<Field>() {{
+                Field f1 = new Field();
+                f1.setCount(5);
+                add(f1);
+            }});
+            add(r1);
+        }});
+
+        assertFalse(VendingService.checkCellLimit(notValidMachine));
     }
 
     @Test

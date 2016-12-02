@@ -64,8 +64,7 @@ public class FavoritesService {
         if (product == null) {
             throw new ProductNotFoundException("Product with id " + productId + " not found.");
         } else {
-
-            if (favoritesRepository.getByAcountAndProduct(user, productId) == null) {
+            if (favoritesRepository.getByAccountAndProduct(user, productId) == null) {
                 throw new ProductIsNotInFavoritesException(String.format("Product with id %d was not found in favorites", productId));
             } else {
                 favoritesRepository.delete(user, productId);

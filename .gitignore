@@ -13,3 +13,5 @@ bower_components/
 *.log
 /src/main/resources/persistance.xml
 /src/test/sh/init.sh
+
+application-prod.properties

@@ -74,7 +74,7 @@ public class MachineServiceProd implements MachineService {
 
     private int post(String url, String fieldInternalId) {
             HttpHeaders authHeader = new HttpHeaders();
-            authHeader.put(AUTH_HEADER_NAME, Collections.singletonList(createSignedData()));
+            authHeader.put(AUTH_HEADER_NAME, Collections.singletonList(createSignedData(fieldInternalId)));
 
             ResponseEntity<String> response = template.exchange(url,
                     HttpMethod.POST,
@@ -84,8 +84,8 @@ public class MachineServiceProd implements MachineService {
             return response.getStatusCode().value();
     }
 
-    private String createSignedData() {
-        String raw = Instant.now().toEpochMilli() + "";
+    private String createSignedData(String cell) {
+        String raw = Instant.now().toEpochMilli() + "" + cell;
         try {
             signature.update(raw.getBytes());
             String signed = new BigInteger(signature.sign()).toString(16);

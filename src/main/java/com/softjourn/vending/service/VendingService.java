@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,7 @@ public class VendingService {
     private FieldRepository fieldRepository;
     private LoadHistoryRepository loadHistoryRepository;
     private RestTemplate coinRestTemplate;
+    private MachineService machineService;
 
 
     @Autowired
@@ -52,11 +54,13 @@ public class VendingService {
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
                           LoadHistoryRepository loadHistoryRepository,
-                          CoinService coinService) {
+                          CoinService coinService,
+                          MachineService machineService) {
         this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
         this.loadHistoryRepository = loadHistoryRepository;
+        this.machineService = machineService;
 
         coinRestTemplate = new RestTemplate();
     }
@@ -249,5 +253,24 @@ public class VendingService {
 
     public BigDecimal getUndistributedPriceFromMachine(Integer id) {
         return loadHistoryRepository.getUndistributedPriceFromMachine(id).orElse(BigDecimal.ZERO);
+    }
+
+    public void resetEngine(Integer id) {
+        AtomicBoolean isActive = new AtomicBoolean();
+        Optional.ofNullable(get(id))
+                .map(machine -> {
+                    isActive.set(machine.getIsActive());
+                    machine.setIsActive(false);
+                    return machine;
+                })
+                .map(machine -> machineRepository.save(machine))
+                .map(machine -> {
+                    machineService.resetEngines(machine.getId());
+                    return machine;
+                })
+                .ifPresent(machine -> {
+                    machine.setIsActive(isActive.get());
+                    machineRepository.save(machine);
+                });
     }
 }

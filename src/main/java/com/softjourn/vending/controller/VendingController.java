@@ -52,6 +52,11 @@ public class VendingController {
         return vendingService.update(machine);
     }
 
+    @RequestMapping(value = "/{id}/reset", method = RequestMethod.POST)
+    public void resetEngines(@PathVariable Integer id) {
+        vendingService.resetEngine(id);
+    }
+
     @RequestMapping(method = RequestMethod.PUT)
     public VendingMachine refill(@RequestBody VendingMachine machine, Principal principal) {
         return vendingService.refill(machine, principal);

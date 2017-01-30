@@ -10,7 +10,12 @@ import org.springframework.stereotype.Service;
 public class MachineServiceMock implements MachineService {
     @Override
     public void buy(Integer machineId, String fieldInternalId) {
-        log.info("sending request to buy from machine " + machineId + " field " + fieldInternalId);
+        log.info("sending request to buy for machine " + machineId + " field " + fieldInternalId);
+    }
+
+    @Override
+    public void resetEngines(Integer machineId) {
+        log.info("sending request to reset for machine " + machineId);
     }
 
 

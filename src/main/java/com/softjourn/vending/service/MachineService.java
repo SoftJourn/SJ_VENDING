@@ -4,4 +4,6 @@ public interface MachineService {
 
     void buy(Integer machineId, String fieldInternalId);
 
+    void resetEngines(Integer machineId);
+
 }

@@ -58,7 +58,7 @@ public class MachineServiceProd implements MachineService {
         try {
             Optional.ofNullable(vendingService.get(machineId))
                     .map(VendingMachine::getUrl)
-                    .map(url -> post(url, fieldInternalId))
+                    .map(url -> postBuy(url, fieldInternalId))
                     .ifPresent((result) -> {
                         if (result == 509) {
                             throw new MachineBusyException(machineId);
@@ -72,26 +72,64 @@ public class MachineServiceProd implements MachineService {
 
     }
 
-    private int post(String url, String fieldInternalId) {
-            HttpHeaders authHeader = new HttpHeaders();
-            authHeader.put(AUTH_HEADER_NAME, Collections.singletonList(createSignedData(fieldInternalId)));
-
-            ResponseEntity<String> response = template.exchange(url,
-                    HttpMethod.POST,
-                    new HttpEntity<>(fieldInternalId, authHeader),
-                    String.class);
-            System.out.println(response.getBody());
-            return response.getStatusCode().value();
+    @Override
+    public void resetEngines(Integer machineId) {
+        try {
+            Optional.ofNullable(vendingService.get(machineId))
+                    .map(VendingMachine::getUrl)
+                    .map(url -> postReset(url + "/service"))
+                    .ifPresent((result) -> {
+                        if (result == 509) {
+                            throw new MachineBusyException(machineId);
+                        } else if (result != 200) {
+                            throw new RuntimeException("Error response from server \"" + result + "\"" + ".");
+                        }
+                    });
+        } catch (Exception e) {
+            throw new VendingProcessingException("Error occurred while processing service request. " + e.getMessage(), e);
+        }
     }
+
+    private int postBuy(String url, String fieldInternalId) {
+        HttpHeaders authHeader = new HttpHeaders();
+        authHeader.put(AUTH_HEADER_NAME, Collections.singletonList(createSignedData(fieldInternalId)));
+
+        return post(url, new HttpEntity<>(fieldInternalId, authHeader));
+    }
+
+    private int postReset(String url) {
+        HttpHeaders authHeader = new HttpHeaders();
+        authHeader.put(AUTH_HEADER_NAME, Collections.singletonList(createSignedTimestamp()));
+
+        return post(url, new HttpEntity<>(authHeader));
+    }
+
+    private int post(String url, HttpEntity httpEntity) {
+        ResponseEntity<String> response = template.exchange(url,
+                HttpMethod.POST,
+                httpEntity,
+                String.class);
+        return response.getStatusCode().value();
+    }
+
 
     private String createSignedData(String cell) {
         String raw = Instant.now().toEpochMilli() + "" + cell;
+        return sign(raw);
+    }
+
+    private String createSignedTimestamp() {
+        String raw = Instant.now().toEpochMilli() + "";
+        return sign(raw);
+    }
+
+    private String sign(String data) {
         try {
-            signature.update(raw.getBytes());
+            signature.update(data.getBytes());
             String signed = new BigInteger(signature.sign()).toString(16);
-            return raw + "." + signed;
+            return data + "." + signed;
         } catch (SignatureException e) {
-            throw new RuntimeException("Can't sign data " + raw, e);
+            throw new RuntimeException("Can't sign data " + data, e);
         }
     }
 

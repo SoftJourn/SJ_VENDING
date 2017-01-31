@@ -291,7 +291,7 @@ public abstract class ControllerTestConfig {
     public CoinService coinService() {
         CoinService coinService = Mockito.mock(CoinService.class);
 
-        when(coinService.spent(any(), any(), anyString())).thenReturn(new BigDecimal(10));
+        when(coinService.spent(any(), any(), anyString())).thenReturn(new TransactionDTO());
 
         return coinService;
     }

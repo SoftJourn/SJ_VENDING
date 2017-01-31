@@ -2,9 +2,8 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseProductDto;
+import com.softjourn.vending.dto.TransactionDTO;
 import com.softjourn.vending.entity.*;
-import com.softjourn.vending.exceptions.NotFoundException;
-import com.softjourn.vending.exceptions.ProductNotFoundException;
 import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
@@ -22,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -175,7 +172,10 @@ public class BuyServiceTest {
         when(purchaseRepository.getAllByMachineId(anyInt())).thenReturn(purchases);
         when(purchaseRepository.getAllByUser("user")).thenReturn(purchases);
 
-        when(coinService.spent(any(), any(), anyString())).thenReturn(new BigDecimal(10));
+        TransactionDTO transactionDTO = mock(TransactionDTO.class);
+        when(transactionDTO.getRemain()).thenReturn(new BigDecimal(10));
+
+        when(coinService.spent(any(), any(), anyString())).thenReturn(transactionDTO);
 
 
     }

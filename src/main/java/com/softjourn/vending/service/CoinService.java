@@ -54,14 +54,14 @@ public class CoinService {
     }
 
     @PreAuthorize("isAuthenticated()")
-    public BigDecimal spent(Principal principal, BigDecimal amount, String machineAddress) {
+    public TransactionDTO spent(Principal principal, BigDecimal amount, String machineAddress) {
         return wrapExceptionHandling(() -> {
             ResponseEntity<TransactionDTO> response =  coinRestTemplate.exchange(coinsServerHost + "/buy/" + machineAddress,
                     HttpMethod.POST,
                     prepareRequest(principal, amount),
                     TransactionDTO.class);
             if (response.getBody().getStatus().equals("SUCCESS")) {
-                return response.getBody().getRemain();
+                return response.getBody();
             } else {
                 throw new PaymentProcessingException("Unsuccessful call to coins server. " + response.getBody().getError());
             }
@@ -70,6 +70,10 @@ public class CoinService {
 
     public void refill(Principal adminPrincipal, BigDecimal amount, String machineName) {
         distributeMoney(adminPrincipal, amount, machineName);
+    }
+
+    public void returnMoney(Principal principal, BigDecimal price) {
+
     }
 
     private void distributeMoney(Principal adminPrincipal, BigDecimal amount, String machineName) {
@@ -85,7 +89,7 @@ public class CoinService {
         });
     }
 
-    private BigDecimal wrapExceptionHandling(Supplier<BigDecimal> function) {
+    private TransactionDTO wrapExceptionHandling(Supplier<TransactionDTO> function) {
         try {
             return function.get();
         } catch (HttpClientErrorException hcee) {

@@ -72,7 +72,7 @@ public class CoinService {
         distributeMoney(adminPrincipal, amount, machineName);
     }
 
-    public void returnMoney(Principal principal, BigDecimal price) {
+    public void returnMoney(TransactionDTO tx) {
 
     }
 

@@ -5,11 +5,14 @@ import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
+import com.softjourn.vending.dto.TransactionDTO;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.MachineBusyException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
+import com.softjourn.vending.exceptions.VendingProcessingException;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ import java.util.stream.Stream;
 
 @Service
 @Setter
+@Slf4j
 public class BuyService {
 
     private static final long BES_SELLERS_LIMIT = 10;
@@ -81,12 +85,22 @@ public class BuyService {
 
     private BigDecimal buyProduct(Integer machineId, String itemId, Principal principal) {
         Product product = getProductIfAvailable(machineId, itemId);
-        VendingMachine machine = vendingService.get(machineId);
-        BigDecimal remain = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
-        machineService.buy(machineId, itemId);
-        decreaseProductsCount(machineId, itemId);
-        savePurchase(machineId, product, principal);
-        return remain;
+        TransactionDTO tx = null;
+        try {
+            VendingMachine machine = vendingService.get(machineId);
+            tx = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
+            machineService.buy(machineId, itemId);
+            decreaseProductsCount(machineId, itemId);
+            savePurchase(machineId, product, principal);
+            return tx.getRemain();
+        } catch (VendingProcessingException ve) {
+            if (tx == null || tx.getId() == null) {
+                log.warn("Unsuccessful vending but money can't be returned.");
+            } else {
+                coinService.returnMoney(tx);
+            }
+            throw ve;
+        }
     }
 
     @FunctionalInterface

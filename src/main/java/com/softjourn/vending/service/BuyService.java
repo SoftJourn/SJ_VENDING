@@ -95,7 +95,7 @@ public class BuyService {
             return tx.getRemain();
         } catch (VendingProcessingException ve) {
             if (tx == null || tx.getId() == null) {
-                log.warn("Unsuccessful vending but money can't be returned.");
+                log.warn("Unsuccessful vending but money can't be returned. " + tx, ve);
             } else {
                 coinService.returnMoney(tx);
             }

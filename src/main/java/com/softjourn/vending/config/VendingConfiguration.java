@@ -1,5 +1,6 @@
 package com.softjourn.vending.config;
 
+import com.softjourn.common.auth.OAuthHelper;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +28,17 @@ public class VendingConfiguration extends ResourceServerConfigurerAdapter {
 
     @Value("${authPublicKeyFile}")
     private String authPublicKeyFile;
+
+    @Value("${auth.server.host}")
+    private String authServerHost;
+
+    @Value("${auth.client.secret}")
+    private String clientSecret;
+
+    @Bean
+    public OAuthHelper oAuthHelper() {
+        return new OAuthHelper(clientId, clientSecret, authServerHost, new RestTemplate());
+    }
 
     @Bean
     public TokenStore tokenStore() {

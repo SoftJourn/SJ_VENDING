@@ -46,6 +46,8 @@ public class VendingService {
     private FieldRepository fieldRepository;
     private LoadHistoryRepository loadHistoryRepository;
     private RestTemplate coinRestTemplate;
+
+    @Autowired
     private MachineService machineService;
 
 
@@ -54,13 +56,11 @@ public class VendingService {
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
                           LoadHistoryRepository loadHistoryRepository,
-                          CoinService coinService,
-                          MachineService machineService) {
+                          CoinService coinService) {
         this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
         this.loadHistoryRepository = loadHistoryRepository;
-        this.machineService = machineService;
 
         coinRestTemplate = new RestTemplate();
     }

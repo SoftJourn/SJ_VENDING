@@ -1,8 +1,11 @@
 package com.softjourn.vending.service;
 
+import com.softjourn.vending.exceptions.VendingProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -10,7 +13,11 @@ import org.springframework.stereotype.Service;
 public class MachineServiceMock implements MachineService {
     @Override
     public void buy(Integer machineId, String fieldInternalId) {
-        log.info("sending request to buy for machine " + machineId + " field " + fieldInternalId);
+        if (new Random().nextBoolean()) {
+            log.info("sending request to buy for machine " + machineId + " field " + fieldInternalId);
+        } else {
+            throw new VendingProcessingException("Error occurred while processing vending request. ");
+        }
     }
 
     @Override

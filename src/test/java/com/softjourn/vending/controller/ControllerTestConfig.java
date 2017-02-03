@@ -1,5 +1,6 @@
 package com.softjourn.vending.controller;
 
+import com.softjourn.common.auth.OAuthHelper;
 import com.softjourn.vending.dto.*;
 import com.softjourn.vending.entity.*;
 import com.softjourn.vending.service.*;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Configuration
@@ -188,6 +190,11 @@ public abstract class ControllerTestConfig {
         when(vendingService.getAllAvailable()).thenReturn(Collections.singletonList(vendingMachine));
 
         return vendingService;
+    }
+
+    @Bean
+    public OAuthHelper oAuthHelper() {
+        return mock(OAuthHelper.class);
     }
 
     @Bean

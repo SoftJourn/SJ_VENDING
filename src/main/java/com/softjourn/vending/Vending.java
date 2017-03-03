@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources(
-        @PropertySource("file:${user.home}/.vending/application.properties")
+        @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)
 )
 public class Vending {
 

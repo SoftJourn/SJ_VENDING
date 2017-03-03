@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
@@ -13,6 +15,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@PropertySources(
+        @PropertySource("file:${user.home}/.vending/application.properties")
+)
 public class Vending {
 
     public static void main(String[] args) {

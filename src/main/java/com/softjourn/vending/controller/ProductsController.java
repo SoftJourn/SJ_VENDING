@@ -68,6 +68,21 @@ public class ProductsController {
         productService.updateImage(file, id);
     }
 
+    @RequestMapping(path = "/{id}/description/image", method = RequestMethod.POST, consumes = "multipart/form-data;charset=UTF-8")
+    public void addDescriptionImage(@RequestParam MultipartFile file, @PathVariable Integer id){
+
+    }
+
+    @RequestMapping(path = "/{id}/description/images", method = RequestMethod.GET, consumes = "multipart/form-data;charset=UTF-8")
+    public void getAllDescriptionImage(@PathVariable Integer id){
+
+    }
+
+    @RequestMapping(path = "/description/image/{imageId}", method = RequestMethod.GET)
+    public void deleteDescriptionImage(@PathVariable Integer imageId){
+
+    }
+
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public Product deleteProduct(@PathVariable Integer id) {
         return productService.delete(id);

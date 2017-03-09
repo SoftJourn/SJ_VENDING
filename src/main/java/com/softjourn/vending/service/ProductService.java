@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,9 +58,11 @@ public class ProductService {
             .build();
     }
 
-    public Collection<Product> getProducts() {
+    public List<Product> getProducts() {
         Iterable<Product> res = productRepository.findAll();
-        return StreamSupport.stream(res.spliterator(), false).collect(Collectors.toList());
+        return StreamSupport.stream(res.spliterator(), false)
+            .peek(product -> product.setImageUrls(this.getImageUrls(product.getId())))
+            .collect(Collectors.toList());
     }
 
     public List<Product> getProductsByNameThatContain(String name) {
@@ -73,7 +76,6 @@ public class ProductService {
         }
         List<String> imageUrls = this.getImageUrls(id);
         product.setImageUrls(imageUrls);
-        this.imageRepository.findByProductId(id);
         return product;
     }
 
@@ -91,11 +93,18 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized void addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+    public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
         Image image = new Image(file.getBytes(), productId, resolution);
-        imageRepository.save(image);
+        return imageRepository.save(image);
+    }
+
+    @Transactional
+    public synchronized void addProductImage(@NonNull MultipartFile files[], Integer productId) throws IOException {
+        for (MultipartFile file : files) {
+            this.addProductImage(file, productId);
+        }
     }
 
     @Transactional
@@ -143,9 +152,25 @@ public class ProductService {
         }
     }
 
-    List<String> getImageUrls(Integer productId) {
-        return null;
+    public byte [] getImageById(Integer productId, Integer imageId){
+        Image image = this.imageRepository.findOne(imageId);
+        if (image == null)
+            throw  new IllegalArgumentException("There is no images passed id");
+        else{
+            if(!productId.equals(image.getProductId()))
+                throw  new IllegalArgumentException("There is no images passed id");
+            return image.getData();
+        }
     }
+
+    List<String> getImageUrls(Integer productId) {
+        List<Image> productImages = this.imageRepository.findByProductId(productId);
+        return productImages.stream()
+            .map(image -> image.getId() + "." + image.getResolution())
+            .map(file -> "products/" + productId + "/images/"+file)
+            .collect(Collectors.toList());
+    }
+
 
     private void validateImage(@NonNull MultipartFile file) throws IOException {
         this.validateImageMimeType(file);

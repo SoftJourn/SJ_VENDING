@@ -91,3 +91,10 @@ CREATE TABLE row_fields
   FOREIGN KEY (row) REFERENCES rows (id),
   FOREIGN KEY (field) REFERENCES fields (id)
 );
+CREATE TABLE image
+(
+  id BIGINT PRIMARY KEY NOT NULL IDENTITY ,
+  data BLOB,
+  product_id INT NOT NULL,
+  resolution VARCHAR(255)
+);

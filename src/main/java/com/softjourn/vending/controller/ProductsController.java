@@ -43,8 +43,8 @@ public class ProductsController {
     }
 
     @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void addProductImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
-        productService.addProductImage(file, id);
+    public void addProductImage(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
+        productService.addProductImage(files, id);
     }
 
     // GET
@@ -70,6 +70,12 @@ public class ProductsController {
     @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer id) {
         return productService.getProduct(id).getImageData();
+    }
+
+    @PreAuthorize("permitAll")
+    @RequestMapping(path = "/{productId}/image/{imageId}", method = RequestMethod.GET)
+    public byte[] getImage(@PathVariable Integer productId, @PathVariable Integer imageId) {
+        return productService.getImageById(productId,imageId);
     }
 
     // DELETE

@@ -25,10 +25,24 @@ public class ProductsController {
         this.productService = productService;
     }
 
+    // POST
+
     @RequestMapping(method = RequestMethod.POST)
     public Product addProduct(@Valid @RequestBody Product product) {
         return productService.add(product);
     }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
+    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
+        return productService.update(id, updater);
+    }
+
+    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void updateCoverImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
+        productService.updateCoverImage(file, id);
+    }
+
+    // GET
 
     @PreAuthorize("authenticated")
     @RequestMapping(method = RequestMethod.GET)
@@ -47,41 +61,24 @@ public class ProductsController {
         return productService.getProduct(id);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
-    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
-        return productService.update(id, updater);
-    }
-
-    @PreAuthorize("authenticated")
-    @GetMapping("/category/{categoryName}")
-    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
-        return productService.getProductsByCategory(categoryName);
-    }
-
     @PreAuthorize("permitAll")
     @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer id) {
         return productService.getProduct(id).getImageData();
     }
 
-    @RequestMapping(path = "/{id}/images/{imageId}", method = RequestMethod.GET, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void getAllDescriptionImage(@PathVariable Integer id, @PathVariable Integer imageId){
-        
-    }
-
-    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void updateImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
-        productService.updateImage(file, id);
-    }
-
-    @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void addAdditionalImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
-        productService.addAdditionalImage(file,id);
-    }
-
+    // DELETE
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public Product deleteProduct(@PathVariable Integer id) {
         return productService.delete(id);
+    }
+
+    // ALL
+
+    @PreAuthorize("authenticated")
+    @GetMapping("/category/{categoryName}")
+    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
+        return productService.getProductsByCategory(categoryName);
     }
 }

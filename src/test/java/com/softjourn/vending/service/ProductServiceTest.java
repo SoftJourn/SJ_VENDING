@@ -119,10 +119,10 @@ public class ProductServiceTest {
 
     @Test
     public void testUpdateImage() throws Exception {
-        productService.updateImage(imageJpg, 1);
+        productService.updateCoverImage(imageJpg, 1);
         assertTrue(product.getImageUrl().endsWith("1/image.jpeg"));
 
-        productService.updateImage(imagePng, 1);
+        productService.updateCoverImage(imagePng, 1);
         assertTrue(product.getImageUrl().endsWith("1/image.png"));
 
         assertEquals(product.getImageData(), imageData);

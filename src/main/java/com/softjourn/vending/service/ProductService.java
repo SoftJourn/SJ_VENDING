@@ -98,7 +98,7 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized void updateImage(@NonNull MultipartFile file, Integer id) throws IOException {
+    public synchronized void updateCoverImage(@NonNull MultipartFile file, Integer id) throws IOException {
         validateImage(file);
         Product product = getProduct(id);
         setImage(product, file);

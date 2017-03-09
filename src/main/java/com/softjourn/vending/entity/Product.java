@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -55,4 +56,8 @@ public class Product {
     @JoinColumn(name = "id_categories")
     @NotNull(message = "Product category is required")
     private Category category;
+
+    @Transient
+    private ArrayList<String> imageUrls;
+
 }

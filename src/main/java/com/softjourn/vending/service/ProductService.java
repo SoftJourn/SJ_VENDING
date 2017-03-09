@@ -2,7 +2,9 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.FavoritesRepository;
+import com.softjourn.vending.dao.ImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
+import com.softjourn.vending.entity.Image;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.ProductNotFoundException;
@@ -35,6 +37,7 @@ import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 public class ProductService {
 
     private FavoritesRepository favoritesRepository;
+    private ImageRepository imageRepository;
 
     private ProductRepository productRepository;
 
@@ -43,15 +46,17 @@ public class ProductService {
     @Autowired
     public ProductService(@NonNull ProductRepository productRepository,
                           @NotNull FavoritesRepository favoritesRepository,
+                          ImageRepository imageRepository,
                           ServletContext servletContext) {
         this.productRepository = productRepository;
         this.favoritesRepository = favoritesRepository;
+        this.imageRepository = imageRepository;
 
         mergeUtil = ReflectionMergeUtil
-                .forClass(Product.class)
-                .ignoreField("id")
-                .ignoreNull(true)
-                .build();
+            .forClass(Product.class)
+            .ignoreField("id")
+            .ignoreNull(true)
+            .build();
     }
 
     public Collection<Product> getProducts() {
@@ -68,6 +73,7 @@ public class ProductService {
         if (product == null) {
             throw new ProductNotFoundException(String.format("Product with id %d not found.", id));
         }
+        this.imageRepository.findByProductId(id);
         return product;
     }
 
@@ -84,12 +90,24 @@ public class ProductService {
     }
 
     @Transactional
+    public synchronized void addAdditionalImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+        validateImage(file);
+        String resolution = FileUploadUtil.getResolution(file);
+        Image image = new Image(file.getBytes(), productId, resolution);
+        imageRepository.save(image);
+    }
+
+    @Transactional
     public synchronized void updateImage(@NonNull MultipartFile file, Integer id) throws IOException {
-        this.validateImageMimeType(file);
-        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
+        validateImage(file);
         Product product = getProduct(id);
         setImage(product, file);
         productRepository.save(product);
+    }
+
+    private void validateImage(@NonNull MultipartFile file) throws IOException {
+        this.validateImageMimeType(file);
+        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 
     @Transactional

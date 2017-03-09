@@ -2,6 +2,7 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.FavoritesRepository;
+import com.softjourn.vending.dao.ImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.entity.Product;
@@ -10,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
@@ -24,7 +25,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 public class ProductServiceTest {
 
     @Mock
@@ -53,13 +54,16 @@ public class ProductServiceTest {
     @Mock
     ServletContext servletContext;
 
+    @Mock
+    ImageRepository imageRepository;
+
     Product product;
     Product updated;
 
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(repository, favoritesRepository, servletContext);
+        productService = new ProductService(repository, favoritesRepository, imageRepository, servletContext);
 
         product = new Product();
         product.setId(1);

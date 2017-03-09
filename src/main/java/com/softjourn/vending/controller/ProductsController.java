@@ -4,6 +4,7 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,25 +64,21 @@ public class ProductsController {
         return productService.getProduct(id).getImageData();
     }
 
-    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = "multipart/form-data;charset=UTF-8")
+    @RequestMapping(path = "/{id}/images/{imageId}", method = RequestMethod.GET, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void getAllDescriptionImage(@PathVariable Integer id, @PathVariable Integer imageId){
+        
+    }
+
+    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void updateImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
         productService.updateImage(file, id);
     }
 
-    @RequestMapping(path = "/{id}/description/image", method = RequestMethod.POST, consumes = "multipart/form-data;charset=UTF-8")
-    public void addDescriptionImage(@RequestParam MultipartFile file, @PathVariable Integer id){
-
+    @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void addAdditionalImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
+        productService.addAdditionalImage(file,id);
     }
 
-    @RequestMapping(path = "/{id}/description/images", method = RequestMethod.GET, consumes = "multipart/form-data;charset=UTF-8")
-    public void getAllDescriptionImage(@PathVariable Integer id){
-
-    }
-
-    @RequestMapping(path = "/description/image/{imageId}", method = RequestMethod.GET)
-    public void deleteDescriptionImage(@PathVariable Integer imageId){
-
-    }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public Product deleteProduct(@PathVariable Integer id) {

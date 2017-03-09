@@ -71,9 +71,12 @@ public class ProductService {
         if (product == null) {
             throw new ProductNotFoundException(String.format("Product with id %d not found.", id));
         }
+        List<String> imageUrls = this.getImageUrls(id);
+        product.setImageUrls(imageUrls);
         this.imageRepository.findByProductId(id);
         return product;
     }
+
 
     public synchronized Product add(@NonNull Product product) {
         product.setAddedTime(Instant.now());
@@ -103,10 +106,10 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    private void validateImage(@NonNull MultipartFile file) throws IOException {
-        this.validateImageMimeType(file);
-        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
+    public List<Product> getProductsByCategory(String categoryName) {
+        return productRepository.getProductByCategory_Name(categoryName);
     }
+
 
     @Transactional
     public synchronized Product delete(@NonNull Integer id) {
@@ -140,7 +143,12 @@ public class ProductService {
         }
     }
 
-    public List<Product> getProductsByCategory(String categoryName) {
-        return productRepository.getProductByCategory_Name(categoryName);
+    List<String> getImageUrls(Integer productId) {
+        return null;
+    }
+
+    private void validateImage(@NonNull MultipartFile file) throws IOException {
+        this.validateImageMimeType(file);
+        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 }

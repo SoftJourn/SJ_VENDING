@@ -15,3 +15,5 @@ bower_components/
 /src/test/sh/init.sh
 
 application-prod.properties
+application-test.properties
+/src/main/resources/auth.pub

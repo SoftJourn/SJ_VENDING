@@ -15,6 +15,7 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -58,6 +59,6 @@ public class Product {
     private Category category;
 
     @Transient
-    private ArrayList<String> imageUrls;
+    private List<String> imageUrls;
 
 }

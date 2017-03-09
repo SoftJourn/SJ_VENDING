@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
@@ -46,8 +45,7 @@ public class ProductService {
     @Autowired
     public ProductService(@NonNull ProductRepository productRepository,
                           @NotNull FavoritesRepository favoritesRepository,
-                          ImageRepository imageRepository,
-                          ServletContext servletContext) {
+                          ImageRepository imageRepository) {
         this.productRepository = productRepository;
         this.favoritesRepository = favoritesRepository;
         this.imageRepository = imageRepository;
@@ -90,7 +88,7 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized void addAdditionalImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+    public synchronized void addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
         Image image = new Image(file.getBytes(), productId, resolution);
@@ -130,8 +128,8 @@ public class ProductService {
     }
 
     private void validateImageMimeType(MultipartFile file) {
-        if (file.getContentType().matches("image/(?:jpeg|png|jpg|apng|svg|bmp)")) {
-        } else {
+        String supportedTypes = "image/(?:jpeg|png|jpg|apng|svg|bmp)";
+        if (!file.getContentType().matches(supportedTypes)) {
             throw new NotImageException("File is not image");
         }
     }

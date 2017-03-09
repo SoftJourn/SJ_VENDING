@@ -63,7 +63,7 @@ public class ProductServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(repository, favoritesRepository, imageRepository, servletContext);
+        productService = new ProductService(repository, favoritesRepository, imageRepository);
 
         product = new Product();
         product.setId(1);

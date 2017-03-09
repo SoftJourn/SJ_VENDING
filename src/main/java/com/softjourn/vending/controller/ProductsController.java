@@ -42,6 +42,11 @@ public class ProductsController {
         productService.updateCoverImage(file, id);
     }
 
+    @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void addProductImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
+        productService.addProductImage(file, id);
+    }
+
     // GET
 
     @PreAuthorize("authenticated")

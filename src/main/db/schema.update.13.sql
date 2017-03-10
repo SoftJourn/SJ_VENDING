@@ -1,1 +1,7 @@
-
+CREATE TABLE image
+(
+  id BIGINT(20) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  data MEDIUMBLOB,
+  product_id INT(11) NOT NULL,
+  resolution VARCHAR(255)
+);

@@ -74,7 +74,7 @@ public class ProductsController {
 
     @PreAuthorize("permitAll")
     @RequestMapping(path = "/{productId}/image/{imageId}", method = RequestMethod.GET)
-    public byte[] getImage(@PathVariable Integer productId, @PathVariable Integer imageId) {
+    public byte[] getImage(@PathVariable Integer productId, @PathVariable Long imageId) {
         return productService.getImageById(productId,imageId);
     }
 

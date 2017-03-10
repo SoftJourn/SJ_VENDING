@@ -152,7 +152,7 @@ public class ProductService {
         }
     }
 
-    public byte [] getImageById(Integer productId, Integer imageId){
+    public byte [] getImageById(Integer productId, Long imageId){
         Image image = this.imageRepository.findOne(imageId);
         if (image == null)
             throw  new IllegalArgumentException("There is no images passed id");

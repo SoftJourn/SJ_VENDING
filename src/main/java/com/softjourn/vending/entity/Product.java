@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -14,8 +15,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -58,7 +57,6 @@ public class Product {
     @NotNull(message = "Product category is required")
     private Category category;
 
-    @Transient
-    private List<String> imageUrls;
-
+    @JsonRawValue
+    private String imageUrls;
 }

@@ -1,11 +1,11 @@
 package com.softjourn.vending.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -58,5 +58,6 @@ public class Product {
     private Category category;
 
     @JsonRawValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String imageUrls;
 }

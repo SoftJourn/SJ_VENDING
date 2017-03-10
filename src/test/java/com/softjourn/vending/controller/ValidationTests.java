@@ -55,13 +55,13 @@ public class ValidationTests {
         // --- Entities---
         nameWithNumberCategory = new Category(null, "Sn8ck");
         nameWithSpecialCharProduct = new Product(null, new BigDecimal(20), "Snickers999@", "/image.jpg", new byte[10],
-                Instant.ofEpochMilli(1_000_000), "Some thing", snacks);
+                Instant.ofEpochMilli(1_000_000), "Some thing", snacks,null);
 
         negativePriceProduct = new Product(null, new BigDecimal(-20), "Snickers", "/image.jpg", new byte[10],
-                Instant.ofEpochMilli(1_000_000), "Some thing", snacks);
+                Instant.ofEpochMilli(1_000_000), "Some thing", snacks,null);
 
         nullCategoryProduct = new Product(null, new BigDecimal(20), "Snickers", "/image.jpg", new byte[10],
-                Instant.ofEpochMilli(1_000_000), "Some thing", null);
+                Instant.ofEpochMilli(1_000_000), "Some thing", null, null);
 
         //---Error response objects---
         nameWithNumberCategoryError = new ErrorDetail("Error",

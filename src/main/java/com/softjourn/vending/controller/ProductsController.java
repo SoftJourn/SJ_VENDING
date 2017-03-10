@@ -4,6 +4,7 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +25,29 @@ public class ProductsController {
         this.productService = productService;
     }
 
+    // POST
+
     @RequestMapping(method = RequestMethod.POST)
     public Product addProduct(@Valid @RequestBody Product product) {
         return productService.add(product);
     }
+
+    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
+    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
+        return productService.update(id, updater);
+    }
+
+    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void updateCoverImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
+        productService.updateCoverImage(file, id);
+    }
+
+    @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void addProductImage(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
+        productService.addProductImage(files, id);
+    }
+
+    // GET
 
     @PreAuthorize("authenticated")
     @RequestMapping(method = RequestMethod.GET)
@@ -46,30 +66,30 @@ public class ProductsController {
         return productService.getProduct(id);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
-    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
-        return productService.update(id, updater);
-    }
-
-    @PreAuthorize("authenticated")
-    @GetMapping("/category/{categoryName}")
-    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
-        return productService.getProductsByCategory(categoryName);
-    }
-
     @PreAuthorize("permitAll")
     @RequestMapping(path = "/{id}/image", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer id) {
         return productService.getProduct(id).getImageData();
     }
 
-    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = "multipart/form-data;charset=UTF-8")
-    public void updateImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
-        productService.updateImage(file, id);
+    @PreAuthorize("permitAll")
+    @RequestMapping(path = "/{productId}/image/{imageId}", method = RequestMethod.GET)
+    public byte[] getImage(@PathVariable Integer productId, @PathVariable Integer imageId) {
+        return productService.getImageById(productId,imageId);
     }
+
+    // DELETE
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public Product deleteProduct(@PathVariable Integer id) {
         return productService.delete(id);
+    }
+
+    // ALL
+
+    @PreAuthorize("authenticated")
+    @GetMapping("/category/{categoryName}")
+    public List<Product> getProductsByCategory(@PathVariable String categoryName) {
+        return productService.getProductsByCategory(categoryName);
     }
 }

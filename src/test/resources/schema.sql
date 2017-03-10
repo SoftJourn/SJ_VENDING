@@ -24,6 +24,7 @@ CREATE TABLE products
   description LONGVARCHAR,
   image_data BLOB,
   id_categories BIGINT,
+  image_urls VARCHAR(255) NULL,
   CONSTRAINT FK_8l3my8ls6adnevblpj5twva2e FOREIGN KEY (id_categories) REFERENCES categories (id)
 );
 CREATE INDEX machines_unique_id_uindex ON machines (unique_id);

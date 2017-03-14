@@ -1,7 +1,7 @@
 package com.softjourn.vending.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,10 +53,17 @@ public class Product {
     @Column(columnDefinition="text")
     private String description;
 
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categories")
     @NotNull(message = "Product category is required")
     private Category category;
+
+    @JsonProperty("category")
+    private void setCategoryId(long id) {
+        this.category = new Category(id);
+    }
 
     @Transient
     private List<String> imageUrls;

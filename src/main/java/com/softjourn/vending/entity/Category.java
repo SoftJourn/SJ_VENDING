@@ -1,5 +1,6 @@
 package com.softjourn.vending.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "categories")
@@ -26,9 +28,8 @@ public class Category {
     @Pattern(regexp = "^[a-zA-Z\\u0400-\\u04FF]+[ a-zA-Z\\u0400-\\u04FF]*[a-zA-Z\\u0400-\\u04FF]+$", message = "Category name should not contain numbers and starts with symbols")
     private String name;
 
-    public Category(Long id, String name) {
+    Category(Long id) {
         this.id = id;
-        this.name = name;
     }
 
 }

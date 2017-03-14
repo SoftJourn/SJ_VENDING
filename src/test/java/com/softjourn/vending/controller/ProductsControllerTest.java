@@ -171,8 +171,7 @@ public class ProductsControllerTest {
                                 fieldWithPath("price").description("Product price."),
                                 fieldWithPath("imageUrl").description("Relative path to product image."),
                                 fieldWithPath("imageUrls").description("Relative path to all product images."),
-                                fieldWithPath("category.id").description("Category id."),
-                                fieldWithPath("category.name").description("Category name."),
+                                fieldWithPath("category").description("Category id."),
                                 fieldWithPath("description").description("Product description.")
                         )));
     }

@@ -162,28 +162,4 @@ public class ValidationTests {
                         )));
     }
 
-    @Test
-    public void postNullProductCategory() throws Exception {
-        mockMvc
-                .perform(RestDocumentationRequestBuilders
-                        .post("/v1/products")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(nullCategoryProduct)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().json(json(nullCategoryProductError)))
-                .andDo(document("product-price-validator",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
-                        ),
-                        responseFields(
-                                fieldWithPath("title").description("Error title"),
-                                fieldWithPath("detail").description("Error details notification"),
-                                fieldWithPath("code").description("Sql code(is not required)"),
-                                fieldWithPath("developerMessage").description("Error details notification for developers")
-                        )));
-    }
-
 }

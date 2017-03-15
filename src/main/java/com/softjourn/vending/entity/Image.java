@@ -25,6 +25,8 @@ public class Image {
 
     private int productId;
 
+//  TODO 1. make all primitives objects. 2. Add is cover flag. 3. Migrate cover image from product here.
+
     public Image(byte[] bytes, int productId, String resolution) {
         this.data = bytes;
         this.productId = productId;

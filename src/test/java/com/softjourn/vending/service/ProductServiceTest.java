@@ -141,7 +141,7 @@ public class ProductServiceTest {
         product.setAddedTime(Instant.now());
         product.setPrice(new BigDecimal(10));
         product.setImageUrl("/products/1/image.jpg");
-        product.setImageUrls(new ArrayList<>());
+        product.setImageUrls("urls");
         product.setCategory(new Category(1L, "Drink"));
 
         updated = new Product();

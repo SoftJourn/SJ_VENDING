@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,25 +56,37 @@ public class ProductServiceIntegrationTest {
 
     @Test
     public void getImageUrls() throws Exception {
-        String result = "[products/1/images/1.jpg, products/1/images/2.png]";
         Image image;
         int productId = 1;
         image = new Image(this.imageData, productId, "jpg");
-        this.imageRepository.save(image);
+        image = this.imageRepository.save(image);
+        long imageId1 = image.getId();
         image = new Image(this.imageData, productId, "png");
-        this.imageRepository.save(image);
-        assertEquals(result, this.productService.getImageUrls(productId).toString());
+        image = this.imageRepository.save(image);
+        long imageId2 = image.getId();
+        String result = "[\"products/1/images/"+imageId1+".jpg\", \"products/1/images/"+imageId2+".png\"]";
+
+        assertEquals(result, this.productService.generateImageUrls(productId).toString());
     }
 
     @Test
     public void getProduct_WithMultipleImages() throws Exception {
         int productId = this.testProduct.getId();
         Image storedImage =  this.productService.addProductImage(this.imagePng, productId);
-        String result = "[products/"+productId+"/images/"+storedImage.getId()+".png]";
+        String result = "[\"products/"+productId+"/images/"+storedImage.getId()+".png\"]";
         Product product = this.productService.getProduct(productId);
         assertNotNull(product.getImageUrls());
         assertEquals(result, product.getImageUrls().toString());
         log.info(product.getImageUrls().toString());
+    }
+
+    @Test
+    public void addImage() throws Exception {
+        this.productService.addProductImage(this.imageJpg, testProduct.getId());
+        this.productService.addProductImage(this.imagePng, testProduct.getId());
+        Product product;
+        product = this.productRepository.findOne(testProduct.getId());
+        assertNotNull(product.getImageUrls());
     }
 
     @Test
@@ -116,7 +127,6 @@ public class ProductServiceIntegrationTest {
         testProduct.setAddedTime(Instant.now());
         testProduct.setPrice(new BigDecimal(10));
         testProduct.setImageUrl("/products/1/image.jpg");
-        testProduct.setImageUrls(new ArrayList<>());
         testProduct.setCategory(new Category(1L, "Drink"));
 
         testProduct = this.productRepository.save(testProduct);

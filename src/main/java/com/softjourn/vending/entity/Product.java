@@ -2,6 +2,7 @@ package com.softjourn.vending.entity;
 
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +15,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -53,19 +52,12 @@ public class Product {
     @Column(columnDefinition="text")
     private String description;
 
-    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categories")
     @NotNull(message = "Product category is required")
     private Category category;
 
-    @JsonProperty("category")
-    private void setCategoryId(long id) {
-        this.category = new Category(id);
-    }
-
-    @Transient
-    private List<String> imageUrls;
-
+    @JsonRawValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String imageUrls;
 }

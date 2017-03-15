@@ -23,8 +23,6 @@ import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -61,7 +59,6 @@ public class ProductService {
     public List<Product> getProducts() {
         Iterable<Product> res = productRepository.findAll();
         return StreamSupport.stream(res.spliterator(), false)
-            .peek(product -> product.setImageUrls(this.getImageUrls(product.getId())))
             .collect(Collectors.toList());
     }
 
@@ -74,8 +71,6 @@ public class ProductService {
         if (product == null) {
             throw new ProductNotFoundException(String.format("Product with id %d not found.", id));
         }
-        List<String> imageUrls = this.getImageUrls(id);
-        product.setImageUrls(imageUrls);
         return product;
     }
 
@@ -94,17 +89,17 @@ public class ProductService {
 
     @Transactional
     public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
-        validateImage(file);
-        String resolution = FileUploadUtil.getResolution(file);
-        Image image = new Image(file.getBytes(), productId, resolution);
-        return imageRepository.save(image);
+        Image image = saveImage(file, productId);
+        updateProductImagesUrl(productId);
+        return image;
     }
 
     @Transactional
     public synchronized void addProductImage(@NonNull MultipartFile files[], Integer productId) throws IOException {
         for (MultipartFile file : files) {
-            this.addProductImage(file, productId);
+            this.saveImage(file, productId);
         }
+        this.updateProductImagesUrl(productId);
     }
 
     @Transactional
@@ -152,7 +147,7 @@ public class ProductService {
         }
     }
 
-    public byte [] getImageById(Integer productId, Integer imageId){
+    public byte [] getImageById(Integer productId, Long imageId){
         Image image = this.imageRepository.findOne(imageId);
         if (image == null)
             throw  new IllegalArgumentException("There is no images passed id");
@@ -163,17 +158,32 @@ public class ProductService {
         }
     }
 
-    List<String> getImageUrls(Integer productId) {
+    String generateImageUrls(Integer productId) {
         List<Image> productImages = this.imageRepository.findByProductId(productId);
-        return productImages.stream()
+        List<String> urls = productImages.stream()
             .map(image -> image.getId() + "." + image.getResolution())
-            .map(file -> "products/" + productId + "/images/"+file)
+            .map(file -> "\"products/" + productId + "/images/"+file+"\"")
             .collect(Collectors.toList());
+        return urls.toString();
     }
 
 
     private void validateImage(@NonNull MultipartFile file) throws IOException {
         this.validateImageMimeType(file);
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
+    }
+
+    private Product updateProductImagesUrl(Integer productId) {
+        String urls = this.generateImageUrls(productId);
+        Product product = this.getProduct(productId);
+        product.setImageUrls(urls);
+        return this.update(productId, product);
+    }
+
+    private Image saveImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+        validateImage(file);
+        String resolution = FileUploadUtil.getResolution(file);
+        Image image = new Image(file.getBytes(), productId, resolution);
+        return imageRepository.save(image);
     }
 }

@@ -75,7 +75,7 @@ public class ProductsController {
     @PreAuthorize("permitAll")
     @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.GET)
     public byte[] getImage(@PathVariable Integer productId, @PathVariable Long imageId) {
-        return productService.getImageById(productId,imageId);
+        return productService.getImageById(productId, imageId);
     }
 
     // DELETE
@@ -83,6 +83,11 @@ public class ProductsController {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public Product deleteProduct(@PathVariable Integer id) {
         return productService.delete(id);
+    }
+
+    @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.DELETE)
+    public void deleteImage(@PathVariable Integer productId, @PathVariable Long imageId) {
+        productService.deleteImage(productId, imageId);
     }
 
     // ALL

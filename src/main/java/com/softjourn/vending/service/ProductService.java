@@ -147,13 +147,13 @@ public class ProductService {
         }
     }
 
-    public byte [] getImageById(Integer productId, Long imageId){
+    public byte[] getImageById(Integer productId, Long imageId) {
         Image image = this.imageRepository.findOne(imageId);
         if (image == null)
-            throw  new IllegalArgumentException("There is no images passed id");
-        else{
-            if(!productId.equals(image.getProductId()))
-                throw  new IllegalArgumentException("There is no images passed id");
+            throw new IllegalArgumentException("There is no images passed id");
+        else {
+            if (!productId.equals(image.getProductId()))
+                throw new IllegalArgumentException("There is no images passed id");
             return image.getData();
         }
     }
@@ -162,7 +162,7 @@ public class ProductService {
         List<Image> productImages = this.imageRepository.findByProductId(productId);
         List<String> urls = productImages.stream()
             .map(image -> image.getId() + "." + image.getResolution())
-            .map(file -> "\"products/" + productId + "/images/"+file+"\"")
+            .map(file -> "\"products/" + productId + "/images/" + file + "\"")
             .collect(Collectors.toList());
         return urls.toString();
     }
@@ -186,4 +186,17 @@ public class ProductService {
         Image image = new Image(file.getBytes(), productId, resolution);
         return imageRepository.save(image);
     }
+
+    public void deleteImage(Integer productId, Long imageId) {
+        Image image = this.imageRepository.findOne(imageId);
+        if (image == null) {
+            throw new IllegalArgumentException("There is no images passed id");
+        } else {
+            if (!productId.equals(image.getProductId()))
+                throw new IllegalArgumentException("There is no images passed id");
+        }
+        this.imageRepository.delete(image);
+        this.updateProductImagesUrl(productId);
+    }
+
 }

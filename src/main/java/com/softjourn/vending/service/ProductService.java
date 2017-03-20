@@ -123,6 +123,50 @@ public class ProductService {
         return product;
     }
 
+    public byte[] getImageById(Integer productId, Long imageId) {
+        Image image = this.imageRepository.findOne(imageId);
+        if (image == null)
+            throw new IllegalArgumentException("There is no images passed id");
+        else {
+            if (!productId.equals(image.getProductId()))
+                throw new IllegalArgumentException("There is no images passed id");
+            return image.getData();
+        }
+    }
+
+    public void deleteImage(Integer productId, Long imageId) {
+        Image image = this.imageRepository.findOne(imageId);
+        validateImage(productId, image);
+        this.imageRepository.delete(image);
+        this.updateProductImagesUrl(productId);
+    }
+
+    public void setCoverByImgId(Integer productId, Long imgId) {
+        Image image = this.imageRepository.findOne(imgId);
+        this.validateImage(productId, image);
+    }
+
+    String generateImageUrls(Integer productId) {
+        List<Image> productImages = this.imageRepository.findByProductId(productId);
+        List<String> urls = productImages.stream()
+            .map(image -> image.getId() + "." + image.getResolution())
+            .map(file -> "\"products/" + productId + "/images/" + file + "\"")
+            .collect(Collectors.toList());
+        return urls.toString();
+    }
+
+    private void validateImage(@NonNull MultipartFile file) throws IOException {
+        this.validateImageMimeType(file);
+        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
+    }
+
+    private Product updateProductImagesUrl(Integer productId) {
+        String urls = this.generateImageUrls(productId);
+        Product product = this.getProduct(productId);
+        product.setImageUrls(urls);
+        return this.update(productId, product);
+    }
+
     private Product setImage(Product product, MultipartFile image) {
         try {
             String resolution = FileUploadUtil.getResolution(image);
@@ -147,39 +191,6 @@ public class ProductService {
         }
     }
 
-    public byte[] getImageById(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
-        if (image == null)
-            throw new IllegalArgumentException("There is no images passed id");
-        else {
-            if (!productId.equals(image.getProductId()))
-                throw new IllegalArgumentException("There is no images passed id");
-            return image.getData();
-        }
-    }
-
-    String generateImageUrls(Integer productId) {
-        List<Image> productImages = this.imageRepository.findByProductId(productId);
-        List<String> urls = productImages.stream()
-            .map(image -> image.getId() + "." + image.getResolution())
-            .map(file -> "\"products/" + productId + "/images/" + file + "\"")
-            .collect(Collectors.toList());
-        return urls.toString();
-    }
-
-
-    private void validateImage(@NonNull MultipartFile file) throws IOException {
-        this.validateImageMimeType(file);
-        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
-    }
-
-    private Product updateProductImagesUrl(Integer productId) {
-        String urls = this.generateImageUrls(productId);
-        Product product = this.getProduct(productId);
-        product.setImageUrls(urls);
-        return this.update(productId, product);
-    }
-
     private Image saveImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
@@ -187,16 +198,20 @@ public class ProductService {
         return imageRepository.save(image);
     }
 
-    public void deleteImage(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
+    /**
+     * Check if image corresponds to proper product
+     *
+     * @param productId product associated with image
+     * @param image     stored image in db
+     * @throws IllegalArgumentException If image doesn't exists in DB or product id does not match
+     */
+    private void validateImage(Integer productId, Image image) throws IllegalArgumentException {
+        String message = "There is no images passed id";
         if (image == null) {
-            throw new IllegalArgumentException("There is no images passed id");
+            throw new IllegalArgumentException(message);
         } else {
             if (!productId.equals(image.getProductId()))
-                throw new IllegalArgumentException("There is no images passed id");
+                throw new IllegalArgumentException(message);
         }
-        this.imageRepository.delete(image);
-        this.updateProductImagesUrl(productId);
     }
-
 }

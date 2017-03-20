@@ -3,6 +3,7 @@ package com.softjourn.vending.entity;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.softjourn.vending.utils.jsonview.View;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -60,4 +62,9 @@ public class Product {
     @JsonRawValue
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String imageUrls;
+
+//    @JsonUnwrapped
+//    @JsonView(View.Client.class)
+//    @OneToMany(mappedBy = "productId")
+//    private List<Image> imageUrls;
 }

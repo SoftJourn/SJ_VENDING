@@ -32,7 +32,7 @@ public class ProductDTO {
         this.setId(product.getId());
         this.setPrice(product.getPrice());
         this.setName(product.getName());
-        this.setImageUrl(product.getImageUrl());
+//        this.setImageUrl(product.getImageUrl());
         this.setCategory(product.getCategory().getName());
         this.setDescription(product.getDescription());
     }

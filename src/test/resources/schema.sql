@@ -97,5 +97,7 @@ CREATE TABLE image
   id BIGINT PRIMARY KEY NOT NULL IDENTITY ,
   data BLOB,
   product_id INT NOT NULL,
-  resolution VARCHAR(255)
+  is_cover BOOLEAN DEFAULT FALSE,
+  resolution VARCHAR(255),
+  url VARCHAR(255) DEFAULT ''
 );

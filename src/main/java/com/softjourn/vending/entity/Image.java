@@ -1,6 +1,8 @@
 package com.softjourn.vending.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.softjourn.vending.utils.jsonview.View;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,21 +17,22 @@ public class Image {
 
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
 
     @JsonIgnore
     @Column(length = IMAGE_FILE_MAX_SIZE)
     private byte[] data;
 
+    private String url;
     private String resolution;
+    private Integer productId;
+    private Boolean isCover;
 
-    private int productId;
+//  TODO  3. Migrate cover image from product here.
 
-//  TODO 1. make all primitives objects. 2. Add is cover flag. 3. Migrate cover image from product here.
-
-    public Image(byte[] bytes, int productId, String resolution) {
-        this.data = bytes;
-        this.productId = productId;
+    public Image(byte[] data, Integer productId, String resolution) {
+        this.data = data;
         this.resolution = resolution;
+        this.productId = productId;
     }
 }

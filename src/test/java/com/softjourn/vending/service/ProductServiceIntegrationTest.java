@@ -17,6 +17,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -53,6 +55,9 @@ public class ProductServiceIntegrationTest {
     private byte[] imageData;
 
     private Product testProduct;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Test
     public void getImageUrls() throws Exception {
@@ -96,6 +101,7 @@ public class ProductServiceIntegrationTest {
         List<Image> images = this.imageRepository.findByProductId(testProduct.getId());
         assertEquals(1, images.size());
 
+        this.loadingFromDBNotInternalCache();
         List<Product> allProducts = this.productService.getProducts();
         // Finding products with product.id and don`t empty images
         long count = allProducts
@@ -138,5 +144,11 @@ public class ProductServiceIntegrationTest {
         when(imagePng.getBytes()).thenReturn(imageData);
         when(imagePng.getInputStream()).thenReturn(new ByteArrayInputStream(realImage));
         when(imageJpg.getInputStream()).thenReturn(new ByteArrayInputStream(realImage));
+    }
+
+    @Before
+    public void loadingFromDBNotInternalCache(){
+        em.flush();
+        em.clear();
     }
 }

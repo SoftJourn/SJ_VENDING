@@ -163,7 +163,8 @@ public class ProductService {
     private Product updateProductImagesUrl(Integer productId) {
         String urls = this.generateImageUrls(productId);
         Product product = this.getProduct(productId);
-        product.setImageUrls(urls);
+        //TODO
+//        product.setImageUrls(urls);
         return this.update(productId, product);
     }
 

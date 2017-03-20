@@ -17,6 +17,7 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -59,9 +60,11 @@ public class Product {
     @NotNull(message = "Product category is required")
     private Category category;
 
-    @JsonRawValue
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String imageUrls;
+//    @JsonRawValue
+//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "productId")
+    private Set<Image> imageUrls;
 
 //    @JsonUnwrapped
 //    @JsonView(View.Client.class)

@@ -1,9 +1,8 @@
 package com.softjourn.vending.entity;
 
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.softjourn.vending.utils.jsonview.View;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,10 +16,7 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
 @Data
 @NoArgsConstructor
@@ -43,17 +39,10 @@ public class Product {
     @Pattern(regexp = "^[a-zA-Z0-9\\u0400-\\u04FF]+[ a-zA-Z0-9\\u0400-\\u04FF,-]*[a-zA-Z0-9\\u0400-\\u04FF,-]+", message = "Product name should't starts and ends with whitespaces and should't contain special characters")
     private String name;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @JsonIgnore
-    @Column(length = IMAGE_FILE_MAX_SIZE)
-    private byte[] imageData;
-
     @JsonIgnore
     private Instant addedTime;
 
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -61,7 +50,21 @@ public class Product {
     @NotNull(message = "Product category is required")
     private Category category;
 
-    @OneToMany(orphanRemoval = true, mappedBy = "productId")
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER)
     private Set<Image> imageUrls = new HashSet<>();
+
+    @JsonGetter
+    public String getImageUrl() {
+        if (this.imageUrls != null)
+            return this.imageUrls
+                .stream()
+                .filter(Image::isCover)
+                .findFirst()
+                .map(Image::getUrl)
+                .orElse("");
+        else
+            return "";
+    }
 
 }

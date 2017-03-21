@@ -91,7 +91,7 @@ CREATE TABLE row_fields
   FOREIGN KEY (row) REFERENCES rows (id),
   FOREIGN KEY (field) REFERENCES fields (id)
 );
-CREATE TABLE image
+CREATE TABLE images
 (
   id BIGINT PRIMARY KEY NOT NULL IDENTITY ,
   data varbinary(262144),

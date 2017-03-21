@@ -6,6 +6,7 @@ import com.softjourn.vending.dao.ImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Image;
 import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.ProductNotFoundException;
 import com.softjourn.vending.exceptions.WrongImageDimensions;
@@ -94,7 +95,7 @@ public class ProductService {
     @Transactional
     public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         Product product = productRepository.findOne(productId);
-        if(product == null)
+        if (product == null)
             throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
         Set<Image> productImages = product.getImageUrls();
         Image image = saveImage(file, productId);
@@ -112,9 +113,9 @@ public class ProductService {
 
     @Transactional
     public synchronized void updateCoverImage(@NonNull MultipartFile file, Integer id) throws IOException {
-        validateImage(file);
         Product product = getProduct(id);
-        setImage(product, file);
+        Image image = this.saveImage(file, id, true);
+        product.getImageUrls().add(image);
         productRepository.save(product);
     }
 
@@ -134,10 +135,10 @@ public class ProductService {
     public byte[] getImageById(Integer productId, Long imageId) {
         Image image = this.imageRepository.findOne(imageId);
         if (image == null)
-            throw new IllegalArgumentException("There is no images passed id");
+            throw new NotFoundException("There is no images passed id");
         else {
             if (!productId.equals(image.getProductId()))
-                throw new IllegalArgumentException("There is no images passed id");
+                throw new NotFoundException("There is no images passed id");
             return image.getData();
         }
     }
@@ -158,16 +159,6 @@ public class ProductService {
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 
-    private Product setImage(Product product, MultipartFile image) {
-        try {
-            String resolution = FileUploadUtil.getResolution(image);
-            product.setImageData(image.getBytes());
-            product.setImageUrl("products/" + product.getId() + "/image." + resolution);
-            return product;
-        } catch (IOException e) {
-            throw new RuntimeException("Can't save image for product with id " + product.getId(), e);
-        }
-    }
 
     private void validateImageMimeType(MultipartFile file) {
         String supportedTypes = "image/(?:jpeg|png|jpg|apng|svg|bmp)";
@@ -183,11 +174,25 @@ public class ProductService {
     }
 
     private Image saveImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+        return this.saveImage(file, productId, false);
+    }
+
+    private Image saveImage(@NonNull MultipartFile file, Integer productId, boolean isCover) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
+        if(isCover)
+            this.dropCover(productId);
         Image image = new Image(file.getBytes(), productId, resolution);
+        image.setCover(isCover);
         Image stored = imageRepository.save(image);
         return imageRepository.save(this.setUrlTo(stored));
+    }
+
+    private void dropCover(Integer productId){
+        this.imageRepository.findByProductIdAndIsCover(productId,true)
+            .stream()
+            .peek(image -> image.setCover(false))
+            .forEach(image -> this.imageRepository.save(image));
     }
 
     private Image setUrlTo(Image image) {

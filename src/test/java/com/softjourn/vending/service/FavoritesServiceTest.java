@@ -51,21 +51,21 @@ public class FavoritesServiceTest {
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
-        product.setImageUrl("/image.jpg");
+//        product.setImageUrl("/image.jpg");
         product.setAddedTime(Instant.ofEpochMilli(1_000_000));
 
         product2 = new Product();
         product2.setId(1);
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
-        product2.setImageUrl("/image2.jpg");
+//        product2.setImageUrl("/image2.jpg");
         product2.setAddedTime(Instant.ofEpochMilli(2_000_000));
 
         product1 = new Product();
         product1.setId(2);
         product1.setName("COCA");
         product1.setPrice(new BigDecimal(50));
-        product1.setImageUrl("/image2.jpg");
+//        product1.setImageUrl("/image2.jpg");
         product1.setAddedTime(Instant.ofEpochMilli(2_500_000));
 
         favorite = new Favorite(userName, product);

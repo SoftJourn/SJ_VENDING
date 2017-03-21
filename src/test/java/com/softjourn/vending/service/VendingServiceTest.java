@@ -208,7 +208,7 @@ public class VendingServiceTest {
     private VendingMachine createMachineWithProducts() {
         Product product1 = new Product();
         product1.setName("Pepsi");
-        product1.setImageUrl("6/image.jpg");
+//        product1.setImageUrl("6/image.jpg");
         product1.setPrice(new BigDecimal(100));
 
         VendingMachine vendingMachine = service.create(builder2, principal);

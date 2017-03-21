@@ -74,7 +74,7 @@ public class BuyServiceTest {
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
-        product.setImageUrl("/image.jpg");
+//        product.setImageUrl("/image.jpg");
         product.setCategory(drinks);
         product.setAddedTime(Instant.ofEpochMilli(1_000_000));
 
@@ -82,7 +82,7 @@ public class BuyServiceTest {
         product2.setId(1);
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
-        product2.setImageUrl("/image2.jpg");
+//        product2.setImageUrl("/image2.jpg");
         product2.setCategory(drinks);
         product2.setAddedTime(Instant.ofEpochMilli(2_000_000));
 

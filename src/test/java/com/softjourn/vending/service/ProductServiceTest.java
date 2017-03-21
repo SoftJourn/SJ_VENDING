@@ -13,28 +13,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-
 @Log
 public class ProductServiceTest {
 
@@ -89,23 +82,9 @@ public class ProductServiceTest {
     public void testUpdate() throws Exception {
         Product newProduct = productService.update(1, updated);
         assertEquals("Pepsi", newProduct.getName());
-        assertEquals("/products/1/image.jpg", newProduct.getImageUrl());
         assertEquals(new BigDecimal(10), newProduct.getPrice());
 
         verify(productRepository, times(1)).save(product);
-    }
-
-    @Test
-    public void testUpdateImage() throws Exception {
-        productService.updateCoverImage(imageJpg, 1);
-        assertTrue(product.getImageUrl().endsWith("1/image.jpeg"));
-
-        productService.updateCoverImage(imagePng, 1);
-        assertTrue(product.getImageUrl().endsWith("1/image.png"));
-
-        assertEquals(product.getImageData(), imageData);
-
-        verify(productRepository, times(2)).save(product);
     }
 
     @Test
@@ -140,8 +119,6 @@ public class ProductServiceTest {
         product.setName("Cola");
         product.setAddedTime(Instant.now());
         product.setPrice(new BigDecimal(10));
-        product.setImageUrl("/products/1/image.jpg");
-//        product.setImageUrls("urls");
         product.setCategory(new Category(1L, "Drink"));
 
         updated = new Product();
@@ -149,7 +126,6 @@ public class ProductServiceTest {
         updated.setPrice(new BigDecimal(10));
         updated.setAddedTime(Instant.now());
         updated.setCategory(new Category(1L, "Drink"));
-        updated.setImageUrl("/products/1/image.jpg");
 
 
         when(productRepository.findOne(1)).thenReturn(product);

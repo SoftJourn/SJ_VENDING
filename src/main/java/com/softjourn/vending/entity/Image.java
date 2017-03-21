@@ -16,6 +16,7 @@ import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "images")
 public class Image {
 
     @Id
@@ -29,15 +30,13 @@ public class Image {
     private String url;
     private String resolution;
     private Integer productId;
-    private Boolean isCover = false;
+    private boolean isCover = false;
 
     @Override
     @JsonValue
     public String toString() {
         return this.url;
     }
-
-    //  TODO  3. Migrate cover image from product here.
 
     public Image(byte[] data, Integer productId, String resolution) {
         this.data = data;

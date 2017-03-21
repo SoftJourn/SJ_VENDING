@@ -21,13 +21,11 @@ public class ReflectionMergeUtilTest {
         product.setId(1);
         product.setName("Cola");
         product.setPrice(new BigDecimal(10));
-        product.setImageUrl("/images/1.jpg");
 
         productUpdater = new Product();
         productUpdater.setId(2);
         productUpdater.setName("Pepsi");
         productUpdater.setPrice(new BigDecimal(20));
-        productUpdater.setImageUrl(null);
 
     }
 
@@ -44,6 +42,5 @@ public class ReflectionMergeUtilTest {
         assertEquals(new Integer(1), product.getId());
         assertEquals("Pepsi", product.getName());
         assertEquals(new BigDecimal(20), product.getPrice());
-        assertEquals("/images/1.jpg", product.getImageUrl());
     }
 }

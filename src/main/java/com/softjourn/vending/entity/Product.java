@@ -61,14 +61,7 @@ public class Product {
     @NotNull(message = "Product category is required")
     private Category category;
 
-//    @JsonRawValue
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "productId")
+    @OneToMany(orphanRemoval = true, mappedBy = "productId")
     private Set<Image> imageUrls = new HashSet<>();
 
-//    @JsonUnwrapped
-//    @JsonView(View.Client.class)
-//    @OneToMany(mappedBy = "productId")
-//    private List<Image> imageUrls;
 }

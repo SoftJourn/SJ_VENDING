@@ -1,12 +1,15 @@
 package com.softjourn.vending.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.softjourn.vending.utils.jsonview.View;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import java.util.Arrays;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 
@@ -26,9 +29,15 @@ public class Image {
     private String url;
     private String resolution;
     private Integer productId;
-    private Boolean isCover;
+    private Boolean isCover = false;
 
-//  TODO  3. Migrate cover image from product here.
+    @Override
+    @JsonValue
+    public String toString() {
+        return this.url;
+    }
+
+    //  TODO  3. Migrate cover image from product here.
 
     public Image(byte[] data, Integer productId, String resolution) {
         this.data = data;

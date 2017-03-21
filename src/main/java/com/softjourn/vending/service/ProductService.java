@@ -35,6 +35,9 @@ import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 @Slf4j
 public class ProductService {
 
+    private final static String PRODUCTS_RELATIVE_ENDPOINT = "products";
+    private final static String IMAGES_ENDPOINT = "images";
+
     private FavoritesRepository favoritesRepository;
     private ImageRepository imageRepository;
 
@@ -91,6 +94,8 @@ public class ProductService {
     @Transactional
     public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         Product product = productRepository.findOne(productId);
+        if(product == null)
+            throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
         Set<Image> productImages = product.getImageUrls();
         Image image = saveImage(file, productId);
         productImages.add(image);
@@ -148,15 +153,6 @@ public class ProductService {
         this.validateImage(productId, image);
     }
 
-    String generateImageUrls(Integer productId) {
-        List<Image> productImages = this.imageRepository.findByProductId(productId);
-        List<String> urls = productImages.stream()
-            .map(image -> image.getId() + "." + image.getResolution())
-            .map(file -> "\"products/" + productId + "/images/" + file + "\"")
-            .collect(Collectors.toList());
-        return urls.toString();
-    }
-
     private void validateImage(@NonNull MultipartFile file) throws IOException {
         this.validateImageMimeType(file);
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
@@ -190,7 +186,22 @@ public class ProductService {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
         Image image = new Image(file.getBytes(), productId, resolution);
-        return imageRepository.save(image);
+        Image stored = imageRepository.save(image);
+        return imageRepository.save(this.setUrlTo(stored));
+    }
+
+    private Image setUrlTo(Image image) {
+        if (image.getId() == null || image.getProductId() == null || image.getResolution() == null) {
+            throw new IllegalArgumentException("Can't form urls due to image or product id is not set");
+        } else {
+            int productId = image.getProductId();
+            long imageId = image.getId();
+            String type = image.getResolution();
+            String url = PRODUCTS_RELATIVE_ENDPOINT + '/' + productId + '/' + IMAGES_ENDPOINT + '/'
+                + imageId + '.' + type;
+            image.setUrl(url);
+            return image;
+        }
     }
 
     /**

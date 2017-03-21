@@ -3,9 +3,9 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.FavoritesRepository;
 import com.softjourn.vending.dao.ImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
-import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.entity.Image;
 import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.exceptions.ProductNotFoundException;
 import lombok.extern.java.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.ByteArrayInputStream;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,33 +48,13 @@ public class ProductServiceIntegrationTest {
     @Mock
     private MultipartFile imageJpg;
 
-    private byte[] imageData;
-
-    private Product testProduct;
-
-    @PersistenceContext
-    private EntityManager em;
-
-    @Test
-    public void getImageUrls() throws Exception {
-        Image image;
-        int productId = 1;
-        image = new Image(this.imageData, productId, "jpg");
-        image = this.imageRepository.save(image);
-        long imageId1 = image.getId();
-        image = new Image(this.imageData, productId, "png");
-        image = this.imageRepository.save(image);
-        long imageId2 = image.getId();
-        String result = "[\"products/1/images/"+imageId1+".jpg\", \"products/1/images/"+imageId2+".png\"]";
-
-        assertEquals(result, this.productService.generateImageUrls(productId).toString());
-    }
+    private Integer testProductId = 0;
 
     @Test
     public void getProduct_WithMultipleImages() throws Exception {
-        int productId = this.testProduct.getId();
-        Image storedImage =  this.productService.addProductImage(this.imagePng, productId);
-        String result = "[\"products/"+productId+"/images/"+storedImage.getId()+".png\"]";
+        int productId = this.testProductId;
+        Image storedImage = this.productService.addProductImage(this.imagePng, productId);
+        String result = "[products/" + productId + "/images/" + storedImage.getId() + ".png]";
         Product product = this.productService.getProduct(productId);
         assertNotNull(product.getImageUrls());
         assertEquals(result, product.getImageUrls().toString());
@@ -87,30 +63,33 @@ public class ProductServiceIntegrationTest {
 
     @Test
     public void addImage() throws Exception {
-        this.productService.addProductImage(this.imageJpg, testProduct.getId());
-        this.productService.addProductImage(this.imagePng, testProduct.getId());
+        this.productService.addProductImage(this.imageJpg, testProductId);
+        this.productService.addProductImage(this.imagePng, testProductId);
         Product product;
-        product = this.productRepository.findOne(testProduct.getId());
+        product = this.productRepository.findOne(testProductId);
         assertNotNull(product.getImageUrls());
     }
 
+    @Test(expected = ProductNotFoundException.class)
+    public void addImage_NotExistedProduct() throws Exception {
+        this.productService.addProductImage(this.imageJpg, Integer.MAX_VALUE);
+    }
+
     @Test
-    public void getAllProducts() throws Exception {
-        this.productService.addProductImage(this.imagePng, testProduct.getId());
+    public void addProductImage_getAllProducts_integration() throws Exception {
+        this.productService.addProductImage(this.imagePng, testProductId);
 
-       /* List<Image> images = this.imageRepository.findByProductId(testProduct.getId());
-        assertEquals(1, images.size());*/
+        List<Image> images = this.imageRepository.findByProductId(testProductId);
+        assertEquals(1, images.size());
 
-        //this.loadingFromDBNotInternalCache();
         List<Product> allProducts = this.productService.getProducts();
         // Finding products with product.id and don`t empty images
         long count = allProducts
             .stream()
-            .filter(product -> Objects.equals(product.getId(), testProduct.getId()))
+            .filter(product -> Objects.equals(product.getId(), testProductId))
             .filter(product -> !product.getImageUrls().isEmpty())
             .count();
-        assertEquals(1, count);
-
+        assertEquals(1,count);
     }
 
     @Before
@@ -118,7 +97,7 @@ public class ProductServiceIntegrationTest {
 
         productService = new ProductService(productRepository, favoritesRepository, imageRepository);
 
-        imageData = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 45, 78, 56, 45, 12, 5, 48, 7, 54, 21, 5, 45, 4, 87, 8,
+        byte[] imageData = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 45, 78, 56, 45, 12, 5, 48, 7, 54, 21, 5, 45, 4, 87, 8,
             75, 41, 21, 51};
         byte[] realImage = new byte[]{-119, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 17, 0, 0, 0,
             18, 8, 6, 0, 0, 0, -67, -7, 53, 84, 0, 0, 0, 4, 115, 66, 73, 84, 8, 8, 8, 8, 124, 8, 100, -120, 0, 0, 0,
@@ -126,16 +105,6 @@ public class ProductServiceIntegrationTest {
             101, 101, 110, 115, 104, 111, 116, -17, 3, -65, 62, 0, 0, 0, 31, 73, 68, 65, 84, 56, -115, 99, -4, -1, -1,
             -1, 127, 6, 10, 1, 19, -91, 6, -116, 26, 50, 106, -56, -88, 33, -93, -122, 80, -45, 16, 0, -89, -19, 4, 32,
             -98, -16, 34, -99, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126};
-
-        testProduct = new Product();
-        testProduct.setId(2);
-        testProduct.setName("Cola");
-        testProduct.setAddedTime(Instant.now());
-        testProduct.setPrice(new BigDecimal(10));
-        testProduct.setImageUrl("/products/1/image.jpg");
-        testProduct.setCategory(new Category(1L, "Drink"));
-
-        testProduct = this.productRepository.save(testProduct);
 
         when(imagePng.getContentType()).thenReturn("image/png");
         when(imageJpg.getContentType()).thenReturn("image/jpeg");
@@ -146,9 +115,4 @@ public class ProductServiceIntegrationTest {
         when(imageJpg.getInputStream()).thenReturn(new ByteArrayInputStream(realImage));
     }
 
-    /*@Before
-    public void loadingFromDBNotInternalCache(){
-        em.flush();
-        em.clear();
-    }*/
 }

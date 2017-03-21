@@ -6,3 +6,7 @@ INSERT INTO categories (name) VALUES ('Other stuff');
 INSERT INTO categories (name) VALUES ('Sandwiches');
 INSERT INTO categories (name) VALUES ('Snack');
 INSERT INTO categories (name) VALUES ('Sugar');
+
+INSERT INTO products (id, image_url, "NAME", price, added_time, description, image_data, id_categories)
+  VALUES (1, 'terasdfgh.jpg', 'COCA', 10, CURRENT_TIMESTAMP, 'adfgsfg', NULL , 1);
+INSERT INTO image ("DATA", product_id, is_cover, resolution, url) VALUES (NULL , 1, true, 'png', 'test.png');

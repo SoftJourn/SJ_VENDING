@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -89,8 +90,11 @@ public class ProductService {
 
     @Transactional
     public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+        Product product = productRepository.findOne(productId);
+        Set<Image> productImages = product.getImageUrls();
         Image image = saveImage(file, productId);
-        updateProductImagesUrl(productId);
+        productImages.add(image);
+        productRepository.save(product);
         return image;
     }
 
@@ -99,7 +103,6 @@ public class ProductService {
         for (MultipartFile file : files) {
             this.saveImage(file, productId);
         }
-        this.updateProductImagesUrl(productId);
     }
 
     @Transactional
@@ -138,7 +141,6 @@ public class ProductService {
         Image image = this.imageRepository.findOne(imageId);
         validateImage(productId, image);
         this.imageRepository.delete(image);
-        this.updateProductImagesUrl(productId);
     }
 
     public void setCoverByImgId(Integer productId, Long imgId) {
@@ -158,14 +160,6 @@ public class ProductService {
     private void validateImage(@NonNull MultipartFile file) throws IOException {
         this.validateImageMimeType(file);
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
-    }
-
-    private Product updateProductImagesUrl(Integer productId) {
-        String urls = this.generateImageUrls(productId);
-        Product product = this.getProduct(productId);
-        //TODO
-//        product.setImageUrls(urls);
-        return this.update(productId, product);
     }
 
     private Product setImage(Product product, MultipartFile image) {

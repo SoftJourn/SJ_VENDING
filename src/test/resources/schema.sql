@@ -10,7 +10,7 @@ CREATE TABLE machines
   name VARCHAR(255),
   url VARCHAR(255) NOT NULL,
   unique_id VARCHAR(36) NOT NULL,
-  is_active BIT(1) NOT NULL,
+  is_active BOOLEAN NOT NULL,
   cell_limit INT DEFAULT '6' NOT NULL
 );
 CREATE UNIQUE INDEX machines_name_uindex ON machines (name);
@@ -19,12 +19,11 @@ CREATE TABLE products
   id INT PRIMARY KEY NOT NULL IDENTITY,
   image_url VARCHAR(255),
   name VARCHAR(255) NOT NULL,
-  price DECIMAL(19,2) NOT NULL,
+  price NUMERIC(19,2) NOT NULL,
   added_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   description LONGVARCHAR,
-  image_data BLOB,
+  image_data varbinary(262144),
   id_categories BIGINT,
-  image_urls VARCHAR(255) NULL,
   CONSTRAINT FK_8l3my8ls6adnevblpj5twva2e FOREIGN KEY (id_categories) REFERENCES categories (id)
 );
 CREATE INDEX machines_unique_id_uindex ON machines (unique_id);
@@ -58,7 +57,7 @@ CREATE UNIQUE INDEX UK_idou9b2ifkx5035yonqkx48ey ON favorites (account, product)
 CREATE TABLE fields
 (
   id INT PRIMARY KEY NOT NULL IDENTITY,
-  "count" INT NOT NULL,
+  "COUNT" INT NOT NULL,
   internal_id VARCHAR(255) NOT NULL,
   position INT,
   product INT,
@@ -68,9 +67,9 @@ CREATE INDEX FK_3dlqg7ao6x5xew3nnmer8equo ON fields (product);
 CREATE TABLE load_history
 (
   id BIGINT PRIMARY KEY NOT NULL IDENTITY,
-  price DECIMAL(19,2) NOT NULL,
+  price NUMERIC(19,2) NOT NULL,
   date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  is_distributed TINYINT DEFAULT '0' NOT NULL,
+  is_distributed BOOLEAN DEFAULT FALSE NOT NULL,
   machine_id INT NOT NULL,
   CONSTRAINT load_history_machines_id_fk FOREIGN KEY (machine_id) REFERENCES machines (id)
 );
@@ -95,7 +94,7 @@ CREATE TABLE row_fields
 CREATE TABLE image
 (
   id BIGINT PRIMARY KEY NOT NULL IDENTITY ,
-  data BLOB,
+  data varbinary(262144),
   product_id INT NOT NULL,
   is_cover BOOLEAN DEFAULT FALSE,
   resolution VARCHAR(255),

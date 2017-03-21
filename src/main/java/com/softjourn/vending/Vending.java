@@ -1,6 +1,7 @@
 package com.softjourn.vending;
 
 
+import com.softjourn.common.spring.aspects.logging.EnableLoggingAspect;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 @SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
 @EnableResourceServer
+@EnableLoggingAspect
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources(
         @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)

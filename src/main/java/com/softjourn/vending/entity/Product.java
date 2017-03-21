@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -62,9 +63,9 @@ public class Product {
 
 //    @JsonRawValue
 //    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "productId")
-    private Set<Image> imageUrls;
+    private Set<Image> imageUrls = new HashSet<>();
 
 //    @JsonUnwrapped
 //    @JsonView(View.Client.class)

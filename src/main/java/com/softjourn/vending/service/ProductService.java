@@ -216,6 +216,7 @@ public class ProductService {
      * @param image     stored image in db
      * @throws IllegalArgumentException If image doesn't exists in DB or product id does not match
      */
+    // TODO change to NotFoundException
     private void validateImage(Integer productId, Image image) throws IllegalArgumentException {
         String message = "There is no images passed id";
         if (image == null) {

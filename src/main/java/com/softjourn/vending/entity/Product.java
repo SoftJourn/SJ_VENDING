@@ -16,6 +16,7 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -49,6 +50,9 @@ public class Product {
     @JoinColumn(name = "id_categories")
     @NotNull(message = "Product category is required")
     private Category category;
+
+    @ElementCollection
+    private Map<String,String> nutritionFacts;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER)

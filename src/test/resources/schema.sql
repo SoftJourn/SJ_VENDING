@@ -100,3 +100,10 @@ CREATE TABLE images
   resolution VARCHAR(255),
   url VARCHAR(255) DEFAULT ''
 );
+CREATE TABLE product_nutrition_facts(
+  product_id INT NOT NULL,
+  nutrition_facts_key VARCHAR(255) NOT NULL,
+  nutrition_facts VARCHAR(255),
+  PRIMARY KEY (product_id, nutrition_facts_key),
+  CONSTRAINT FK_product_id FOREIGN KEY (product_id) REFERENCES products(id)
+);

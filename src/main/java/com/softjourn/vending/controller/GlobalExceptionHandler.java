@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,75 +27,124 @@ import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 
 @ControllerAdvice
 @Slf4j
+@ResponseBody
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotEnoughAmountException.class)
-    public ResponseEntity<ErrorDetail> handlePaymentNotEnoughAmount(NotEnoughAmountException e) {
-        log.info(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40901,
-                "Not enough money to buy product"));
-    }
+    // 400 BAD_REQUEST
 
-    @ExceptionHandler(PaymentProcessingException.class)
-    public ResponseEntity<ErrorDetail> handlePaymentProcessingException(PaymentProcessingException e) {
-        log.warn("Error during processing payment. " + e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(buildErrorDetails(e, 50902,
-                "Error during processing payment."));
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public void handleNotFoundException(Exception e) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public ErrorDetail handleBadRequestException(Exception e) {
         log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40000,
+            e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorDetail handle(MethodArgumentNotValidException e) {
+        log.info(e.getMessage());
+        String message = e.getBindingResult().getAllErrors().stream()
+            .findFirst()
+            .filter(Objects::nonNull)
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .orElse("");
+
+        return buildErrorDetails(e, null, message);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ErrorDetail handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Image size is too large");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotImageException.class)
+    public ErrorDetail handleNotImageException(NotImageException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "This file is not image or this file format is not supported!");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(WrongImageDimensions.class)
+    public ErrorDetail handleWrongImageDimensions(WrongImageDimensions e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Image dimensions is too big, try to use 205*205px");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ParseException.class)
+    public ErrorDetail handleParseException(ParseException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Sent data could not be parsed");
+    }
+
+    // 404 NOT_FOUND
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ErrorDetail> handleNoHandlerFoundException(NoHandlerFoundException e) {
+    public ErrorDetail handleNoHandlerFoundException(NoHandlerFoundException e) {
         log.warn(e.getLocalizedMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(buildErrorDetails(e, 40401, String.format("Endpoint %s not found", e.getRequestURL())));
+        return buildErrorDetails(e, 40401, String.format("Endpoint %s not found", e.getRequestURL()));
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(MachineNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleMachineNotFoundException(MachineNotFoundException e) {
+    public ErrorDetail handleMachineNotFoundException(MachineNotFoundException e) {
         log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40402,
-                e.getMessage()));
+        return buildErrorDetails(e, 40402, e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleProductNotFoundException(ProductNotFoundException e) {
+    public ErrorDetail handleProductNotFoundException(ProductNotFoundException e) {
         log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40403,
-                e.getMessage()));
+        return buildErrorDetails(e, 40403, e.getMessage());
     }
 
     @ExceptionHandler(ProductNotFoundInMachineException.class)
-    public ResponseEntity<ErrorDetail> handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDetail handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
         log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(buildErrorDetails(e, 40404,
-                e.getMessage()));
+        return buildErrorDetails(e, 40404,
+            e.getMessage());
     }
 
-    @ExceptionHandler(ProductAlreadyInFavoritesException.class)
-    public ResponseEntity<ErrorDetail> handleProductAlreadyInFavoritesException(ProductAlreadyInFavoritesException e) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ErrorDetail handleNotFoundException(Exception e) {
         log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40902,
-                e.getMessage()));
+        return buildErrorDetails(e, 40405, "Record does not exists");
     }
 
-    @ExceptionHandler(ProductIsNotInFavoritesException.class)
-    public ResponseEntity<ErrorDetail> handleProductIsNotInFavoritesException(ProductIsNotInFavoritesException e) {
-        log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(e, 40903,
-                e.getMessage()));
+    // 409 CONFLICT
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ErrorDetail handleDataIntegrityViolationException(Exception e) {
+        if (e.getCause() instanceof ConstraintViolationException) {
+            ConstraintViolationException cause = (ConstraintViolationException) e.getCause();
+            if (cause.getSQLException().getErrorCode() == SQL_DUPLICATE_ENTRY) {
+                log.info(e.getMessage());
+                return buildErrorDetails(cause,
+                    cause.getSQLException().getErrorCode(), "Duplicate entry");
+            } else if (cause.getSQLException().getErrorCode() == SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW) {
+                log.info(e.getMessage());
+                return buildErrorDetails(cause,
+                    cause.getSQLException().getErrorCode(), "Cannot delete or update a parent row");
+            }
+        }
+        log.info(e.getLocalizedMessage());
+        return null;
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorDetail> handleBadRequestException(Exception e) {
-        log.warn(e.getLocalizedMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorDetails(e, 40000,
-                e.getMessage()));
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ErisAccountNotFoundException.class)
+    public ErrorDetail handleErisAccountNotFound(Exception e) {
+        log.info("Request for create machine and assign Eris account. " + e.getLocalizedMessage());
+        return buildErrorDetails(e, null, e.getLocalizedMessage());
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Such item already presented.")
@@ -103,94 +153,55 @@ public class GlobalExceptionHandler {
         log.info(e.getLocalizedMessage());
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(NotEnoughAmountException.class)
+    public ErrorDetail handlePaymentNotEnoughAmount(NotEnoughAmountException e) {
+        log.info(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40901, "Not enough money to buy product");
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ProductAlreadyInFavoritesException.class)
+    public ErrorDetail handleProductAlreadyInFavoritesException(ProductAlreadyInFavoritesException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40902,
+            e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ProductIsNotInFavoritesException.class)
+    public ErrorDetail handleProductIsNotInFavoritesException(ProductIsNotInFavoritesException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40903,
+            e.getMessage());
+    }
+
+    // 500 INTERNAL_SERVER_ERROR
+
+    @ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
+    @ExceptionHandler(MachineBusyException.class)
+    public ErrorDetail handleMachineBusyException(Exception e) {
+        return buildErrorDetails(e, 50901, "Machine is locked by queue. Try again later.");
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(PaymentProcessingException.class)
+    public ErrorDetail handlePaymentProcessingException(PaymentProcessingException e) {
+        log.warn("Error during processing payment. " + e.getLocalizedMessage());
+        return buildErrorDetails(e, 50902, "Error during processing payment.");
+    }
+
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error occurred during processing request. Contact ADMIN.")
     @ExceptionHandler(VendingProcessingException.class)
     public void handleVendingProcessingException(Exception e) {
         log.info(e.getLocalizedMessage());
     }
 
+    // NO STATUS
+
     @ExceptionHandler(value = AccessDeniedException.class)
     public ModelAndView accessDenied() {
         return new ModelAndView("redirect:login.html");
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorDetail> handleDataIntegrityViolationException(Exception e) {
-        if (e.getCause() instanceof ConstraintViolationException) {
-            ConstraintViolationException cause = (ConstraintViolationException) e.getCause();
-            if (cause.getSQLException().getErrorCode() == SQL_DUPLICATE_ENTRY) {
-                log.info(e.getMessage());
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(cause,
-                        cause.getSQLException().getErrorCode(), "Duplicate entry"));
-            } else if (cause.getSQLException().getErrorCode() == SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW) {
-                log.info(e.getMessage());
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(buildErrorDetails(cause,
-                        cause.getSQLException().getErrorCode(), "Cannot delete or update a parent row"));
-            }
-        }
-        log.info(e.getLocalizedMessage());
-        return null;
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDetail> handle(MethodArgumentNotValidException e) {
-        log.info(e.getMessage());
-        String message = e.getBindingResult().getAllErrors().stream()
-                .findFirst()
-                .filter(Objects::nonNull)
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .orElse("");
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorDetails(e, null, message));
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorDetail> handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
-        log.info(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorDetails(e, null, "Image size is too large"));
-    }
-
-    @ExceptionHandler(NotImageException.class)
-    public ResponseEntity<ErrorDetail> handleNotImageException(NotImageException e) {
-        log.info(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorDetails(e, null, "This file is not image or this file format is not supported!"));
-    }
-
-    @ExceptionHandler(WrongImageDimensions.class)
-    public ResponseEntity<ErrorDetail> handleWrongImageDimensions(WrongImageDimensions e) {
-        log.info(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorDetails(e, null, "Image dimensions is too big, try to use 205*205px"));
-    }
-
-    @ExceptionHandler(ParseException.class)
-    public ResponseEntity<ErrorDetail> handleParseException(ParseException e) {
-        log.info(e.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorDetails(e, null, "Sent data could not be parsed"));
-    }
-
-    @ExceptionHandler(ErisAccountNotFoundException.class)
-    public ResponseEntity<ErrorDetail> handleErisAccountNotFound(Exception e) {
-        log.info("Request for create machine and assign Eris account. " + e.getLocalizedMessage());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(buildErrorDetails(e, null, e.getLocalizedMessage()));
-    }
-
-    @ExceptionHandler(MachineBusyException.class)
-    public ResponseEntity<ErrorDetail> handleMachineBusyException(Exception e) {
-        return ResponseEntity
-                .status(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
-                .body(buildErrorDetails(e, 50901, "Machine is locked by queue. Try again later."));
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

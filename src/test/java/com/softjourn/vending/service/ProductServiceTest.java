@@ -96,7 +96,7 @@ public class ProductServiceTest {
 
     @Test
     public void deleteTest() {
-        assertEquals(product, productService.delete(1));
+        productService.delete(1);
 
         verify(productRepository, times(1)).delete(1);
     }

@@ -15,6 +15,7 @@ import com.softjourn.vending.utils.ReflectionMergeUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -125,11 +126,13 @@ public class ProductService {
 
 
     @Transactional
-    public synchronized Product delete(@NonNull Integer id) {
-        Product product = getProduct(id);
-        favoritesRepository.deleteByProduct(id);
-        productRepository.delete(id);
-        return product;
+    public synchronized void delete(@NonNull Integer id) {
+        try {
+            favoritesRepository.deleteByProduct(id);
+            productRepository.delete(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ProductNotFoundException("Product with id " + id + " not found", e);
+        }
     }
 
     public byte[] getImageById(Integer productId, Long imageId) {
@@ -180,7 +183,7 @@ public class ProductService {
     private Image saveImage(@NonNull MultipartFile file, Integer productId, boolean isCover) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
-        if(isCover)
+        if (isCover)
             this.dropCover(productId);
         Image image = new Image(file.getBytes(), productId, resolution);
         image.setCover(isCover);
@@ -188,8 +191,8 @@ public class ProductService {
         return imageRepository.save(this.setUrlTo(stored));
     }
 
-    private void dropCover(Integer productId){
-        this.imageRepository.findByProductIdAndIsCover(productId,true)
+    private void dropCover(Integer productId) {
+        this.imageRepository.findByProductIdAndIsCover(productId, true)
             .stream()
             .peek(image -> image.setCover(false))
             .forEach(image -> this.imageRepository.save(image));

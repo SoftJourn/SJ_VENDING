@@ -205,26 +205,12 @@ public class ProductsControllerTest {
             .perform(RestDocumentationRequestBuilders
                 .delete("/v1/products/{productId}", 0)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
-            .andExpect(status().isOk())
-            .andExpect(content().json(json(product)))
+            .andExpect(status().isNoContent())
             .andDo(document("delete-product",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
-                ),
-                responseFields(
-                    fieldWithPath("id").description("Product id."),
-                    fieldWithPath("name").description("Product name."),
-                    fieldWithPath("price").description("Product price."),
-                    fieldWithPath("imageUrl").description("Relative path to product image."),
-                    fieldWithPath("imageUrls").description("Relative path to all product images."),
-                    fieldWithPath("category.id").description("Category id."),
-                    fieldWithPath("category.name").description("Category name."),
-                    fieldWithPath("description").description("Product description."),
-                    fieldWithPath("nutritionFacts").description("Additional info like Calories,Fats ets")
-
-                )));
+                requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]"))
+            ));
     }
 
     @Test

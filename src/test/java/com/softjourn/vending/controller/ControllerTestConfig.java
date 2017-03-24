@@ -117,7 +117,6 @@ public abstract class ControllerTestConfig {
         when(productService.add(product2)).thenReturn(product2);
         when(productService.add(product4)).thenReturn(product4);
         when(productService.update(anyInt(), any())).thenReturn(product);
-        when(productService.delete(anyInt())).thenReturn(product);
         when(productService.getProductsByCategory(anyString())).thenReturn(Collections.singletonList(product));
 
         return productService;

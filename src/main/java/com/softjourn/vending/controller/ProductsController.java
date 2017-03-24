@@ -4,6 +4,7 @@ package com.softjourn.vending.controller;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -80,8 +81,9 @@ public class ProductsController {
     // DELETE
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public Product deleteProduct(@PathVariable Integer id) {
-        return productService.delete(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.delete(id);
     }
 
     @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.DELETE)

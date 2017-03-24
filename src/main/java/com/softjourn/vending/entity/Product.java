@@ -3,9 +3,12 @@ package com.softjourn.vending.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -57,6 +60,11 @@ public class Product {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER)
     private Set<Image> imageUrls = new HashSet<>();
+
+    @JsonSetter(value = "imageUrls")
+    public void setImageUrlsByJSON(Set imageUrls){
+//      Do nothing
+    }
 
     @JsonGetter
     public String getImageUrl() {

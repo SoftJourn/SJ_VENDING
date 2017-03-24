@@ -55,7 +55,6 @@ public abstract class ControllerTestConfig {
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
-//        product.setImageUrl("/image.jpg");
         product.setCategory(drinks);
         product.setDescription("Cola with coca.");
 
@@ -64,7 +63,6 @@ public abstract class ControllerTestConfig {
         product2.setId(1);
         product2.setName("Nuts");
         product2.setPrice(new BigDecimal(50));
-//        product2.setImageUrl("/image2.jpg");
         product2.setCategory(snacks);
         product2.setDescription("Energy bar with nuts.");
 
@@ -72,7 +70,6 @@ public abstract class ControllerTestConfig {
         product3.setId(1);
         product3.setName("Snickers");
         product3.setPrice(new BigDecimal(50));
-//        product3.setImageUrl("/image3.jpg");
         product3.setCategory(snacks);
         product3.setDescription("Energy bar with nuts.");
 
@@ -80,7 +77,6 @@ public abstract class ControllerTestConfig {
         product4.setId(2);
         product4.setName("Super Snickers");
         product4.setPrice(new BigDecimal(50));
-//        product4.setImageUrl("/image3.jpg");
         product4.setCategory(snacks);
         product4.setDescription("Energy bar with nuts.");
 

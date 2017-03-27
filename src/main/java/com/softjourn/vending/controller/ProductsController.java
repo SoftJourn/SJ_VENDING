@@ -48,7 +48,7 @@ public class ProductsController {
         productService.addProductImage(files, id);
     }
 
-    @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST)
     public void setCoverByImgId(@PathVariable Integer productId, @PathVariable Long imgId) throws IOException {
         productService.setCoverByImgId(productId, imgId);
     }

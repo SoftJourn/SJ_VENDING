@@ -785,14 +785,15 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 98
+Content-Length: 119
 
 [ {
   "id" : 0,
   "name" : "Snack machine",
   "size" : {
     "rows" : 2,
-    "columns" : 2
+    "columns" : 2,
+    "cellLimit" : 2
   }
 } ]</code></pre>
 </div>
@@ -845,6 +846,11 @@ Content-Length: 98
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Vending machine columns count(Works correctly only for "rectangular" machines).</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size.cellLimit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vending machine should have products limit in a cell</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -864,14 +870,15 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 94
+Content-Length: 115
 
 {
   "id" : 0,
   "name" : "Snack machine",
   "size" : {
     "rows" : 2,
-    "columns" : 2
+    "columns" : 2,
+    "cellLimit" : 2
   }
 }</code></pre>
 </div>
@@ -1030,16 +1037,16 @@ Host: localhost</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 155
+Content-Length: 157
 
 [ {
   "name" : "COLA",
   "price" : 5,
-  "time" : "2016-11-17T15:35:47.62Z"
+  "time" : "2017-03-21T15:09:27.535Z"
 }, {
   "name" : "Nuts",
   "price" : 50,
-  "time" : "2016-11-17T15:35:47.62Z"
+  "time" : "2017-03-21T15:09:27.535Z"
 } ]</code></pre>
 </div>
 </div>
@@ -1958,15 +1965,17 @@ Content-Length: 177
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 153
+Content-Length: 206
 
 {
   "name" : "Machine",
-  "url" : null,
+  "url" : "http://url.com",
   "rowsCount" : 2,
   "columnsCount" : 2,
   "rowsNumbering" : "ALPHABETICAL",
-  "columnsNumbering" : "NUMERICAL"
+  "columnsNumbering" : "NUMERICAL",
+  "isActive" : false,
+  "cellLimit" : 2
 }</code></pre>
 </div>
 </div>
@@ -1977,13 +1986,13 @@ Content-Length: 153
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1702
+Content-Length: 1756
 
 {
   "id" : 0,
   "name" : "Snack machine",
   "url" : "https://192.168.0.53",
-  "uniqueId" : "07bdeb21-4b91-4273-92db-30f6f7b52a8d",
+  "uniqueId" : "e9eb888e-45b9-4071-b5cd-de3ddcb695d7",
   "rows" : [ {
     "id" : 0,
     "rowId" : "A",
@@ -1995,7 +2004,7 @@ Content-Length: 1702
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -2031,7 +2040,7 @@ Content-Length: 1702
       "product" : {
         "id" : 0,
         "price" : 5,
-        "name" : "COLA",
+        "name" : "Super Nuts",
         "imageUrl" : "/image.jpg",
         "description" : "Cola with coca.",
         "category" : {
@@ -2057,9 +2066,11 @@ Content-Length: 1702
       }
     } ]
   } ],
+  "isActive" : true,
   "size" : {
     "rows" : 2,
-    "columns" : 2
+    "columns" : 2,
+    "cellLimit" : 2
   }
 }</code></pre>
 </div>
@@ -2103,7 +2114,7 @@ Host: localhost</code></pre>
 Content-Type: application/json
 Authorization: Bearer [ACCESS_TOKEN_VALUE]
 Host: localhost
-Content-Length: 277
+Content-Length: 283
 
 {
   "id" : 0,
@@ -2113,7 +2124,7 @@ Content-Length: 277
   "product" : {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -2131,7 +2142,7 @@ Content-Length: 277
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 277
+Content-Length: 283
 
 {
   "id" : 0,
@@ -2141,7 +2152,7 @@ Content-Length: 277
   "product" : {
     "id" : 0,
     "price" : 5,
-    "name" : "COLA",
+    "name" : "Super Nuts",
     "imageUrl" : "/image.jpg",
     "description" : "Cola with coca.",
     "category" : {
@@ -2179,7 +2190,7 @@ Content-Length: 1
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 678
+Content-Length: 684
 
 {
   "id" : 0,
@@ -2192,7 +2203,7 @@ Content-Length: 678
     "product" : {
       "id" : 0,
       "price" : 5,
-      "name" : "COLA",
+      "name" : "Super Nuts",
       "imageUrl" : "/image.jpg",
       "description" : "Cola with coca.",
       "category" : {
@@ -2307,21 +2318,21 @@ Content-Length: 396
 {
   "content" : [ {
     "account" : "ldap",
-    "date" : "2016-11-17T15:35:45.578Z",
+    "date" : "2017-03-21T15:09:30.365Z",
     "product" : "COLA",
     "price" : 5
   }, {
     "account" : "ldap",
-    "date" : "2016-11-17T15:35:45.578Z",
+    "date" : "2017-03-21T15:09:30.365Z",
     "product" : "Nuts",
     "price" : 50
   } ],
-  "totalElements" : 2,
   "totalPages" : 1,
+  "totalElements" : 2,
   "last" : true,
   "sort" : null,
-  "numberOfElements" : 2,
   "first" : true,
+  "numberOfElements" : 2,
   "size" : 0,
   "number" : 0
 }</code></pre>
@@ -2468,7 +2479,7 @@ Content-Length: 234
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-11-17 17:33:51 EET
+Last updated 2016-11-18 12:35:03 EET
 </div>
 </div>
 </body>

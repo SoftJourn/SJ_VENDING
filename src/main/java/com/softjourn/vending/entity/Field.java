@@ -1,12 +1,14 @@
 package com.softjourn.vending.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -31,6 +33,9 @@ public class Field {
     @ManyToOne
     @JoinColumn(name = "product")
     private Product product;
+
+    @JsonIgnore
+    private Instant loaded;
 
     public Field() {
     }

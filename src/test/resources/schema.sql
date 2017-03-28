@@ -60,6 +60,7 @@ CREATE TABLE fields
   "COUNT" INT NOT NULL,
   internal_id VARCHAR(255) NOT NULL,
   position INT,
+  loaded TIMESTAMP DEFAULT NULL,
   product INT,
   CONSTRAINT FK_3dlqg7ao6x5xew3nnmer8equo FOREIGN KEY (product) REFERENCES products (id)
 );

@@ -237,18 +237,18 @@ public abstract class ControllerTestConfig {
 
         when(buyService.buy(anyInt(), anyInt(), any())).thenReturn(new BigDecimal(5));
         when(buyService.buy(anyInt(), anyString(), any())).thenReturn(new BigDecimal(5));
-        when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Product>() {{
-            add(product2);
-            add(product);
+        when(buyService.getBestSellers(anyInt())).thenReturn(new ArrayList<Integer>() {{
+            add(product2.getId());
+            add(product.getId());
         }});
         when(buyService.getByCategory(drinks, 0)).thenReturn(Collections.singletonList(product));
         when(buyService.getByCategory(snacks, 0)).thenReturn(new ArrayList<Product>() {{
             add(product);
             add(product2);
         }});
-        when(buyService.getNew(anyInt())).thenReturn(new ArrayList<Product>() {{
-            add(product2);
-            add(product);
+        when(buyService.getLastAdded(anyInt())).thenReturn(new ArrayList<Integer>() {{
+            add(product2.getId());
+            add(product.getId());
         }});
         when(buyService.lastPurchases(any(Principal.class))).thenReturn(new ArrayList<PurchaseProductDto>() {{
             add(new PurchaseProductDto(product, Instant.now()));

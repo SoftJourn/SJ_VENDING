@@ -78,6 +78,7 @@ public class VendingService {
         if (machineToUpdate == null) {
             throw new BadRequestException("Requested machine does not exists");
         }
+        updateLastTimeLoadedForFields(machineToUpdate, machine);
         machineToUpdate.setRows(machine.getRows());
         if (!VendingService.checkCellLimit(machineToUpdate)) {
             throw new BadRequestException("Requested machine cell out of limit '"
@@ -165,6 +166,20 @@ public class VendingService {
         loadHistory.setVendingMachine(vendingMachine);
 
         return loadHistoryRepository.save(loadHistory);
+    }
+
+    private void updateLastTimeLoadedForFields(VendingMachine machineToUpdate, VendingMachine machine) {
+        machineToUpdate.getFields().stream()
+                .map(Field::getInternalId)
+                .map(id -> getField(machine, id))
+                .forEach(field -> field.setLoaded(Instant.now()));
+    }
+
+    private Field getField(VendingMachine vendingMachine, String internalId) {
+        return vendingMachine.getFields().stream()
+                .filter(field -> field.getInternalId().equals(internalId))
+                .findAny()
+                .orElseThrow(() -> new NotFoundException("Field with internal id " + internalId + " not found in machine " + vendingMachine.getName() + "."));
     }
 
     private HttpEntity<Object> prepareRequest(Principal principal) {

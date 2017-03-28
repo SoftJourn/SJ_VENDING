@@ -55,16 +55,16 @@ public class BuyServiceTest {
     private Row row;
     private Row row1;
 
-    PurchaseProductDto purchaseProductDto0;
-    PurchaseProductDto purchaseProductDto1;
-    PurchaseProductDto purchaseProductDto2;
-    PurchaseProductDto purchaseProductDto3;
-    PurchaseProductDto purchaseProductDto4;
-    PurchaseProductDto purchaseProductDto5;
-    PurchaseProductDto purchaseProductDto6;
-    PurchaseProductDto purchaseProductDto7;
-    PurchaseProductDto purchaseProductDto8;
-    PurchaseProductDto purchaseProductDto9;
+    private PurchaseProductDto purchaseProductDto0;
+    private PurchaseProductDto purchaseProductDto1;
+    private PurchaseProductDto purchaseProductDto2;
+    private PurchaseProductDto purchaseProductDto3;
+    private PurchaseProductDto purchaseProductDto4;
+    private PurchaseProductDto purchaseProductDto5;
+    private PurchaseProductDto purchaseProductDto6;
+    private PurchaseProductDto purchaseProductDto7;
+    private PurchaseProductDto purchaseProductDto8;
+    private PurchaseProductDto purchaseProductDto9;
 
     @Before
     public void setUp() throws Exception {
@@ -105,6 +105,11 @@ public class BuyServiceTest {
         field1.setCount(5);
         field2.setCount(5);
         field3.setCount(5);
+
+        field.setLoaded(Instant.ofEpochSecond(3));
+        field1.setLoaded(Instant.ofEpochSecond(2));
+        field2.setLoaded(Instant.ofEpochSecond(1));
+        field3.setLoaded(Instant.ofEpochSecond(0));
 
         row = new Row("A");
         row1 = new Row("B");
@@ -238,12 +243,12 @@ public class BuyServiceTest {
 
     @Test
     public void getBestSellersTest() {
-        assertThat(buyService.getBestSellers(0), IsIterableContainingInOrder.contains(product2, product));
+        assertThat(buyService.getBestSellers(0), IsIterableContainingInOrder.contains(product2.getId(), product.getId()));
     }
 
     @Test
-    public void getNewTest() {
-        assertThat(buyService.getNew(0), IsIterableContainingInOrder.contains(product2, product));
+    public void getLastAddedTest() {
+        assertThat(buyService.getLastAdded(0), IsIterableContainingInOrder.contains(product.getId(), product2.getId()));
     }
 
     @Test

@@ -20,9 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class BuyService {
                 .flatMap(r -> r.getFields().stream())
                 .filter(f -> f.getCount() > 0)
                 .map(Field::getProduct)
-                .filter(p -> p != null)
+                .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -123,20 +124,26 @@ public class BuyService {
         }
     }
 
-    public List<Product> getBestSellers(Integer machineId) {
+    public List<Integer> getBestSellers(Integer machineId) {
         return purchaseRepository.getAllByMachineId(machineId).stream()
                 .map(Purchase::getProduct)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
-                .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+                .sorted(Comparator.<Map.Entry<Product, Long>, Long>comparing(Map.Entry::getValue).reversed())
                 .limit(BES_SELLERS_LIMIT)
                 .map(Map.Entry::getKey)
+                .map(Product::getId)
                 .collect(Collectors.toList());
     }
 
-    public List<Product> getNew(Integer machineId) {
-        return getAvailableProductsStream(machineId)
-                .sorted((p1, p2) -> p2.getAddedTime().compareTo(p1.getAddedTime()))
+    public List<Integer> getLastAdded(Integer machineId) {
+        return vendingService.get(machineId)
+                .getFields().stream()
+                .filter(field -> field.getLoaded() != null)
+                .sorted(Comparator.comparing(Field::getLoaded).reversed())
+                .map(Field::getProduct)
+                .filter(Objects::nonNull)
+                .map(Product::getId)
                 .distinct()
                 .limit(NEW_PRODUCTS_LIMIT)
                 .collect(Collectors.toList());
@@ -144,7 +151,7 @@ public class BuyService {
 
     public List<PurchaseProductDto> lastPurchases(Principal principal) {
         return purchaseRepository.getAllByUser(principal.getName()).stream()
-                .sorted((p1, p2) -> p2.getTime().compareTo(p1.getTime()))
+                .sorted(Comparator.comparing(Purchase::getTime).reversed())
                 .map(p -> new PurchaseProductDto(p.getProduct(), p.getTime()))
                 .limit(LAST_PURCHASES_LIMIT)
                 .collect(Collectors.toList());
@@ -163,20 +170,12 @@ public class BuyService {
     }
 
     public FeatureDTO getFeatures(Integer machineId) {
-        FeatureDTO dto = new FeatureDTO();
-        List<Integer> lastAdded = new ArrayList<>();
-        getNew(machineId).forEach(product -> lastAdded.add(product.getId()));
-        List<Integer> bestSellers = new ArrayList<>();
-        getBestSellers(machineId).forEach(product -> bestSellers.add(product.getId()));
-        dto.setLastAdded(lastAdded);
-        dto.setBestSellers(bestSellers);
-        List<CategoryDTO> categories = new ArrayList<>();
-        categoriesService.getAll()
-                .forEach(c -> {
-                    categories.add(new CategoryDTO(c.getName(), getByCategory(c, machineId)));
-                });
-        dto.setCategories(categories);
-        return dto;
+        List<Integer> lastAdded = getLastAdded(machineId);
+        List<Integer> bestSellers = getBestSellers(machineId);
+        List<CategoryDTO> categories = categoriesService.getAll().stream()
+                .map(category -> new CategoryDTO(category.getName(), getByCategory(category, machineId)))
+                .collect(Collectors.toList());
+        return new FeatureDTO(lastAdded, bestSellers, categories);
     }
 
     private Stream<Product> getAvailableProductsStream(Integer machineId) {

@@ -13,4 +13,6 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
     List<Product> getProductsByNameThatContain(String name);
 
     List<Product> getProductByCategory_Name(String name);
+
+    Product getProductByName(String name);
 }

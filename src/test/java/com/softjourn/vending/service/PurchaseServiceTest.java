@@ -2,7 +2,6 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
-import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.entity.VendingMachine;
 import org.junit.Before;
@@ -15,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -51,10 +51,10 @@ public class PurchaseServiceTest {
         MockitoAnnotations.initMocks(this);
         purchaseService.setDateTimeFormatter(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         when(purchaseRepository.findAllByStartDue(any(), any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
-            add(new Purchase("ldap", new Product(), new VendingMachine(), Instant.now()));
+            add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
         when(purchaseRepository.findAllByStartDue(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
-            add(new Purchase("ldap", new Product(), new VendingMachine(), Instant.now()));
+            add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
     }
 

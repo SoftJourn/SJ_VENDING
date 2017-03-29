@@ -251,8 +251,8 @@ public abstract class ControllerTestConfig {
             add(product.getId());
         }});
         when(buyService.lastPurchases(any(Principal.class))).thenReturn(new ArrayList<PurchaseProductDto>() {{
-            add(new PurchaseProductDto(product, Instant.now()));
-            add(new PurchaseProductDto(product2, Instant.now()));
+            add(new PurchaseProductDto(product.getName(), product.getPrice(), Instant.now()));
+            add(new PurchaseProductDto(product2.getName(), product.getPrice(), Instant.now()));
         }});
         when(buyService.getByCategoryName(anyString(), anyInt())).thenReturn(Collections.singletonList(product));
 

@@ -1,5 +1,6 @@
 package com.softjourn.vending.service;
 
+import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.dto.TransactionDTO;
@@ -40,6 +41,8 @@ public class BuyServiceTest {
     private FieldService fieldService;
     @Mock
     private PurchaseRepository purchaseRepository;
+    @Mock
+    ProductRepository productRepository;
 
     @InjectMocks
     private BuyService buyService;
@@ -74,17 +77,17 @@ public class BuyServiceTest {
         product.setId(0);
         product.setName("COLA");
         product.setPrice(new BigDecimal(5));
-//        product.setImageUrl("/image.jpg");
         product.setCategory(drinks);
         product.setAddedTime(Instant.ofEpochMilli(1_000_000));
+        when(productRepository.getProductByName(eq("COLA"))).thenReturn(product);
 
         product2 = new Product();
         product2.setId(1);
         product2.setName("COCA");
         product2.setPrice(new BigDecimal(50));
-//        product2.setImageUrl("/image2.jpg");
         product2.setCategory(drinks);
         product2.setAddedTime(Instant.ofEpochMilli(2_000_000));
+        when(productRepository.getProductByName(eq("COCA"))).thenReturn(product2);
 
         field = new Field("A0", 0);
         field1 = new Field("A1", 1);
@@ -134,29 +137,29 @@ public class BuyServiceTest {
             add(row1);
         }});
 
-        Purchase purchase = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(1_000_000));
-        Purchase purchase1 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(2_000_000));
-        Purchase purchase2 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(3_000_000));
-        Purchase purchase3 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(4_000_000));
-        Purchase purchase4 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(5_000_000));
-        Purchase purchase5 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(6_000_000));
-        Purchase purchase6 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(7_000_000));
-        Purchase purchase7 = new Purchase("user", product2, vendingMachine, Instant.ofEpochSecond(8_000_000));
-        Purchase purchase8 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(9_000_000));
-        Purchase purchase9 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(10_000_000));
-        Purchase purchase10 = new Purchase("user", product, vendingMachine, Instant.ofEpochSecond(11_000_000));
+        Purchase purchase = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(1_000_000));
+        Purchase purchase1 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(2_000_000));
+        Purchase purchase2 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(3_000_000));
+        Purchase purchase3 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(4_000_000));
+        Purchase purchase4 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(5_000_000));
+        Purchase purchase5 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(6_000_000));
+        Purchase purchase6 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(7_000_000));
+        Purchase purchase7 = new Purchase("user", product2.getName(), product2.getPrice(), vendingMachine, Instant.ofEpochSecond(8_000_000));
+        Purchase purchase8 = new Purchase("user", product.getName(), product.getPrice(), vendingMachine, Instant.ofEpochSecond(9_000_000));
+        Purchase purchase9 = new Purchase("user", product.getName(), product.getPrice(), vendingMachine, Instant.ofEpochSecond(10_000_000));
+        Purchase purchase10 = new Purchase("user", product.getName(), product.getPrice(), vendingMachine, Instant.ofEpochSecond(11_000_000));
 
 
-        purchaseProductDto0 = new PurchaseProductDto(product, Instant.ofEpochSecond(11_000_000));
-        purchaseProductDto1 = new PurchaseProductDto(product, Instant.ofEpochSecond(10_000_000));
-        purchaseProductDto2 = new PurchaseProductDto(product, Instant.ofEpochSecond(9_000_000));
-        purchaseProductDto3 = new PurchaseProductDto(product2, Instant.ofEpochSecond(8_000_000));
-        purchaseProductDto4 = new PurchaseProductDto(product2, Instant.ofEpochSecond(7_000_000));
-        purchaseProductDto5 = new PurchaseProductDto(product2, Instant.ofEpochSecond(6_000_000));
-        purchaseProductDto6 = new PurchaseProductDto(product2, Instant.ofEpochSecond(5_000_000));
-        purchaseProductDto7 = new PurchaseProductDto(product2, Instant.ofEpochSecond(4_000_000));
-        purchaseProductDto8 = new PurchaseProductDto(product2, Instant.ofEpochSecond(3_000_000));
-        purchaseProductDto9 = new PurchaseProductDto(product2, Instant.ofEpochSecond(2_000_000));
+        purchaseProductDto0 = new PurchaseProductDto(product.getName(), product.getPrice(), Instant.ofEpochSecond(11_000_000));
+        purchaseProductDto1 = new PurchaseProductDto(product.getName(), product.getPrice(), Instant.ofEpochSecond(10_000_000));
+        purchaseProductDto2 = new PurchaseProductDto(product.getName(), product.getPrice(), Instant.ofEpochSecond(9_000_000));
+        purchaseProductDto3 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(8_000_000));
+        purchaseProductDto4 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(7_000_000));
+        purchaseProductDto5 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(6_000_000));
+        purchaseProductDto6 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(5_000_000));
+        purchaseProductDto7 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(4_000_000));
+        purchaseProductDto8 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(3_000_000));
+        purchaseProductDto9 = new PurchaseProductDto(product2.getName(), product2.getPrice(), Instant.ofEpochSecond(2_000_000));
 
         List<Purchase> purchases = new ArrayList<Purchase>(){{
             add(purchase);

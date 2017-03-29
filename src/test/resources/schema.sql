@@ -32,14 +32,13 @@ CREATE TABLE purchases
 (
   account VARCHAR(255),
   time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  product INT,
+  product_name VARCHAR(255),
+  product_price NUMERIC,
   machine INT,
   id BIGINT PRIMARY KEY NOT NULL IDENTITY,
-  CONSTRAINT FK_product FOREIGN KEY (product) REFERENCES products (id),
   CONSTRAINT FK_machine FOREIGN KEY (machine) REFERENCES machines (id)
 );
 CREATE INDEX FK_machine_i ON purchases (machine);
-CREATE INDEX FK_product_i ON purchases (product);
 CREATE TABLE rows
 (
   id INT PRIMARY KEY NOT NULL IDENTITY,

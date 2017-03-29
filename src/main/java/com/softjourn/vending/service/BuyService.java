@@ -1,6 +1,7 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.FeatureDTO;
@@ -45,6 +46,7 @@ public class BuyService {
     private CoinService coinService;
     private FieldService fieldService;
     private CategoriesService categoriesService;
+    private ProductRepository productRepository;
     private ReentrantLock lock = new ReentrantLock();
 
     @Autowired
@@ -53,13 +55,15 @@ public class BuyService {
                       PurchaseRepository purchaseRepository,
                       CoinService coinService,
                       FieldService fieldService,
-                      CategoriesService categoriesService) {
+                      CategoriesService categoriesService,
+                      ProductRepository productRepository) {
         this.vendingService = vendingService;
         this.machineService = machineService;
         this.purchaseRepository = purchaseRepository;
         this.coinService = coinService;
         this.fieldService = fieldService;
         this.categoriesService = categoriesService;
+        this.productRepository = productRepository;
     }
 
     public List<Product> getAvailableProducts(Integer machineId) {
@@ -126,7 +130,9 @@ public class BuyService {
 
     public List<Integer> getBestSellers(Integer machineId) {
         return purchaseRepository.getAllByMachineId(machineId).stream()
-                .map(Purchase::getProduct)
+                .map(Purchase::getProductName)
+                .map(productRepository::getProductByName)
+                .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
                 .sorted(Comparator.<Map.Entry<Product, Long>, Long>comparing(Map.Entry::getValue).reversed())
@@ -152,7 +158,7 @@ public class BuyService {
     public List<PurchaseProductDto> lastPurchases(Principal principal) {
         return purchaseRepository.getAllByUser(principal.getName()).stream()
                 .sorted(Comparator.comparing(Purchase::getTime).reversed())
-                .map(p -> new PurchaseProductDto(p.getProduct(), p.getTime()))
+                .map(p -> new PurchaseProductDto(p.getProductName(), p.getProductPrice(), p.getTime()))
                 .limit(LAST_PURCHASES_LIMIT)
                 .collect(Collectors.toList());
     }
@@ -187,11 +193,13 @@ public class BuyService {
     }
 
     private void savePurchase(Integer machineId, Product product, Principal principal) {
-        Purchase purchase = new Purchase();
-        purchase.setAccount(principal.getName());
-        purchase.setProduct(product);
-        purchase.setTime(Instant.now());
-        purchase.setMachine(vendingService.get(machineId));
+        Purchase purchase = Purchase.builder()
+                .account(principal.getName())
+                .productName(product.getName())
+                .productPrice(product.getPrice())
+                .machine(vendingService.get(machineId))
+                .time(Instant.now())
+                .build();
         purchaseRepository.save(purchase);
     }
 

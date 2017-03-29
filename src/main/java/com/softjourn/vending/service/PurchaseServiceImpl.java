@@ -89,8 +89,8 @@ public class PurchaseServiceImpl implements PurchaseService {
             PurchaseDTO dto = new PurchaseDTO();
             dto.setAccount(purchase.getAccount());
             dto.setDate(purchase.getTime());
-            dto.setPrice(purchase.getProduct().getPrice());
-            dto.setProduct(purchase.getProduct().getName());
+            dto.setPrice(purchase.getProductPrice());
+            dto.setProduct(purchase.getProductName());
             return dto;
         });
     }

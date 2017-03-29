@@ -1,10 +1,9 @@
 package com.softjourn.vending.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -12,6 +11,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Purchase {
 
     @Id
@@ -21,9 +22,11 @@ public class Purchase {
     @Column
     private String account;
 
-    @ManyToOne
-    @JoinColumn(name = "product")
-    private Product product;
+    @Column
+    private String productName;
+
+    @Column
+    private BigDecimal productPrice;
 
     @Column
     private Instant time;
@@ -32,9 +35,10 @@ public class Purchase {
     @JoinColumn(name = "machine")
     private VendingMachine machine;
 
-    public Purchase(String account, Product product, VendingMachine machine, Instant time) {
+    public Purchase(String account, String productName, BigDecimal productPrice, VendingMachine machine, Instant time) {
         this.account = account;
-        this.product = product;
+        this.productName = productName;
+        this.productPrice = productPrice;
         this.machine = machine;
         this.time = time;
     }

@@ -5,5 +5,4 @@ UPDATE purchases SET product_name = (SELECT products.name FROM products WHERE pr
 UPDATE purchases SET product_price = (SELECT products.price FROM products WHERE products.id = purchases.product);
 
 ALTER TABLE purchases DROP FOREIGN KEY FK_product;
-ALTER TABLE purchases DROP INDEX FK_product;
 ALTER TABLE purchases DROP COLUMN product;

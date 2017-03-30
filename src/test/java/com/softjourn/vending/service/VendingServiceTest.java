@@ -27,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 import static junit.framework.TestCase.*;
@@ -113,6 +114,29 @@ public class VendingServiceTest {
         VendingMachine notExistedMachine = new VendingMachine();
         notExistedMachine.setId(Integer.MAX_VALUE);
         service.refill(notExistedMachine, principal);
+    }
+
+    @Test
+    public void isProductChanged_notChanged_expectedFalse() {
+        Product product1 = new Product();
+        product1.setId(1);
+        Field field1 = new Field();
+        field1.setInternalId("11");
+        field1.setProduct(product1);
+
+        Product product2 = new Product();
+        product2.setId(1);
+        Field field2 = new Field();
+        field2.setInternalId("11");
+        field2.setProduct(product1);
+
+        Row row = new Row("1");
+        row.setFields(Collections.singletonList(field1));
+
+        VendingMachine vendingMachine = new VendingMachine();
+        vendingMachine.setRows(Collections.singletonList(row));
+
+        assertFalse(service.productChanged(field2, vendingMachine));
     }
 
 

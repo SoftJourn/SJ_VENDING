@@ -1,22 +1,22 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.common.functions.OptionalUtil;
 import com.softjourn.vending.dao.FieldRepository;
 import com.softjourn.vending.dao.LoadHistoryRepository;
 import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.RowRepository;
 import com.softjourn.vending.dto.MerchantDTO;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
-import com.softjourn.vending.entity.Field;
-import com.softjourn.vending.entity.LoadHistory;
-import com.softjourn.vending.entity.Row;
-import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.entity.*;
 import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
 import com.softjourn.vending.exceptions.MachineNotFoundException;
 import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.utils.ReflectionMergeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -47,8 +47,9 @@ public class VendingService {
     private LoadHistoryRepository loadHistoryRepository;
     private RestTemplate coinRestTemplate;
 
-    @Autowired
     private MachineService machineService;
+
+    private ReflectionMergeUtil<Field> fieldMergeUtil;
 
 
     @Autowired
@@ -56,19 +57,25 @@ public class VendingService {
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
                           LoadHistoryRepository loadHistoryRepository,
-                          CoinService coinService) {
+                          CoinService coinService,
+                          @Lazy MachineService machineService) {
         this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
         this.fieldRepository = fieldRepository;
         this.loadHistoryRepository = loadHistoryRepository;
+        this.machineService = machineService;
 
         coinRestTemplate = new RestTemplate();
+
+        fieldMergeUtil = ReflectionMergeUtil
+                .forClass(Field.class)
+                .ignoreNull(true)
+                .build();
     }
 
     static boolean checkCellLimit(VendingMachine machine) {
-        return machine.getRows().stream().allMatch(row ->
-                row.getFields().stream().allMatch(cell ->
-                        cell.getCount() <= machine.getCellLimit() && cell.getCount() > -1));
+        return machine.getFields().stream().allMatch(cell ->
+                        cell.getCount() <= machine.getCellLimit() && cell.getCount() > -1);
     }
 
     @Transactional
@@ -78,15 +85,16 @@ public class VendingService {
         if (machineToUpdate == null) {
             throw new BadRequestException("Requested machine does not exists");
         }
-        updateLastTimeLoadedForFields(machineToUpdate, machine);
-        machineToUpdate.setRows(machine.getRows());
-        if (!VendingService.checkCellLimit(machineToUpdate)) {
+        machine.setCellLimit(machineToUpdate.getCellLimit());
+        if (!VendingService.checkCellLimit(machine)) {
             throw new BadRequestException("Requested machine cell out of limit '"
                     + machineToUpdate.getCellLimit() + "'");
         }
+        updateFields(machineToUpdate, machine);
         saveLoadHistory(machineToUpdate, false);
 
-        return machineRepository.save(machineToUpdate);
+        machineRepository.refresh(machineToUpdate);
+        return machineToUpdate;
     }
 
     public List<VendingMachine> getAll() {
@@ -168,18 +176,33 @@ public class VendingService {
         return loadHistoryRepository.save(loadHistory);
     }
 
-    private void updateLastTimeLoadedForFields(VendingMachine machineToUpdate, VendingMachine machine) {
-        machineToUpdate.getFields().stream()
-                .map(Field::getInternalId)
-                .map(id -> getField(machine, id))
-                .forEach(field -> field.setLoaded(Instant.now()));
+    private void updateFields(VendingMachine machineToUpdate, VendingMachine machine) {
+        machine.getFields().stream()
+                .filter(field -> countChanged(field, machineToUpdate) || productChanged(field, machineToUpdate))
+                .map(field -> fieldMergeUtil.merge(getField(machineToUpdate, field.getId()), field))
+                .peek(field -> field.setLoaded(Instant.now()))
+                .forEach(fieldRepository::save);
     }
 
-    private Field getField(VendingMachine vendingMachine, String internalId) {
+    boolean productChanged(Field field, VendingMachine machine) {
+        Integer savedFieldProductId = OptionalUtil.allChainOrElse(getField(machine, field.getId()), Field::getProduct, Product::getId, null);
+        Integer receivedFieldProductId = OptionalUtil.allChainOrElse(field, Field::getProduct, Product::getId, null);
+
+        if (savedFieldProductId == null)
+            return receivedFieldProductId != null;
+        else
+            return !savedFieldProductId.equals(receivedFieldProductId);
+    }
+
+    private boolean countChanged(Field field, VendingMachine machine) {
+        return !getField(machine, field.getId()).getCount().equals(field.getCount());
+    }
+
+    private Field getField(VendingMachine vendingMachine, Integer id) {
         return vendingMachine.getFields().stream()
-                .filter(field -> field.getInternalId().equals(internalId))
+                .filter(field -> field.getId().equals(id))
                 .findAny()
-                .orElseThrow(() -> new NotFoundException("Field with internal id " + internalId + " not found in machine " + vendingMachine.getName() + "."));
+                .orElseThrow(() -> new NotFoundException("Field with id " + id + " not found in machine " + vendingMachine.getName() + "."));
     }
 
     private HttpEntity<Object> prepareRequest(Principal principal) {

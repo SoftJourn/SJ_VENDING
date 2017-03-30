@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MachineRepository extends JpaRepository<VendingMachine, Integer> {
+public interface MachineRepository extends JpaRepository<VendingMachine, Integer>, RefreshableRepository<VendingMachine, Integer> {
     List<VendingMachine> findByIsActive(Boolean isActive);
 }

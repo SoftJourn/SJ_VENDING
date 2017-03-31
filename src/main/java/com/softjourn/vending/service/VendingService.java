@@ -181,7 +181,7 @@ public class VendingService {
                 .filter(field -> countChanged(field, machineToUpdate) || productChanged(field, machineToUpdate))
                 .map(field -> fieldMergeUtil.merge(getField(machineToUpdate, field.getId()), field))
                 .peek(field -> field.setLoaded(Instant.now()))
-                .forEach(fieldRepository::save);
+                .forEach(s -> fieldRepository.saveAndFlush(s));
     }
 
     boolean productChanged(Field field, VendingMachine machine) {

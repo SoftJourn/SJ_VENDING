@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
+@EnableTransactionManagement
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
 
     @Value("${auth.client.id}")

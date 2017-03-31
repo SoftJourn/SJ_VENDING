@@ -2,7 +2,6 @@ package com.softjourn.vending;
 
 
 import com.softjourn.common.spring.aspects.logging.EnableLoggingAspect;
-import com.softjourn.vending.dao.RefreshableRepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
@@ -10,7 +9,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
@@ -18,7 +16,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
 @EnableResourceServer
 @EnableLoggingAspect
-@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources(
         @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)

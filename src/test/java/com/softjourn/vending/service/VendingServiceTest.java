@@ -121,12 +121,14 @@ public class VendingServiceTest {
         Product product1 = new Product();
         product1.setId(1);
         Field field1 = new Field();
+        field1.setId(1);
         field1.setInternalId("11");
         field1.setProduct(product1);
 
         Product product2 = new Product();
         product2.setId(1);
         Field field2 = new Field();
+        field2.setId(1);
         field2.setInternalId("11");
         field2.setProduct(product1);
 

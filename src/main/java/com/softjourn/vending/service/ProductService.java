@@ -2,9 +2,9 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.FavoritesRepository;
-import com.softjourn.vending.dao.ImageRepository;
+import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
-import com.softjourn.vending.entity.Image;
+import com.softjourn.vending.entity.ProductImage;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.exceptions.NotImageException;
@@ -41,7 +41,7 @@ public class ProductService {
     private final static String IMAGES_ENDPOINT = "images";
 
     private FavoritesRepository favoritesRepository;
-    private ImageRepository imageRepository;
+    private ProductImageRepository imageRepository;
 
     private ProductRepository productRepository;
 
@@ -50,7 +50,7 @@ public class ProductService {
     @Autowired
     public ProductService(@NonNull ProductRepository productRepository,
                           @NotNull FavoritesRepository favoritesRepository,
-                          ImageRepository imageRepository) {
+                          ProductImageRepository imageRepository) {
         this.productRepository = productRepository;
         this.favoritesRepository = favoritesRepository;
         this.imageRepository = imageRepository;
@@ -94,12 +94,12 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+    public synchronized ProductImage addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         Product product = productRepository.findOne(productId);
         if (product == null)
             throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
-        Set<Image> productImages = product.getImageUrls();
-        Image image = saveImage(file, productId);
+        Set<ProductImage> productImages = product.getImageUrls();
+        ProductImage image = saveImage(file, productId);
         productImages.add(image);
         productRepository.save(product);
         return image;
@@ -115,7 +115,7 @@ public class ProductService {
     @Transactional
     public synchronized void updateCoverImage(@NonNull MultipartFile file, Integer id) throws IOException {
         Product product = getProduct(id);
-        Image image = this.saveImage(file, id, true);
+        ProductImage image = this.saveImage(file, id, true);
         product.getImageUrls().add(image);
         productRepository.save(product);
     }
@@ -136,7 +136,7 @@ public class ProductService {
     }
 
     public byte[] getImageById(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
+        ProductImage image = this.imageRepository.findOne(imageId);
         if (image == null)
             throw new NotFoundException("There is no images passed id");
         else {
@@ -147,13 +147,13 @@ public class ProductService {
     }
 
     public void deleteImage(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
+        ProductImage image = this.imageRepository.findOne(imageId);
         validateImage(productId, image);
         this.imageRepository.delete(image);
     }
 
     public void setCoverByImgId(Integer productId, Long imgId) {
-        Image image = this.imageRepository.findOne(imgId);
+        ProductImage image = this.imageRepository.findOne(imgId);
         this.validateImage(productId, image);
     }
 
@@ -176,18 +176,18 @@ public class ProductService {
         }
     }
 
-    private Image saveImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+    private ProductImage saveImage(@NonNull MultipartFile file, Integer productId) throws IOException {
         return this.saveImage(file, productId, false);
     }
 
-    private Image saveImage(@NonNull MultipartFile file, Integer productId, boolean isCover) throws IOException {
+    private ProductImage saveImage(@NonNull MultipartFile file, Integer productId, boolean isCover) throws IOException {
         validateImage(file);
         String resolution = FileUploadUtil.getResolution(file);
         if (isCover)
             this.dropCover(productId);
-        Image image = new Image(file.getBytes(), productId, resolution);
+        ProductImage image = new ProductImage(file.getBytes(), productId, resolution);
         image.setCover(isCover);
-        Image stored = imageRepository.save(image);
+        ProductImage stored = imageRepository.save(image);
         return imageRepository.save(this.setUrlTo(stored));
     }
 
@@ -198,7 +198,7 @@ public class ProductService {
             .forEach(image -> this.imageRepository.save(image));
     }
 
-    private Image setUrlTo(Image image) {
+    private ProductImage setUrlTo(ProductImage image) {
         if (image.getId() == null || image.getProductId() == null || image.getResolution() == null) {
             throw new IllegalArgumentException("Can't form urls due to image or product id is not set");
         } else {
@@ -220,7 +220,7 @@ public class ProductService {
      * @throws IllegalArgumentException If image doesn't exists in DB or product id does not match
      */
     // TODO change to NotFoundException
-    private void validateImage(Integer productId, Image image) throws IllegalArgumentException {
+    private void validateImage(Integer productId, ProductImage image) throws IllegalArgumentException {
         String message = "There is no images passed id";
         if (image == null) {
             throw new IllegalArgumentException(message);

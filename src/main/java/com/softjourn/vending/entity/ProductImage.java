@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.softjourn.vending.utils.jsonview.View;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +19,9 @@ import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 @Data
 @NoArgsConstructor
 @Table(name = "images")
-public class Image {
+@Builder
+@AllArgsConstructor
+public class ProductImage {
 
     @Id
     @GeneratedValue
@@ -38,7 +42,7 @@ public class Image {
         return this.url;
     }
 
-    public Image(byte[] data, Integer productId, String resolution) {
+    public ProductImage(byte[] data, Integer productId, String resolution) {
         this.data = data;
         this.resolution = resolution;
         this.productId = productId;

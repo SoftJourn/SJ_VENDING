@@ -2,16 +2,16 @@ package com.softjourn.vending.service;
 
 
 import com.softjourn.vending.dao.FavoritesRepository;
-import com.softjourn.vending.dao.ImageRepository;
+import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Category;
-import com.softjourn.vending.entity.Image;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.NotFoundException;
 import lombok.extern.java.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,11 +35,12 @@ public class ProductServiceTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ImageRepository imageRepository;
+    private ProductImageRepository imageRepository;
 
     @Mock
     private FavoritesRepository favoritesRepository;
 
+    @InjectMocks
     private ProductService productService;
 
     @Mock
@@ -112,7 +113,7 @@ public class ProductServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(productRepository, favoritesRepository, imageRepository);
+//        productService = new ProductService(productRepository, favoritesRepository, imageRepository);
 
         product = new Product();
         product.setId(1);

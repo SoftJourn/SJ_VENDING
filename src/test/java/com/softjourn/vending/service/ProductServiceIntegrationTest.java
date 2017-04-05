@@ -1,9 +1,9 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.FavoritesRepository;
-import com.softjourn.vending.dao.ImageRepository;
+import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
-import com.softjourn.vending.entity.Image;
+import com.softjourn.vending.entity.ProductImage;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.ProductNotFoundException;
 import lombok.extern.java.Log;
@@ -38,7 +38,7 @@ public class ProductServiceIntegrationTest {
     private ProductRepository productRepository;
 
     @Autowired
-    private ImageRepository imageRepository;
+    private ProductImageRepository imageRepository;
 
     @Mock
     private FavoritesRepository favoritesRepository;
@@ -53,7 +53,7 @@ public class ProductServiceIntegrationTest {
     @Test
     public void getProduct_WithMultipleImages() throws Exception {
         int productId = this.testProductId;
-        Image storedImage = this.productService.addProductImage(this.imagePng, productId);
+        ProductImage storedImage = this.productService.addProductImage(this.imagePng, productId);
         String result = "[products/" + productId + "/images/" + storedImage.getId() + ".png]";
         Product product = this.productService.getProduct(productId);
         assertNotNull(product.getImageUrls());
@@ -79,7 +79,7 @@ public class ProductServiceIntegrationTest {
     public void addProductImage_getAllProducts_integration() throws Exception {
         this.productService.addProductImage(this.imagePng, testProductId);
 
-        List<Image> images = this.imageRepository.findByProductId(testProductId);
+        List<ProductImage> images = this.imageRepository.findByProductId(testProductId);
         assertEquals(1, images.size());
 
         List<Product> allProducts = this.productService.getProducts();

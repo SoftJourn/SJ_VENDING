@@ -38,23 +38,22 @@ public class ProductImageService {
         this.imageStoragePath = imageStoragePath;
     }
 
-    void addImage(MultipartFile file, int productId) throws IOException {
-        saveImageToDb(file, productId);
+    ProductImage addImage(MultipartFile file, int productId) throws IOException {
         storeToFileSystem(file, productId);
+        return saveImageToDb(file, productId);
     }
 
     private void storeToFileSystem(MultipartFile file, int productId) throws FileAlreadyExistsException {
-        String url = String.format("%s/%s/%s/%s",imageStoragePath,
-            PRODUCTS_RELATIVE_ENDPOINT, productId, file.getOriginalFilename());
+        String url = formUrl(file, productId);
         Path path = Paths.get(url);
         try {
             Files.createDirectories(path.getParent());
             Files.createFile(path);
-            Files.write(path,file.getBytes());
-        } catch (FileAlreadyExistsException e){
+            Files.write(path, file.getBytes());
+        } catch (FileAlreadyExistsException e) {
             throw e;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Can not create file with "+url +" path", e);
+            throw new IllegalArgumentException("Can not create file with " + url + " path", e);
         }
     }
 
@@ -69,8 +68,9 @@ public class ProductImageService {
             this.dropCover(productId);
         ProductImage image = new ProductImage(file.getBytes(), productId, resolution);
         image.setCover(isCover);
-        ProductImage stored = repository.save(image);
-        return repository.save(this.setUrlTo(stored));
+        String url = formUri(file, productId);
+        image.setUrl(url);
+        return repository.save(image);
     }
 
     private void dropCover(Integer productId) {
@@ -85,7 +85,6 @@ public class ProductImageService {
         this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 
-
     private void validateImageMimeType(MultipartFile file) {
         String supportedTypes = "image/(?:jpeg|png|jpg|apng|svg|bmp)";
         if (!file.getContentType().matches(supportedTypes)) {
@@ -99,17 +98,22 @@ public class ProductImageService {
         }
     }
 
-    private ProductImage setUrlTo(ProductImage image) {
-        if (image.getId() == null || image.getProductId() == null || image.getResolution() == null) {
-            throw new IllegalArgumentException("Can't form urls due to image or product id is not set");
-        } else {
-            int productId = image.getProductId();
-            long imageId = image.getId();
-            String type = image.getResolution();
-            String url = PRODUCTS_RELATIVE_ENDPOINT + '/' + productId + '/' + IMAGES_ENDPOINT + '/'
-                + imageId + '.' + type;
-            image.setUrl(url);
-            return image;
-        }
+    private String formUrl(MultipartFile file, int productId) {
+        return this.formUrl(file.getOriginalFilename(),productId);
     }
+
+    private String formUrl(String fileName, int productId) {
+        String uri = formUri(fileName, productId);
+        return imageStoragePath.concat(uri);
+    }
+
+    private String formUri(MultipartFile file, int productId) {
+        return this.formUri(file.getOriginalFilename(),productId);
+    }
+
+    private String formUri(String fileName, int productId) {
+        return String.format("/%s/%s/%s/%s",
+            PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
+    }
+
 }

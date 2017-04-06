@@ -1,7 +1,9 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.ProductImageRepository;
+import com.softjourn.vending.entity.ProductImage;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +16,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -36,7 +42,8 @@ public class ProductImageServiceTest {
     @Test
     public void addImage() throws Exception {
         int productId = 0;
-        this.imageService.addImage(testFile, productId);
+        ProductImage image = this.imageService.addImage(testFile, productId);
+        assertTrue(this.fileExists(image.getUrl()));
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -57,10 +64,25 @@ public class ProductImageServiceTest {
         Resource resource = new ClassPathResource(imagePath);
         testFile = new MockMultipartFile(passedParameterName, resource.getFilename(), contentType,
             resource.getInputStream());
-        // clean products folder
-        String folder = "products";
-        Path path = Paths.get(String.format("%s/%s", imageStoragePath, folder));
+        // clean PRODUCTS_FOLDER folder
+        cleanProductsFolder();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        cleanProductsFolder();
+    }
+
+    private void cleanProductsFolder() throws IOException {
+        String productsFolder = "products";
+        Path path = Paths.get(String.format("%s/%s", imageStoragePath, productsFolder));
         FileUtils.deleteDirectory(path.toFile());
+    }
+
+    private boolean fileExists(String uri) {
+        String fullPath = imageStoragePath + uri;
+        File file = new File(fullPath);
+        return file.exists();
     }
 
 }

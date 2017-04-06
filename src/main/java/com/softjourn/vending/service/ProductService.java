@@ -94,18 +94,6 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized ProductImage addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
-        Product product = productRepository.findOne(productId);
-        if (product == null)
-            throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
-        Set<ProductImage> productImages = product.getImageUrls();
-        ProductImage image = saveImage(file, productId);
-        productImages.add(image);
-        productRepository.save(product);
-        return image;
-    }
-
-    @Transactional
     public synchronized void addProductImage(@NonNull MultipartFile files[], Integer productId) throws IOException {
         for (MultipartFile file : files) {
             this.saveImage(file, productId);
@@ -123,7 +111,6 @@ public class ProductService {
     public List<Product> getProductsByCategory(String categoryName) {
         return productRepository.getProductByCategory_Name(categoryName);
     }
-
 
     @Transactional
     public synchronized void delete(@NonNull Integer id) {
@@ -155,6 +142,18 @@ public class ProductService {
     public void setCoverByImgId(Integer productId, Long imgId) {
         ProductImage image = this.imageRepository.findOne(imgId);
         this.validateImage(productId, image);
+    }
+
+    @Transactional
+    synchronized ProductImage addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
+        Product product = productRepository.findOne(productId);
+        if (product == null)
+            throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
+        Set<ProductImage> productImages = product.getImageUrls();
+        ProductImage image = saveImage(file, productId);
+        productImages.add(image);
+        productRepository.save(product);
+        return image;
     }
 
     private void validateImage(@NonNull MultipartFile file) throws IOException {

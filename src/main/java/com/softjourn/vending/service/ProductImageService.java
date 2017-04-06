@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -36,12 +35,12 @@ public class ProductImageService {
         this.imageStoragePath = imageStoragePath;
     }
 
-    ProductImage addImage(MultipartFile file, int productId) throws IOException {
+    ProductImage add(MultipartFile file, int productId) throws IOException {
         storeToFileSystem(file, productId);
         return saveImageToDb(file, productId);
     }
 
-    byte[] getImage(String uri) throws IOException {
+    byte[] get(String uri) throws IOException {
         String url = this.formUrl(uri);
         // Read file
         Path path = Paths.get(url);

@@ -38,46 +38,46 @@ public class ProductImageServiceTest {
     private ProductImageRepository imageRepository;
 
     @Value("${image.storage.path}")
-    String imageStoragePath;
+    private String imageStoragePath;
 
     private MockMultipartFile testFile;
     private int productTestId = 0;
 
     @Test
-    public void addImage() throws Exception {
-        ProductImage image = this.imageService.addImage(testFile, productTestId);
+    public void add() throws Exception {
+        ProductImage image = this.imageService.add(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
     }
 
     @Test(expected = FileAlreadyExistsException.class)
-    public void addImage_Duplicate_Exception() throws Exception {
-        this.imageService.addImage(testFile, productTestId);
-        this.imageService.addImage(testFile, productTestId);
+    public void add_Duplicate_Exception() throws Exception {
+        this.imageService.add(testFile, productTestId);
+        this.imageService.add(testFile, productTestId);
     }
 
     @Test
-    public void getImage() throws Exception {
-        byte[] image = this.imageService.getImage(testImageName);
+    public void get() throws Exception {
+        byte[] image = this.imageService.get(testImageName);
         assertNotNull(image);
         assertArrayEquals(testFile.getBytes(), image);
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void getImage_UnrealPath_Exception() throws Exception {
-        this.imageService.getImage("UnrealPath");
+    public void get_UnrealPath_Exception() throws Exception {
+        this.imageService.get("UnrealPath");
     }
 
     @Test
-    public void addImageAndRead() throws Exception {
-        ProductImage image = this.imageService.addImage(testFile, productTestId);
-        byte[] imageData = this.imageService.getImage(image.getUrl());
+    public void addAndRead() throws Exception {
+        ProductImage image = this.imageService.add(testFile, productTestId);
+        byte[] imageData = this.imageService.get(image.getUrl());
         assertArrayEquals(testFile.getBytes(),imageData);
         assertArrayEquals(testFile.getBytes(),image.getData());
     }
 
     @Test
     public void addAndDelete() throws Exception {
-        ProductImage image = this.imageService.addImage(testFile, productTestId);
+        ProductImage image = this.imageService.add(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
         this.imageService.delete(image.getUrl());
         assertFalse(this.fileExists(image.getUrl()));

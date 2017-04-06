@@ -39,14 +39,22 @@ public class ProductImageServiceTest {
 
     @Value("${image.storage.path}")
     private String imageStoragePath;
-
     private MockMultipartFile testFile;
+    private MockMultipartFile testFile2;
     private int productTestId = 0;
 
     @Test
     public void add() throws Exception {
         ProductImage image = this.imageService.add(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
+    }
+
+    @Test
+    public void add_TwoImagesForTheSameProduct() throws Exception {
+        ProductImage firstImage = this.imageService.add(testFile, productTestId);
+        ProductImage secondImage = this.imageService.add(testFile2, productTestId);
+        this.fileExists(firstImage.getUrl());
+        this.fileExists(secondImage.getUrl());
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -71,16 +79,34 @@ public class ProductImageServiceTest {
     public void addAndRead() throws Exception {
         ProductImage image = this.imageService.add(testFile, productTestId);
         byte[] imageData = this.imageService.get(image.getUrl());
-        assertArrayEquals(testFile.getBytes(),imageData);
-        assertArrayEquals(testFile.getBytes(),image.getData());
+        assertArrayEquals(testFile.getBytes(), imageData);
+        assertArrayEquals(testFile.getBytes(), image.getData());
     }
 
     @Test
     public void addAndDelete() throws Exception {
+        // add file
         ProductImage image = this.imageService.add(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
+        // delete
         this.imageService.delete(image.getUrl());
+        // check in file system
         assertFalse(this.fileExists(image.getUrl()));
+        String uri = this.imageService.formUri(testImageName, productTestId);
+        // check in db
+        ProductImage stored = this.imageRepository.findProductImageByUrl(uri);
+        assertNull(stored);
+    }
+
+    @Test
+    public void addAndSetCover() throws Exception {
+        this.add();
+        ProductImage image = this.imageService.setCover(testImageName, productTestId);
+        assertNotNull(image);
+        assertTrue(image.isCover());
+        String uri = this.imageService.formUri(testImageName, productTestId);
+        ProductImage storedImage = this.imageRepository.findProductImageByUrl(uri);
+        assertEquals(image, storedImage);
     }
 
     @Before
@@ -88,12 +114,9 @@ public class ProductImageServiceTest {
         // set up image service
         imageService = new ProductImageService(imageRepository, imageStoragePath);
         // mock multipart file
-        String passedParameterName = "file";
-        String contentType = "image/png";
-        String testImagePath = "images/".concat(testImageName);
-        Resource resource = new ClassPathResource(testImagePath);
-        testFile = new MockMultipartFile(passedParameterName, resource.getFilename(), contentType,
-            resource.getInputStream());
+        testFile = mockMultipartFile(testImageName);
+        String testImage2Name = "test_image2.png";
+        testFile2 = mockMultipartFile(testImage2Name);
         // clean PRODUCTS_FOLDER folder
         cleanProductsFolder();
     }
@@ -101,6 +124,16 @@ public class ProductImageServiceTest {
     @After
     public void tearDown() throws Exception {
         cleanProductsFolder();
+    }
+
+    private MockMultipartFile mockMultipartFile(String testImageName) throws IOException {
+        String passedParameterName = "file";
+        String contentType = "image/png";
+        String testImagePath;
+        testImagePath = "images/".concat(testImageName);
+        Resource resource = new ClassPathResource(testImagePath);
+        return new MockMultipartFile(passedParameterName, resource.getFilename(), contentType,
+            resource.getInputStream());
     }
 
     private void cleanProductsFolder() throws IOException {

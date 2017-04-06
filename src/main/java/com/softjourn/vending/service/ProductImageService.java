@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Optional;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_HEIGHT;
 import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
@@ -54,6 +55,16 @@ public class ProductImageService {
     }
 
     void delete(String uri) throws IOException {
+        deleteFromFileSystem(uri);
+        deleteFormDB(uri);
+    }
+
+    private void deleteFormDB(String uri) {
+        ProductImage image = this.repository.findProductImageByUrl(uri);
+        this.repository.delete(image);
+    }
+
+    private void deleteFromFileSystem(String uri) throws IOException {
         String url = this.formUrl(uri);
         Path path = Paths.get(url);
         try {
@@ -61,6 +72,21 @@ public class ProductImageService {
         } catch (IOException e) {
             throw new IOException(canNotDeleteFileMessage(uri), e);
         }
+    }
+
+    ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
+        String uri = formUri(imageName, productId);
+        ProductImage image = this.repository.findProductImageByUrl(uri);
+        Optional.ofNullable(image)
+            .orElseThrow(() -> new NoSuchFileException(uri));
+        this.dropCover(image.getProductId());
+        image.setCover(true);
+        return this.repository.saveAndFlush(image);
+    }
+
+    String formUri(String fileName, int productId) {
+        return String.format("/%s/%s/%s/%s",
+            PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
     }
 
     private String fileDoesNotExistsMessage(String uri) {
@@ -134,23 +160,18 @@ public class ProductImageService {
         return this.formUrl(file.getOriginalFilename(), productId);
     }
 
-    private String formUrl(String fileName, int productId) {
-        String uri = formUri(fileName, productId);
-        return formUrl(uri);
-    }
-
     private String formUrl(String uri) {
         uri = appendSlashIfNotExists(uri);
         return imageStoragePath.concat(uri);
     }
 
-    private String formUri(MultipartFile file, int productId) {
-        return this.formUri(file.getOriginalFilename(), productId);
+    private String formUrl(String fileName, int productId) {
+        String uri = formUri(fileName, productId);
+        return formUrl(uri);
     }
 
-    private String formUri(String fileName, int productId) {
-        return String.format("/%s/%s/%s/%s",
-            PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
+    private String formUri(MultipartFile file, int productId) {
+        return this.formUri(file.getOriginalFilename(), productId);
     }
 
     private String appendSlashIfNotExists(String uri) {

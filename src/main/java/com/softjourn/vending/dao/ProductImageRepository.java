@@ -10,4 +10,5 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Long
 
     List<ProductImage> findByProductId(Integer id);
     List<ProductImage> findByProductIdAndIsCover(Integer id, boolean isCover);
+    ProductImage findProductImageByUrl(String url);
 }

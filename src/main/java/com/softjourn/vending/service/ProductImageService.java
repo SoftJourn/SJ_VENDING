@@ -47,13 +47,33 @@ public class ProductImageService {
         Path path = Paths.get(url);
         try {
             return Files.readAllBytes(path);
-        } catch (NoSuchFileException e){
-            String message = "File with relative path ".concat(uri).concat(" doesn't exist");
-            throw new NoSuchFileException(message);
+        } catch (NoSuchFileException e) {
+            throw new NoSuchFileException(fileDoesNotExistsMessage(uri));
         } catch (IOException e) {
-            String message = "Can't read file with relative path ".concat(uri);
-            throw new IOException(message, e);
+            throw new IOException(canNotReadFileMessage(uri), e);
         }
+    }
+
+    void delete(String uri) throws IOException {
+        String url = this.formUrl(uri);
+        Path path = Paths.get(url);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new IOException(canNotDeleteFileMessage(uri), e);
+        }
+    }
+
+    private String fileDoesNotExistsMessage(String uri) {
+        return "File with relative path ".concat(uri).concat(" doesn't exist");
+    }
+
+    private String canNotReadFileMessage(String uri) {
+        return "Can't read file with relative path ".concat(uri);
+    }
+
+    private String canNotDeleteFileMessage(String uri) {
+        return "Can't delete file with relative path ".concat(uri);
     }
 
     private void storeToFileSystem(MultipartFile file, int productId) throws FileAlreadyExistsException {

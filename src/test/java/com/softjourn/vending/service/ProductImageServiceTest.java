@@ -75,6 +75,14 @@ public class ProductImageServiceTest {
         assertArrayEquals(testFile.getBytes(),image.getData());
     }
 
+    @Test
+    public void addAndDelete() throws Exception {
+        ProductImage image = this.imageService.addImage(testFile, productTestId);
+        assertTrue(this.fileExists(image.getUrl()));
+        this.imageService.delete(image.getUrl());
+        assertFalse(this.fileExists(image.getUrl()));
+    }
+
     @Before
     public void setUp() throws Exception {
         // set up image service

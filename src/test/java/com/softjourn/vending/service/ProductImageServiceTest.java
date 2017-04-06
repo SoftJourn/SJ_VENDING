@@ -19,15 +19,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase
 public class ProductImageServiceTest {
+
+    private final String testImageName = "test_image.png";
 
     private ProductImageService imageService;
 
@@ -38,19 +41,38 @@ public class ProductImageServiceTest {
     String imageStoragePath;
 
     private MockMultipartFile testFile;
+    private int productTestId = 0;
 
     @Test
     public void addImage() throws Exception {
-        int productId = 0;
-        ProductImage image = this.imageService.addImage(testFile, productId);
+        ProductImage image = this.imageService.addImage(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
     }
 
     @Test(expected = FileAlreadyExistsException.class)
     public void addImage_Duplicate_Exception() throws Exception {
-        int productId = 0;
-        this.imageService.addImage(testFile, productId);
-        this.imageService.addImage(testFile, productId);
+        this.imageService.addImage(testFile, productTestId);
+        this.imageService.addImage(testFile, productTestId);
+    }
+
+    @Test
+    public void getImage() throws Exception {
+        byte[] image = this.imageService.getImage(testImageName);
+        assertNotNull(image);
+        assertArrayEquals(testFile.getBytes(), image);
+    }
+
+    @Test(expected = NoSuchFileException.class)
+    public void getImage_UnrealPath_Exception() throws Exception {
+        this.imageService.getImage("UnrealPath");
+    }
+
+    @Test
+    public void addImageAndRead() throws Exception {
+        ProductImage image = this.imageService.addImage(testFile, productTestId);
+        byte[] imageData = this.imageService.getImage(image.getUrl());
+        assertArrayEquals(testFile.getBytes(),imageData);
+        assertArrayEquals(testFile.getBytes(),image.getData());
     }
 
     @Before
@@ -59,9 +81,9 @@ public class ProductImageServiceTest {
         imageService = new ProductImageService(imageRepository, imageStoragePath);
         // mock multipart file
         String passedParameterName = "file";
-        String imagePath = "images/test_image.png";
         String contentType = "image/png";
-        Resource resource = new ClassPathResource(imagePath);
+        String testImagePath = "images/".concat(testImageName);
+        Resource resource = new ClassPathResource(testImagePath);
         testFile = new MockMultipartFile(passedParameterName, resource.getFilename(), contentType,
             resource.getInputStream());
         // clean PRODUCTS_FOLDER folder

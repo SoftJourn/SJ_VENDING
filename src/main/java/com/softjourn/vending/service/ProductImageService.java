@@ -13,11 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_HEIGHT;
 import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
@@ -41,6 +39,21 @@ public class ProductImageService {
     ProductImage addImage(MultipartFile file, int productId) throws IOException {
         storeToFileSystem(file, productId);
         return saveImageToDb(file, productId);
+    }
+
+    byte[] getImage(String uri) throws IOException {
+        String url = this.formUrl(uri);
+        // Read file
+        Path path = Paths.get(url);
+        try {
+            return Files.readAllBytes(path);
+        } catch (NoSuchFileException e){
+            String message = "File with relative path ".concat(uri).concat(" doesn't exist");
+            throw new NoSuchFileException(message);
+        } catch (IOException e) {
+            String message = "Can't read file with relative path ".concat(uri);
+            throw new IOException(message, e);
+        }
     }
 
     private void storeToFileSystem(MultipartFile file, int productId) throws FileAlreadyExistsException {
@@ -99,16 +112,21 @@ public class ProductImageService {
     }
 
     private String formUrl(MultipartFile file, int productId) {
-        return this.formUrl(file.getOriginalFilename(),productId);
+        return this.formUrl(file.getOriginalFilename(), productId);
     }
 
     private String formUrl(String fileName, int productId) {
         String uri = formUri(fileName, productId);
+        return formUrl(uri);
+    }
+
+    private String formUrl(String uri) {
+        uri = appendSlashIfNotExists(uri);
         return imageStoragePath.concat(uri);
     }
 
     private String formUri(MultipartFile file, int productId) {
-        return this.formUri(file.getOriginalFilename(),productId);
+        return this.formUri(file.getOriginalFilename(), productId);
     }
 
     private String formUri(String fileName, int productId) {
@@ -116,4 +134,11 @@ public class ProductImageService {
             PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
     }
 
+    private String appendSlashIfNotExists(String uri) {
+        String regex = "^/.*";
+        String result = uri;
+        if (!uri.matches(regex))
+            result = "/".concat(uri);
+        return result;
+    }
 }

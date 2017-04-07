@@ -1,6 +1,8 @@
 package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.ProductImageRepository;
+import com.softjourn.vending.dao.ProductRepository;
+import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.ProductImage;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -13,15 +15,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestData
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
+import sun.nio.ch.ThreadPool;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
 
@@ -36,6 +44,9 @@ public class ProductImageServiceTest {
 
     @Autowired
     private ProductImageRepository imageRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Value("${image.storage.path}")
     private String imageStoragePath;
@@ -60,6 +71,12 @@ public class ProductImageServiceTest {
     @Test(expected = FileAlreadyExistsException.class)
     public void add_Duplicate_Exception() throws Exception {
         this.imageService.add(testFile, productTestId);
+        this.imageService.add(testFile, productTestId);
+    }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void add_fileProductDoesNotExist_Exception() throws Exception {
+        productTestId = Integer.MAX_VALUE;
         this.imageService.add(testFile, productTestId);
     }
 
@@ -96,6 +113,36 @@ public class ProductImageServiceTest {
         // check in db
         ProductImage stored = this.imageRepository.findProductImageByUrl(uri);
         assertNull(stored);
+    }
+
+    @Test
+    public void productDeleteCascadeImageDelete() throws Exception {
+        // add file
+        ProductImage image = this.imageService.add(testFile, productTestId);
+        assertTrue(this.fileExists(image.getUrl()));
+        // delete product
+        productRepository.delete(productTestId);
+        // check in db
+        assertNull(imageRepository.findOne(image.getId()));
+        // check in file system
+        // TODO delete from file system when deletes in db
+        assertFalse(this.fileExists(image.getUrl()));
+
+    }
+
+    @Test
+    public void name() throws Exception {
+        // TODO test parallel saving of products
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.submit(() -> {
+            Product product = productRepository.findOne(productTestId);
+            try {
+                imageService.add(testFile, productTestId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
     @Test

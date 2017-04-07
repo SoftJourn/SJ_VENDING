@@ -56,12 +56,12 @@ public class Product {
     private Map<String,String> nutritionFacts;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productId", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<ProductImage> imageUrls = new HashSet<>();
 
     @JsonSetter(value = "imageUrls")
     public void setImageUrlsByJSON(Set imageUrls){
-//      Do nothing
+//      Do nothing to avoid deserialization
     }
 
     @JsonGetter

@@ -93,12 +93,14 @@ CREATE TABLE row_fields
 );
 CREATE TABLE images
 (
-  id BIGINT PRIMARY KEY NOT NULL IDENTITY ,
-  data varbinary(262144),
-  product_id INT NOT NULL,
-  is_cover BOOLEAN DEFAULT FALSE,
+  id         BIGINT PRIMARY KEY NOT NULL IDENTITY ,
+  data       varbinary(262144),
+  product_id INT                NOT NULL,
+  is_cover   BOOLEAN      DEFAULT FALSE,
   resolution VARCHAR(255),
-  url VARCHAR(255) DEFAULT ''
+  url        VARCHAR(255) DEFAULT '',
+  CONSTRAINT product_id_fk FOREIGN KEY (product_id) REFERENCES products (id)
+    ON DELETE CASCADE
 );
 CREATE TABLE product_nutrition_facts(
   product_id INT NOT NULL,

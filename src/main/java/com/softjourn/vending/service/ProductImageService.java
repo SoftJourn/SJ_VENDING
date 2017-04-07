@@ -59,6 +59,21 @@ public class ProductImageService {
         deleteFormDB(uri);
     }
 
+    ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
+        String uri = formUri(imageName, productId);
+        ProductImage image = this.repository.findProductImageByUrl(uri);
+        Optional.ofNullable(image)
+            .orElseThrow(() -> new NoSuchFileException(uri));
+        this.dropCover(productId);
+        image.setCover(true);
+        return this.repository.saveAndFlush(image);
+    }
+
+    String formUri(String fileName, int productId) {
+        return String.format("/%s/%s/%s/%s",
+            PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
+    }
+
     private void deleteFormDB(String uri) {
         ProductImage image = this.repository.findProductImageByUrl(uri);
         this.repository.delete(image);
@@ -72,21 +87,6 @@ public class ProductImageService {
         } catch (IOException e) {
             throw new IOException(canNotDeleteFileMessage(uri), e);
         }
-    }
-
-    ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
-        String uri = formUri(imageName, productId);
-        ProductImage image = this.repository.findProductImageByUrl(uri);
-        Optional.ofNullable(image)
-            .orElseThrow(() -> new NoSuchFileException(uri));
-        this.dropCover(image.getProductId());
-        image.setCover(true);
-        return this.repository.saveAndFlush(image);
-    }
-
-    String formUri(String fileName, int productId) {
-        return String.format("/%s/%s/%s/%s",
-            PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
     }
 
     private String fileDoesNotExistsMessage(String uri) {

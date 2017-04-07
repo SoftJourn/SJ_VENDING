@@ -33,18 +33,19 @@ public class ProductImage {
 
     private String url;
     private String resolution;
+    // TODO remove product id
     private Integer productId;
     private boolean isCover = false;
-
-    @Override
-    @JsonValue
-    public String toString() {
-        return this.url;
-    }
 
     public ProductImage(byte[] data, Integer productId, String resolution) {
         this.data = data;
         this.resolution = resolution;
         this.productId = productId;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+        return this.url;
     }
 }

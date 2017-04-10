@@ -18,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import sun.nio.ch.ThreadPool;
 
 import java.io.File;
@@ -116,12 +117,22 @@ public class ProductImageServiceTest {
     }
 
     @Test
+    public void postRemove_image() throws Exception {
+        ProductImage image = this.imageService.add(testFile, productTestId);
+        this.imageRepository.delete(image);
+        // triggers actual delete in Test environment (Transactional does not help). Another option to use @Rollback(false)
+        this.imageRepository.findAll();
+    }
+
+    @Test
     public void productDeleteCascadeImageDelete() throws Exception {
         // add file
         ProductImage image = this.imageService.add(testFile, productTestId);
         assertTrue(this.fileExists(image.getUrl()));
         // delete product
         productRepository.delete(productTestId);
+        // triggers actual delete in Test environment (Transactional does not help). Another option to use @Rollback(false)
+        productRepository.findAll();
         // check in db
         assertNull(imageRepository.findOne(image.getId()));
         // check in file system
@@ -131,7 +142,7 @@ public class ProductImageServiceTest {
     }
 
     @Test
-    public void name() throws Exception {
+    public void parallelSaving() throws Exception {
         // TODO test parallel saving of products
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         executorService.submit(() -> {

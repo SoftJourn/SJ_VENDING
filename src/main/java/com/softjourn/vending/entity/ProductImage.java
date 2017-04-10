@@ -3,6 +3,7 @@ package com.softjourn.vending.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.softjourn.vending.entity.listeners.ProductImageListener;
 import com.softjourn.vending.utils.jsonview.View;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ import static com.softjourn.vending.utils.Constants.IMAGE_FILE_MAX_SIZE;
 @Table(name = "images")
 @Builder
 @AllArgsConstructor
+@EntityListeners(ProductImageListener.class)
 public class ProductImage {
 
     @Id

@@ -7,11 +7,13 @@ import com.softjourn.vending.exceptions.WrongImageDimensions;
 import com.softjourn.vending.utils.FileUploadUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.persistence.PostRemove;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.*;
@@ -36,12 +38,7 @@ public class ProductImageService {
         this.imageStoragePath = imageStoragePath;
     }
 
-    ProductImage add(MultipartFile file, int productId) throws IOException {
-        storeToFileSystem(file, productId);
-        return saveImageToDb(file, productId);
-    }
-
-    byte[] get(String uri) throws IOException {
+    public byte[] get(String uri) throws IOException {
         String url = this.formUrl(uri);
         // Read file
         Path path = Paths.get(url);
@@ -54,9 +51,14 @@ public class ProductImageService {
         }
     }
 
+    ProductImage add(MultipartFile file, int productId) throws IOException {
+        storeToFileSystem(file, productId);
+        return saveImageToDb(file, productId);
+    }
+
     void delete(String uri) throws IOException {
-        deleteFromFileSystem(uri);
         deleteFormDB(uri);
+        deleteFromFileSystem(uri);
     }
 
     ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
@@ -79,6 +81,7 @@ public class ProductImageService {
         this.repository.delete(image);
     }
 
+    @PostRemove
     private void deleteFromFileSystem(String uri) throws IOException {
         String url = this.formUrl(uri);
         Path path = Paths.get(url);

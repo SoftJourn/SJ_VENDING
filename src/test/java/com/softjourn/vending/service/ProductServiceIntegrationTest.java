@@ -3,6 +3,7 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.FavoritesRepository;
 import com.softjourn.vending.dao.ImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
+import com.softjourn.vending.dao.RefreshableRepositoryImpl;
 import com.softjourn.vending.entity.Image;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.exceptions.ProductNotFoundException;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase
 @DataJpaTest
+@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
 @Log
 public class ProductServiceIntegrationTest {
 

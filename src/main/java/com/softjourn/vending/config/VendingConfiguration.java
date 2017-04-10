@@ -1,11 +1,13 @@
 package com.softjourn.vending.config;
 
 import com.softjourn.common.auth.OAuthHelper;
+import com.softjourn.vending.dao.RefreshableRepositoryImpl;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,6 +16,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -21,6 +24,8 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
+@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
+@EnableTransactionManagement
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
 
     @Value("${auth.client.id}")

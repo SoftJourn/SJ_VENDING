@@ -69,7 +69,7 @@ public class VendingConfiguration extends ResourceServerConfigurerAdapter {
         try (InputStream inputStream = new UrlResource("file:" + authPublicKeyFile).getInputStream()) {
             return IOUtils.toString(inputStream, "utf8");
         } catch (IOException e) {
-            throw new RuntimeException("Can't read auth public key from file " + authPublicKeyFile);
+            throw new RuntimeException("Can't read auth public key from file " + authPublicKeyFile, e);
         }
     }
 

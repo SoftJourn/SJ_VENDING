@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.security.*;
 import java.time.Instant;
 import java.util.Collections;
@@ -137,12 +139,12 @@ public class MachineServiceProd implements MachineService {
     private void prepareSignerKey() {
         try {
             KeyPair keyPair = new KeyStoreKeyFactory(
-                    new ClassPathResource(machineSignerKeystoreFile), keystorePassword.toCharArray())
+                    new UrlResource("file:" + machineSignerKeystoreFile), keystorePassword.toCharArray())
                     .getKeyPair(keystoreAlias, keystorePassword.toCharArray());
 
             signature = Signature.getInstance("SHA256withRSA");
             signature.initSign(keyPair.getPrivate());
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | MalformedURLException e) {
             throw new RuntimeException("Can't prepare machine request signer. ", e);
         }
     }

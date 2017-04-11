@@ -8,10 +8,7 @@ import com.softjourn.vending.dto.FeatureDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
 import com.softjourn.vending.dto.TransactionDTO;
 import com.softjourn.vending.entity.*;
-import com.softjourn.vending.exceptions.MachineBusyException;
-import com.softjourn.vending.exceptions.NotFoundException;
-import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
-import com.softjourn.vending.exceptions.VendingProcessingException;
+import com.softjourn.vending.exceptions.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -92,7 +90,11 @@ public class BuyService {
         Product product = getProductIfAvailable(machineId, itemId);
         TransactionDTO tx = null;
         try {
-            VendingMachine machine = vendingService.get(machineId);
+            VendingMachine machine = Optional
+                    .ofNullable(vendingService.get(machineId))
+                    .filter(VendingMachine::getIsActive)
+                    .orElseThrow(() -> new MachineBusyException(machineId));
+
             tx = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
             machineService.buy(machineId, itemId);
             decreaseProductsCount(machineId, itemId);

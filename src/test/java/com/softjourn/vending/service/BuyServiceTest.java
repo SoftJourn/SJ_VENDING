@@ -130,6 +130,7 @@ public class BuyServiceTest {
         }});
 
         VendingMachine vendingMachine = new VendingMachine();
+        vendingMachine.setIsActive(true);
         vendingMachine.setId(0);
         vendingMachine.setName("Snack machine");
         vendingMachine.setRows(new ArrayList<Row>() {{

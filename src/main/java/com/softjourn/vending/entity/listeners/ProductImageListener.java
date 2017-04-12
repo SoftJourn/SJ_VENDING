@@ -5,22 +5,27 @@ import com.softjourn.vending.service.ProductImageService;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.annotation.Resource;
 import javax.persistence.PostRemove;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * React on delete from DB
  * <p>Main goal delete image from file system when record in db deletes</p>
  */
-@Configurable(autowire = Autowire.BY_TYPE)
 public class ProductImageListener {
 
-    @Autowired
-    private ProductImageService imageService;
+    static ProductImageService imageService;
 
     @PostRemove
-    public void productImagePostRemove(ProductImage image) {
-        System.out.println("Listening User Post Remove : ");
+    public void productImagePostRemove(ProductImage image) throws IOException {
+        Optional
+            .ofNullable(imageService)
+            .orElseThrow(() -> new IllegalStateException("ListenerConfiguration is not in context"));
+        imageService.deleteFromFileSystem(image.getUrl());
     }
 }

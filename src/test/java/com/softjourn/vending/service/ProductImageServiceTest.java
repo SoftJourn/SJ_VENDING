@@ -4,6 +4,7 @@ import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.ProductImage;
+import com.softjourn.vending.entity.listeners.ListenerConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -108,6 +110,8 @@ public class ProductImageServiceTest {
         assertTrue(this.fileExists(image.getUrl()));
         // delete
         this.imageService.delete(image.getUrl());
+        // triggers actual delete in Test environment (Transactional does not help). Another option to use @Rollback(false)
+        this.imageRepository.findAll();
         // check in file system
         assertFalse(this.fileExists(image.getUrl()));
         String uri = this.imageService.formUri(testImageName, productTestId);
@@ -171,6 +175,8 @@ public class ProductImageServiceTest {
     public void setUp() throws Exception {
         // set up image service
         imageService = new ProductImageService(imageRepository, imageStoragePath);
+        // create listener configuration for listeners injection
+        new ListenerConfiguration(imageService);
         // mock multipart file
         testFile = mockMultipartFile(testImageName);
         String testImage2Name = "test_image2.png";

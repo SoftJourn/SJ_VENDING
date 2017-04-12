@@ -38,7 +38,17 @@ public class ProductImageService {
         this.imageStoragePath = imageStoragePath;
     }
 
-    public byte[] get(String uri) throws IOException {
+    public void deleteFromFileSystem(String uri) throws IOException {
+        String url = this.formUrl(uri);
+        Path path = Paths.get(url);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new IOException(canNotDeleteFileMessage(uri), e);
+        }
+    }
+
+    byte[] get(String uri) throws IOException {
         String url = this.formUrl(uri);
         // Read file
         Path path = Paths.get(url);
@@ -58,7 +68,6 @@ public class ProductImageService {
 
     void delete(String uri) throws IOException {
         deleteFormDB(uri);
-        deleteFromFileSystem(uri);
     }
 
     ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
@@ -79,17 +88,6 @@ public class ProductImageService {
     private void deleteFormDB(String uri) {
         ProductImage image = this.repository.findProductImageByUrl(uri);
         this.repository.delete(image);
-    }
-
-    @PostRemove
-    private void deleteFromFileSystem(String uri) throws IOException {
-        String url = this.formUrl(uri);
-        Path path = Paths.get(url);
-        try {
-            Files.delete(path);
-        } catch (IOException e) {
-            throw new IOException(canNotDeleteFileMessage(uri), e);
-        }
     }
 
     private String fileDoesNotExistsMessage(String uri) {

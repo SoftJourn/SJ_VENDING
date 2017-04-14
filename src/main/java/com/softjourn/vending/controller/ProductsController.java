@@ -2,6 +2,8 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.ProductImage;
+import com.softjourn.vending.service.ProductImageService;
 import com.softjourn.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +21,13 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
 public class ProductsController {
 
+    private final ProductImageService imageService;
     private ProductService productService;
 
     @Autowired
-    public ProductsController(ProductService productService) {
+    public ProductsController(ProductService productService, ProductImageService imageService) {
         this.productService = productService;
+        this.imageService = imageService;
     }
 
     // POST
@@ -44,8 +48,8 @@ public class ProductsController {
     }
 
     @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void addProductImage(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
-        productService.addProductImage(files, id);
+    public List<ProductImage> addProductImages(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
+        return imageService.add(files, id);
     }
 
     @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST)
@@ -73,22 +77,23 @@ public class ProductsController {
     }
 
     @PreAuthorize("permitAll")
-    @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.GET)
-    public byte[] getImage(@PathVariable Integer productId, @PathVariable Long imageId) {
-        return productService.getImageById(productId, imageId);
+    @RequestMapping(path = "/{productId}/images/{imageName:.*}", method = RequestMethod.GET)
+    public byte[] getImage(@PathVariable Integer productId, @PathVariable String imageName) throws IOException {
+        String uri = String.format("/%s/images/%s", productId, imageName);
+        return imageService.get(uri);
     }
 
     // DELETE
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Integer id) {
         productService.delete(id);
     }
 
-    @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable Integer productId, @PathVariable Long imageId) {
-        productService.deleteImage(productId, imageId);
+    @RequestMapping(path = "/{productId}/images/{imageName:.*}", method = RequestMethod.DELETE)
+    public void deleteImage(@PathVariable Integer productId, @PathVariable String imageName) throws IOException {
+        String uri = String.format("/%s/images/%s", productId, imageName);
+        imageService.delete(uri);
     }
 
     // ALL

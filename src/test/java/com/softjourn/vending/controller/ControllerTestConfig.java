@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.text.ParseException;
@@ -91,6 +92,14 @@ public abstract class ControllerTestConfig {
     private Field field1;
     private Field field2;
     private Field field3;
+
+    @Bean
+    public ProductImageService productImageService() throws IOException {
+        ProductImageService productImageService;
+        productImageService = Mockito.mock(ProductImageService.class);
+        when(productImageService.add(any(), any())).thenCallRealMethod();
+        return productImageService;
+    }
 
     @Bean
     public ProductService productService() {

@@ -2,6 +2,7 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.entity.ProductImage;
+import com.softjourn.vending.exceptions.NoContentException;
 import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.WrongImageDimensions;
 import com.softjourn.vending.utils.FileUploadUtil;
@@ -17,6 +18,8 @@ import javax.persistence.PostRemove;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_HEIGHT;
@@ -48,7 +51,15 @@ public class ProductImageService {
         }
     }
 
-    byte[] get(String uri) throws IOException {
+    public List<ProductImage> add(MultipartFile[] files, Integer productId) throws IOException {
+        List<ProductImage> images = new ArrayList<>();
+        for (MultipartFile file : files) {
+            images.add(this.add(file, productId));
+        }
+        return images;
+    }
+
+    public byte[] get(String uri) throws IOException {
         String url = this.formUrl(uri);
         // Read file
         Path path = Paths.get(url);
@@ -61,13 +72,13 @@ public class ProductImageService {
         }
     }
 
+    public void delete(String uri) throws IOException {
+        deleteFormDB(uri);
+    }
+
     ProductImage add(MultipartFile file, int productId) throws IOException {
         storeToFileSystem(file, productId);
         return saveImageToDb(file, productId);
-    }
-
-    void delete(String uri) throws IOException {
-        deleteFormDB(uri);
     }
 
     ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
@@ -87,6 +98,7 @@ public class ProductImageService {
 
     private void deleteFormDB(String uri) {
         ProductImage image = this.repository.findProductImageByUrl(uri);
+        Optional.ofNullable(image).orElseThrow(NoContentException::new);
         this.repository.delete(image);
     }
 

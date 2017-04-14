@@ -30,6 +30,15 @@ import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 @ResponseBody
 public class GlobalExceptionHandler {
 
+    // 204 No content
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ExceptionHandler(NoContentException.class)
+    public ErrorDetail fileDoesNotExists(Exception e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 20400,
+            e.getMessage());
+    }
+
     // 400 BAD_REQUEST
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

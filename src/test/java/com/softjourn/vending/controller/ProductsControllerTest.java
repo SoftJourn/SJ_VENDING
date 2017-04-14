@@ -1,6 +1,7 @@
 package com.softjourn.vending.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softjourn.vending.TestHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProductsControllerTest {
 
     @Autowired
-    ObjectMapper mapper;
-
-    @Autowired
     private MockMvc mockMvc;
-
-    private String json(Object o) throws IOException {
-        return mapper.writeValueAsString(o);
-    }
 
     @Test
     @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
@@ -128,9 +122,9 @@ public class ProductsControllerTest {
                 .post("/v1/products")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json(product4)))
+                .content(TestHelper.json(product4)))
             .andExpect(status().isOk())
-            .andExpect(content().json(json(product4)))
+            .andExpect(content().json(TestHelper.json(product4)))
             .andDo(document("add-product",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
@@ -159,9 +153,9 @@ public class ProductsControllerTest {
                 .post("/v1/products/{productId}", 1)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json(product)))
+                .content(TestHelper.json(product)))
             .andExpect(status().isOk())
-            .andExpect(content().json(json(product)))
+            .andExpect(content().json(TestHelper.json(product)))
             .andDo(document("update-product",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
@@ -205,7 +199,7 @@ public class ProductsControllerTest {
             .perform(RestDocumentationRequestBuilders
                 .delete("/v1/products/{productId}", 0)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
-            .andExpect(status().isNoContent())
+            .andExpect(status().isOk())
             .andDo(document("delete-product",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
@@ -220,7 +214,7 @@ public class ProductsControllerTest {
             .get("/v1/products/category/{categoryName}", "Drink")
             .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]"))
             .andExpect(status().isOk())
-            .andExpect(content().json(json(Collections.singletonList(product))))
+            .andExpect(content().json(TestHelper.json(Collections.singletonList(product))))
             .andDo(document("product-by-category",
                 preprocessResponse(prettyPrint()),
                 requestHeaders(
@@ -240,4 +234,5 @@ public class ProductsControllerTest {
                 )
             ));
     }
+
 }

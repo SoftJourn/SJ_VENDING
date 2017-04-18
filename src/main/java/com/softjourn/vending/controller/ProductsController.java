@@ -37,20 +37,43 @@ public class ProductsController {
         return productService.add(product);
     }
 
+    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
+    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
+        return productService.update(id, updater);
+    }
+
+    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void updateCoverImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
+        productService.updateCoverImage(file, id);
+    }
+
     @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<ProductImage> addProductImages(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
         return imageService.add(files, id);
     }
 
-    @RequestMapping(path = "/{productId}/images/{imageName:.*}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable Integer productId, @PathVariable String imageName) throws IOException {
-        String uri = String.format("/%s/images/%s", productId, imageName);
-        imageService.delete(uri);
+    @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST)
+    public void setCoverByImgId(@PathVariable Integer productId, @PathVariable Long imgId) throws IOException {
+        productService.setCoverByImgId(productId, imgId);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public void deleteProduct(@PathVariable Integer id) {
-        productService.delete(id);
+    // GET
+
+    @PreAuthorize("authenticated")
+    @RequestMapping(method = RequestMethod.GET)
+    public Iterable<Product> getProducts() {
+        return productService.getProducts();
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public List<Product> getProductsByNameThatContain(@RequestParam("name") String name) {
+        return productService.getProductsByNameThatContain(name);
+    }
+
+    @PreAuthorize("authenticated")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public Product getProduct(@PathVariable Integer id) {
+        return productService.getProduct(id);
     }
 
     @PreAuthorize("permitAll")
@@ -60,47 +83,25 @@ public class ProductsController {
         return imageService.get(uri);
     }
 
-    // GET
+    // DELETE
 
-    @PreAuthorize("authenticated")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable Integer id) {
-        return productService.getProduct(id);
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.delete(id);
     }
 
-    @PreAuthorize("authenticated")
-    @RequestMapping(method = RequestMethod.GET)
-    public Iterable<Product> getProducts() {
-        return productService.getProducts();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(path = "/{productId}/images/{imageName:.*}", method = RequestMethod.DELETE)
+    public void deleteImage(@PathVariable Integer productId, @PathVariable String imageName) throws IOException {
+        String uri = String.format("products/%s/images/%s", productId, imageName);
+        imageService.delete(uri);
     }
+
+    // ALL
 
     @PreAuthorize("authenticated")
     @GetMapping("/category/{categoryName}")
     public List<Product> getProductsByCategory(@PathVariable String categoryName) {
         return productService.getProductsByCategory(categoryName);
-    }
-
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public List<Product> getProductsByNameThatContain(@RequestParam("name") String name) {
-        return productService.getProductsByNameThatContain(name);
-    }
-
-    // DELETE
-
-    @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST)
-    public void setCoverByImgId(@PathVariable Integer productId, @PathVariable Long imgId) throws IOException {
-        productService.setCoverByImgId(productId, imgId);
-    }
-
-    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void updateCoverImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
-        productService.updateCoverImage(file, id);
-    }
-
-    // ALL
-
-    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
-    public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
-        return productService.update(id, updater);
     }
 }

@@ -8,7 +8,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,24 +34,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AccessDeniedException.class)
     public ModelAndView accessDenied() {
         return new ModelAndView("redirect:login.html");
-    }
-
-    // 204 No content
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ExceptionHandler(NoContentException.class)
-    public ErrorDetail fileDoesNotExists(Exception e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 20400,
-            e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ExceptionHandler(NoSuchFileException.class)
-    public ErrorDetail fileDoesNotExistsInFileSystem(Exception e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 20400,
-            e.getMessage());
     }
 
     // 400 BAD_REQUEST
@@ -144,6 +125,19 @@ public class GlobalExceptionHandler {
     public ErrorDetail handleNotFoundException(Exception e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40405, "Record does not exists");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoSuchFileException.class)
+    public ErrorDetail fileDoesNotExistsInFileSystem(NoSuchFileException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40407,
+            e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoImageException.class)
+    public void handleImageNotFoundException() {
     }
 
     // 409 CONFLICT

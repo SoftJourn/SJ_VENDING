@@ -6,7 +6,7 @@ import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.ProductImage;
 import com.softjourn.vending.entity.listeners.ListenerConfiguration;
 import com.softjourn.vending.TestHelper;
-import com.softjourn.vending.exceptions.NoContentException;
+import com.softjourn.vending.exceptions.NoImageException;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -114,7 +114,7 @@ public class ProductImageServiceTest {
         this.imageService.add(testFile, productTestId);
     }
 
-    @Test(expected = NoContentException.class)
+    @Test(expected = NoImageException.class)
     public void deleteImageDoesNotExists_Exception() throws Exception {
         String uri = String.format("/%s/images/%s", this.productTestId, this.testImageName);
         assertFalse(this.fileExists(uri));

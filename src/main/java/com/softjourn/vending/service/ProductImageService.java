@@ -2,19 +2,17 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.entity.ProductImage;
-import com.softjourn.vending.exceptions.NoContentException;
+import com.softjourn.vending.exceptions.NoImageException;
 import com.softjourn.vending.exceptions.NotImageException;
 import com.softjourn.vending.exceptions.WrongImageDimensions;
 import com.softjourn.vending.utils.FileUploadUtil;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.persistence.PostRemove;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.*;
@@ -113,7 +111,7 @@ public class ProductImageService {
 
     private void deleteFormDB(String uri) {
         ProductImage image = this.repository.findProductImageByUrl(uri);
-        Optional.ofNullable(image).orElseThrow(NoContentException::new);
+        Optional.ofNullable(image).orElseThrow(() -> new NoImageException("Image does not exits in DB ".concat(uri)));
         this.repository.delete(image);
     }
 

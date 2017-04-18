@@ -2,13 +2,12 @@ package com.softjourn.vending.controller;
 
 import com.softjourn.vending.TestHelper;
 import com.softjourn.vending.entity.ProductImage;
-import com.softjourn.vending.exceptions.NoContentException;
+import com.softjourn.vending.exceptions.NoImageException;
 import com.softjourn.vending.service.ProductImageService;
 import com.softjourn.vending.service.ProductService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,15 +27,12 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -106,7 +102,7 @@ public class ProductsControllerImageTest {
             .delete(uri, testProductId, file.getOriginalFilename())
             .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
         )
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -119,7 +115,7 @@ public class ProductsControllerImageTest {
             .delete(uri, testProductId, file.getOriginalFilename())
             .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
         )
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -132,7 +128,7 @@ public class ProductsControllerImageTest {
             .delete(uri, testProductId, file.getOriginalFilename())
             .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
         )
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -160,10 +156,10 @@ public class ProductsControllerImageTest {
             .thenThrow(new FileAlreadyExistsException("File exits"));
         // second file is not exists to delete
         String uri;
-        uri = String.format("/%s/images/%s", testProductId, files[1].getOriginalFilename());
-        doThrow(new NoContentException("file does not exists in DB")).when(this.imageService).delete(uri);
+        uri = String.format("products/%s/images/%s", testProductId, files[1].getOriginalFilename());
+        doThrow(new NoImageException("file does not exists in DB")).when(this.imageService).delete(uri);
         // third file is not exists to delete
-        uri = String.format("/%s/images/%s", testProductId, files[2].getOriginalFilename());
+        uri = String.format("products/%s/images/%s", testProductId, files[2].getOriginalFilename());
         doThrow(new NoSuchFileException("file does not exists in File System")).when(this.imageService).delete(uri);
     }
 

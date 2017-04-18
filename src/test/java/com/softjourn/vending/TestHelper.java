@@ -27,6 +27,12 @@ public class TestHelper {
             resource.getInputStream());
     }
 
+    public static MockMultipartFile mockMultipartImageFile(String testImageName, String passedParameterName, byte[] content) throws IOException {
+        String contentType = "image/png";
+        return new MockMultipartFile(passedParameterName, testImageName, contentType,
+            content);
+    }
+
     public static String json(Object o) throws IOException {
         return mapper.writeValueAsString(o);
     }

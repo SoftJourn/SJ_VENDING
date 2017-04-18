@@ -41,6 +41,18 @@ public class ProductImageService {
         this.imageStoragePath = imageStoragePath;
     }
 
+    public List<ProductImage> add(MultipartFile[] files, Integer productId) throws IOException {
+        List<ProductImage> images = new ArrayList<>();
+        for (MultipartFile file : files) {
+            images.add(this.add(file, productId));
+        }
+        return images;
+    }
+
+    public void delete(String uri) throws IOException {
+        deleteFormDB(uri);
+    }
+
     public void deleteFromFileSystem(String uri) throws IOException {
         String url = this.formUrl(uri);
         Path path = Paths.get(url);
@@ -51,29 +63,26 @@ public class ProductImageService {
         }
     }
 
-    public List<ProductImage> add(MultipartFile[] files, Integer productId) throws IOException {
-        List<ProductImage> images = new ArrayList<>();
-        for (MultipartFile file : files) {
-            images.add(this.add(file, productId));
-        }
-        return images;
-    }
-
     public byte[] get(String uri) throws IOException {
         String url = this.formUrl(uri);
         // Read file
         Path path = Paths.get(url);
         try {
-            return Files.readAllBytes(path);
-        } catch (NoSuchFileException e) {
-            throw new NoSuchFileException(fileDoesNotExistsMessage(uri));
-        } catch (IOException e) {
-            throw new IOException(canNotReadFileMessage(uri), e);
+            try {
+                return Files.readAllBytes(path);
+            } catch (NoSuchFileException e) {
+                throw new NoSuchFileException(fileDoesNotExistsMessage(uri));
+            } catch (IOException e) {
+                throw new IOException(canNotReadFileMessage(uri), e);
+            }
+            // TODO remove old version in next release
+        } catch (Exception e) {
+            try {
+                return this.getOldVersion(uri);
+            } catch (NullPointerException nested) {
+                throw new NoSuchFileException("Can not read file " + uri);
+            }
         }
-    }
-
-    public void delete(String uri) throws IOException {
-        deleteFormDB(uri);
     }
 
     ProductImage add(MultipartFile file, int productId) throws IOException {
@@ -94,6 +103,12 @@ public class ProductImageService {
     String formUri(String fileName, int productId) {
         return String.format("/%s/%s/%s/%s",
             PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
+    }
+
+    private byte[] getOldVersion(String uri) {
+        String url = PRODUCTS_RELATIVE_ENDPOINT.concat(uri);
+        ProductImage image = repository.findProductImageByUrl(url);
+        return image.getData();
     }
 
     private void deleteFormDB(String uri) {
@@ -117,14 +132,15 @@ public class ProductImageService {
     private void storeToFileSystem(MultipartFile file, int productId) throws FileAlreadyExistsException {
         String url = formUrl(file, productId);
         Path path = Paths.get(url);
+        String errorMessage = "Can not create file with " + formUri(file, productId) + " path";
         try {
             Files.createDirectories(path.getParent());
             Files.createFile(path);
             Files.write(path, file.getBytes());
         } catch (FileAlreadyExistsException e) {
-            throw e;
+            throw new FileAlreadyExistsException(errorMessage);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Can not create file with " + url + " path", e);
+            throw new IllegalArgumentException(errorMessage, e);
         }
     }
 

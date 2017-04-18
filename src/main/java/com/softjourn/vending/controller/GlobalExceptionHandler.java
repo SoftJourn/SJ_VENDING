@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.text.ParseException;
 import java.util.Objects;
 
@@ -30,7 +32,13 @@ import static com.softjourn.vending.utils.Constants.SQL_DUPLICATE_ENTRY;
 @ResponseBody
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ModelAndView accessDenied() {
+        return new ModelAndView("redirect:login.html");
+    }
+
     // 204 No content
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ExceptionHandler(NoContentException.class)
     public ErrorDetail fileDoesNotExists(Exception e) {
@@ -39,15 +47,15 @@ public class GlobalExceptionHandler {
             e.getMessage());
     }
 
-    // 400 BAD_REQUEST
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadRequestException.class)
-    public ErrorDetail handleBadRequestException(Exception e) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ExceptionHandler(NoSuchFileException.class)
+    public ErrorDetail fileDoesNotExistsInFileSystem(Exception e) {
         log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40000,
+        return buildErrorDetails(e, 20400,
             e.getMessage());
     }
+
+    // 400 BAD_REQUEST
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,73 +70,19 @@ public class GlobalExceptionHandler {
         return buildErrorDetails(e, null, message);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ErrorDetail handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
-        log.info(e.getMessage());
-        return buildErrorDetails(e, null, "Image size is too large");
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Such item already presented.")
+    @ExceptionHandler(AlreadyPresentedException.class)
+    public void handleAlreadyPresentedException(Exception e) {
+        log.info(e.getLocalizedMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NotImageException.class)
-    public ErrorDetail handleNotImageException(NotImageException e) {
-        log.info(e.getMessage());
-        return buildErrorDetails(e, null, "This file is not image or this file format is not supported!");
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(WrongImageDimensions.class)
-    public ErrorDetail handleWrongImageDimensions(WrongImageDimensions e) {
-        log.info(e.getMessage());
-        return buildErrorDetails(e, null, "Image dimensions is too big, try to use 205*205px");
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ParseException.class)
-    public ErrorDetail handleParseException(ParseException e) {
-        log.info(e.getMessage());
-        return buildErrorDetails(e, null, "Sent data could not be parsed");
-    }
-
-    // 404 NOT_FOUND
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ErrorDetail handleNoHandlerFoundException(NoHandlerFoundException e) {
+    @ExceptionHandler(BadRequestException.class)
+    public ErrorDetail handleBadRequestException(Exception e) {
         log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40401, String.format("Endpoint %s not found", e.getRequestURL()));
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(MachineNotFoundException.class)
-    public ErrorDetail handleMachineNotFoundException(MachineNotFoundException e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40402, e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ErrorDetail handleProductNotFoundException(ProductNotFoundException e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40403, e.getMessage());
-    }
-
-    @ExceptionHandler(ProductNotFoundInMachineException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorDetail handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40404,
+        return buildErrorDetails(e, 40000,
             e.getMessage());
     }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    public ErrorDetail handleNotFoundException(Exception e) {
-        log.warn(e.getLocalizedMessage());
-        return buildErrorDetails(e, 40405, "Record does not exists");
-    }
-
-    // 409 CONFLICT
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -156,10 +110,56 @@ public class GlobalExceptionHandler {
         return buildErrorDetails(e, null, e.getLocalizedMessage());
     }
 
-    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Such item already presented.")
-    @ExceptionHandler(AlreadyPresentedException.class)
-    public void handleAlreadyPresentedException(Exception e) {
-        log.info(e.getLocalizedMessage());
+    // 404 NOT_FOUND
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ErrorDetail handleFileUploadBase$SizeLimitExceededException(MaxUploadSizeExceededException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Image size is too large");
+    }
+
+    @ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
+    @ExceptionHandler(MachineBusyException.class)
+    public ErrorDetail handleMachineBusyException(Exception e) {
+        return buildErrorDetails(e, 50901, "Machine is locked by queue. Try again later.");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(MachineNotFoundException.class)
+    public ErrorDetail handleMachineNotFoundException(MachineNotFoundException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40402, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ErrorDetail handleNoHandlerFoundException(NoHandlerFoundException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40401, String.format("Endpoint %s not found", e.getRequestURL()));
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ErrorDetail handleNotFoundException(Exception e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40405, "Record does not exists");
+    }
+
+    // 409 CONFLICT
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotImageException.class)
+    public ErrorDetail handleNotImageException(NotImageException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "This file is not image or this file format is not supported!");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ParseException.class)
+    public ErrorDetail handleParseException(ParseException e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Sent data could not be parsed");
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -169,11 +169,26 @@ public class GlobalExceptionHandler {
         return buildErrorDetails(e, 40901, "Not enough money to buy product");
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(PaymentProcessingException.class)
+    public ErrorDetail handlePaymentProcessingException(PaymentProcessingException e) {
+        log.warn("Error during processing payment. " + e.getLocalizedMessage());
+        return buildErrorDetails(e, 50902, "Error during processing payment.");
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(ProductAlreadyInFavoritesException.class)
     public ErrorDetail handleProductAlreadyInFavoritesException(ProductAlreadyInFavoritesException e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40902,
+            e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public ErrorDetail handleProductImageDuplicateException(FileAlreadyExistsException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40904,
             e.getMessage());
     }
 
@@ -187,17 +202,19 @@ public class GlobalExceptionHandler {
 
     // 500 INTERNAL_SERVER_ERROR
 
-    @ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
-    @ExceptionHandler(MachineBusyException.class)
-    public ErrorDetail handleMachineBusyException(Exception e) {
-        return buildErrorDetails(e, 50901, "Machine is locked by queue. Try again later.");
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ErrorDetail handleProductNotFoundException(ProductNotFoundException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40403, e.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(PaymentProcessingException.class)
-    public ErrorDetail handlePaymentProcessingException(PaymentProcessingException e) {
-        log.warn("Error during processing payment. " + e.getLocalizedMessage());
-        return buildErrorDetails(e, 50902, "Error during processing payment.");
+    @ExceptionHandler(ProductNotFoundInMachineException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDetail handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
+        log.warn(e.getLocalizedMessage());
+        return buildErrorDetails(e, 40404,
+            e.getMessage());
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error occurred during processing request. Contact ADMIN.")
@@ -208,9 +225,11 @@ public class GlobalExceptionHandler {
 
     // NO STATUS
 
-    @ExceptionHandler(value = AccessDeniedException.class)
-    public ModelAndView accessDenied() {
-        return new ModelAndView("redirect:login.html");
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(WrongImageDimensions.class)
+    public ErrorDetail handleWrongImageDimensions(WrongImageDimensions e) {
+        log.info(e.getMessage());
+        return buildErrorDetails(e, null, "Image dimensions is too big, try to use 205*205px");
     }
 
     private ErrorDetail buildErrorDetails(Exception e, Integer code, String message) {

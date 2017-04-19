@@ -2,13 +2,7 @@ package com.softjourn.vending.entity.listeners;
 
 import com.softjourn.vending.entity.ProductImage;
 import com.softjourn.vending.service.ProductImageService;
-import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import javax.annotation.Resource;
 import javax.persistence.PostRemove;
 import java.io.IOException;
 import java.util.Optional;
@@ -26,6 +20,10 @@ public class ProductImageListener {
         Optional
             .ofNullable(imageService)
             .orElseThrow(() -> new IllegalStateException("ListenerConfiguration is not in context"));
-        imageService.deleteFromFileSystem(image.getUrl());
+        try {
+            imageService.deleteFromFileSystem(image.getUrl());
+        } catch (Exception e) {
+            // TODO log info
+        }
     }
 }

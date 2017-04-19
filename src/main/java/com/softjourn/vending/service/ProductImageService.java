@@ -99,7 +99,7 @@ public class ProductImageService {
     }
 
     String formUri(String fileName, int productId) {
-        return String.format("/%s/%s/%s/%s",
+        return String.format("%s/%s/%s/%s",
             PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
     }
 

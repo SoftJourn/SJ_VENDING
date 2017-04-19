@@ -84,8 +84,11 @@ public class ProductImageService {
     }
 
     ProductImage add(MultipartFile file, int productId) throws IOException {
-        storeToFileSystem(file, productId);
-        return saveImageToDb(file, productId);
+        ProductImage image = saveImageToDb(file, productId);
+        // TODO Compatibility. Remove formName in next release
+        String name = formName(file, image);
+        storeToFileSystem(file.getBytes(), productId, name);
+        return image;
     }
 
     ProductImage setCover(String imageName, int productId) throws NoSuchFileException {
@@ -101,6 +104,36 @@ public class ProductImageService {
     String formUri(String fileName, int productId) {
         return String.format("%s/%s/%s/%s",
             PRODUCTS_RELATIVE_ENDPOINT, productId, IMAGES_ENDPOINT, fileName);
+    }
+
+    String appendSlashIfNotExists(String uri) {
+        String regex = "^/.*";
+        String result = uri;
+        if (!uri.matches(regex))
+            result = "/".concat(uri);
+        return result;
+    }
+
+    private void storeToFileSystem(byte[] content, int productId, String name) throws FileAlreadyExistsException {
+        String url = formUrl(name, productId);
+        Path path = Paths.get(url);
+        String errorMessage = "Can not create file with " + formUri(name, productId) + " path";
+        try {
+            Files.createDirectories(path.getParent());
+            Files.createFile(path);
+            Files.write(path, content);
+        } catch (FileAlreadyExistsException e) {
+            throw new FileAlreadyExistsException(errorMessage);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(errorMessage, e);
+        }
+    }
+
+    private String formName(MultipartFile file, ProductImage image) {
+        String name = file.getOriginalFilename();
+        int positionOfLastDot = name.lastIndexOf(".");
+        name = image.getId().toString() + name.substring(positionOfLastDot, name.length());
+        return name;
     }
 
     private byte[] getOldVersion(String uri) {
@@ -127,19 +160,8 @@ public class ProductImageService {
         return "Can't delete file with relative path ".concat(uri);
     }
 
-    private void storeToFileSystem(MultipartFile file, int productId) throws FileAlreadyExistsException {
-        String url = formUrl(file, productId);
-        Path path = Paths.get(url);
-        String errorMessage = "Can not create file with " + formUri(file, productId) + " path";
-        try {
-            Files.createDirectories(path.getParent());
-            Files.createFile(path);
-            Files.write(path, file.getBytes());
-        } catch (FileAlreadyExistsException e) {
-            throw new FileAlreadyExistsException(errorMessage);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(errorMessage, e);
-        }
+    private void storeToFileSystem(MultipartFile file, int productId) throws IOException {
+        this.storeToFileSystem(file.getBytes(), productId, file.getOriginalFilename());
     }
 
     private ProductImage saveImageToDb(@NonNull MultipartFile file, Integer productId) throws IOException {
@@ -153,7 +175,10 @@ public class ProductImageService {
             this.dropCover(productId);
         ProductImage image = new ProductImage(file.getBytes(), productId, resolution);
         image.setCover(isCover);
-        String url = formUri(file, productId);
+        // TODO change naming convention to file name instead of product id
+        ProductImage storedImage = repository.save(image);
+        String name = this.formName(file, storedImage);
+        String url = formUri(name, productId);
         image.setUrl(url);
         return repository.save(image);
     }
@@ -201,11 +226,7 @@ public class ProductImageService {
         return this.formUri(file.getOriginalFilename(), productId);
     }
 
-    private String appendSlashIfNotExists(String uri) {
-        String regex = "^/.*";
-        String result = uri;
-        if (!uri.matches(regex))
-            result = "/".concat(uri);
-        return result;
+    private String formUri(long imageId, int productId) {
+        return this.formUri(Long.valueOf(imageId).toString(), productId);
     }
 }

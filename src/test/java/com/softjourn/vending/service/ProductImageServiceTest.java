@@ -85,19 +85,16 @@ public class ProductImageServiceTest {
 
     @Test
     public void addAndSetCover() throws Exception {
-        this.add();
-        ProductImage image = this.imageService.setCover(testImageName, productTestId);
+        // add new image
+        ProductImage newImage = this.imageService.add(testFile, productTestId);
+        assertTrue(this.fileExists(newImage.getUrl()));
+        // set cover
+        ProductImage image = this.imageService.setCover(newImage.getId() + ".png", productTestId);
         assertNotNull(image);
         assertTrue(image.isCover());
-        String uri = this.imageService.formUri(testImageName, productTestId);
+        String uri = this.imageService.formUri(newImage.getId() + ".png", productTestId);
         ProductImage storedImage = this.imageRepository.findProductImageByUrl(uri);
         assertEquals(image, storedImage);
-    }
-
-    @Test(expected = FileAlreadyExistsException.class)
-    public void add_Duplicate_Exception() throws Exception {
-        this.imageService.add(testFile, productTestId);
-        this.imageService.add(testFile, productTestId);
     }
 
     @Test
@@ -198,6 +195,7 @@ public class ProductImageServiceTest {
     }
 
     private boolean fileExists(String uri) {
+        uri = this.imageService.appendSlashIfNotExists(uri);
         String fullPath = imageStoragePath + uri;
         File file = new File(fullPath);
         return file.exists();

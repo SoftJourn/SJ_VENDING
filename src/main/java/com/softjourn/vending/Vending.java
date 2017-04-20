@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableLoggingAspect
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySources(
-        @PropertySource(value = "file:${user.home}/workspace/softjourn/.vending/application.properties", ignoreResourceNotFound = true)
+        @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)
 )
 public class Vending {
 

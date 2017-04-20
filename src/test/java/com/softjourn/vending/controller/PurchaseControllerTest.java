@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import static com.softjourn.vending.controller.ControllerTestConfig.purchaseFilter;
 import static com.softjourn.vending.controller.ControllerTestConfig.purchaseWrongFilter;
+import static com.softjourn.vending.controller.ControllerTestConfig.topProductsDTO;
+import static com.softjourn.vending.controller.ControllerTestConfig.topProductsDTOWrong;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -108,6 +110,51 @@ public class PurchaseControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
                         ),
+                        responseFields(
+                                fieldWithPath("title").description("Error title"),
+                                fieldWithPath("detail").description("Error detail"),
+                                fieldWithPath("code").description("Error code(Could be null)"),
+                                fieldWithPath("developerMessage").description("Contain info about server exception")
+                        )));
+    }
+
+    @Test
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
+    public void getTopProductsTest() throws Exception {
+        mockMvc
+                .perform(RestDocumentationRequestBuilders
+                        .post("/v1/purchases/top")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(topProductsDTO)))
+                .andExpect(status().isOk())
+                .andDo(document("topProducts-purchases-request", preprocessRequest(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer [ACCESS_TOKEN_VALUE]")
+                        ),
+                        requestFields(
+                                fieldWithPath("topSize").description("Size of result list(Required field)"),
+                                fieldWithPath("start").description("Start point(ISO format like: 2016-10-06T04:00:00Z)(Required field)"),
+                                fieldWithPath("due").description("Due point(ISO format like: 2016-10-06T04:00:00Z)(Required field)")
+                        )))
+                .andDo(document("topProducts-purchases-response", preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("[0].product").description("Product name"),
+                                fieldWithPath("[0].quantity").description("Quantity of sold product")
+                        )));
+    }
+
+    @Test
+    @WithMockUser(roles = {"SUPER_USER", "INVENTORY"})
+    public void getTopProductsTestWithWrongParameters() throws Exception {
+        mockMvc
+                .perform(RestDocumentationRequestBuilders
+                        .post("/v1/purchases/top")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer [ACCESS_TOKEN_VALUE]")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(topProductsDTOWrong)))
+                .andExpect(status().isBadRequest())
+                .andDo(document("topProducts-purchases-error", preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("title").description("Error title"),
                                 fieldWithPath("detail").description("Error detail"),

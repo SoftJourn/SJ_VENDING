@@ -457,3 +457,25 @@ include::{snippets}/filtered-purchases-response/response-fields.adoc[]
 ==== Example error response
 include::{snippets}/filtered-purchases-error/http-response.adoc[]
 include::{snippets}/filtered-purchases-error/response-fields.adoc[]
+
+Make request to get top products by purchases
+
+=== Getting top products by purchases
+
+A `POST` request to get user purchases with pagination.
+
+[[topProducts-purchases-request]]
+==== Example request
+
+include::{snippets}/topProducts-purchases-request/http-request.adoc[]
+include::{snippets}/topProducts-purchases-request/request-fields.adoc[]
+
+[[topProducts-purchases-response]]
+==== Example response
+include::{snippets}/topProducts-purchases-response/http-response.adoc[]
+include::{snippets}/topProducts-purchases-response/response-fields.adoc[]
+
+[[topProducts-purchases-error]]
+==== Example error response
+include::{snippets}/topProducts-purchases-error/http-response.adoc[]
+include::{snippets}/topProducts-purchases-error/response-fields.adoc[]

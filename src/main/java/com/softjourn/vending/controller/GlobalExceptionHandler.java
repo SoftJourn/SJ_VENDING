@@ -2,13 +2,26 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.dto.ErrorDetail;
-import com.softjourn.vending.exceptions.*;
+import com.softjourn.vending.exceptions.AlreadyPresentedException;
+import com.softjourn.vending.exceptions.BadRequestException;
+import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
+import com.softjourn.vending.exceptions.MachineBusyException;
+import com.softjourn.vending.exceptions.MachineNotFoundException;
+import com.softjourn.vending.exceptions.NotEnoughAmountException;
+import com.softjourn.vending.exceptions.NotFoundException;
+import com.softjourn.vending.exceptions.NotImageException;
+import com.softjourn.vending.exceptions.PaymentProcessingException;
+import com.softjourn.vending.exceptions.ProductAlreadyInFavoritesException;
+import com.softjourn.vending.exceptions.ProductIsNotInFavoritesException;
+import com.softjourn.vending.exceptions.ProductNotFoundException;
+import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
+import com.softjourn.vending.exceptions.VendingProcessingException;
+import com.softjourn.vending.exceptions.WrongImageDimensions;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -37,7 +50,7 @@ public class GlobalExceptionHandler {
     public ErrorDetail handleBadRequestException(Exception e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40000,
-            e.getMessage());
+                e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -45,10 +58,10 @@ public class GlobalExceptionHandler {
     public ErrorDetail handle(MethodArgumentNotValidException e) {
         log.info(e.getMessage());
         String message = e.getBindingResult().getAllErrors().stream()
-            .findFirst()
-            .filter(Objects::nonNull)
-            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .orElse("");
+                .findFirst()
+                .filter(Objects::nonNull)
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("");
 
         return buildErrorDetails(e, null, message);
     }
@@ -109,7 +122,7 @@ public class GlobalExceptionHandler {
     public ErrorDetail handleProductNotFoundInMachineException(ProductNotFoundInMachineException e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40404,
-            e.getMessage());
+                e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -129,11 +142,11 @@ public class GlobalExceptionHandler {
             if (cause.getSQLException().getErrorCode() == SQL_DUPLICATE_ENTRY) {
                 log.info(e.getMessage());
                 return buildErrorDetails(cause,
-                    cause.getSQLException().getErrorCode(), "Duplicate entry");
+                        cause.getSQLException().getErrorCode(), "Duplicate entry");
             } else if (cause.getSQLException().getErrorCode() == SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW) {
                 log.info(e.getMessage());
                 return buildErrorDetails(cause,
-                    cause.getSQLException().getErrorCode(), "Cannot delete or update a parent row");
+                        cause.getSQLException().getErrorCode(), "Cannot delete or update a parent row");
             }
         }
         log.info(e.getLocalizedMessage());
@@ -165,7 +178,7 @@ public class GlobalExceptionHandler {
     public ErrorDetail handleProductAlreadyInFavoritesException(ProductAlreadyInFavoritesException e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40902,
-            e.getMessage());
+                e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -173,7 +186,7 @@ public class GlobalExceptionHandler {
     public ErrorDetail handleProductIsNotInFavoritesException(ProductIsNotInFavoritesException e) {
         log.warn(e.getLocalizedMessage());
         return buildErrorDetails(e, 40903,
-            e.getMessage());
+                e.getMessage());
     }
 
     // 500 INTERNAL_SERVER_ERROR
@@ -189,6 +202,13 @@ public class GlobalExceptionHandler {
     public ErrorDetail handlePaymentProcessingException(PaymentProcessingException e) {
         log.warn("Error during processing payment. " + e.getLocalizedMessage());
         return buildErrorDetails(e, 50902, "Error during processing payment.");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("Error with input parameters. " + e.getLocalizedMessage());
+        return buildErrorDetails(e, null, e.getLocalizedMessage());
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error occurred during processing request. Contact ADMIN.")

@@ -5,7 +5,7 @@
 
     <groupId>com.softjourn</groupId>
     <artifactId>vending</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <packaging>war</packaging>
 
     <name>vending</name>
@@ -175,6 +175,18 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
 
@@ -234,7 +246,8 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <copy file="${project.build.directory}/generated-docs/api-guide.html" tofile="src/main/docs/vending.html" overwrite="true"/>
+                                <copy file="${project.build.directory}/generated-docs/api-guide.html"
+                                      tofile="src/main/docs/vending.html" overwrite="true"/>
                             </target>
                         </configuration>
                         <goals>

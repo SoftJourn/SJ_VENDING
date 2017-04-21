@@ -15,12 +15,12 @@ tokens=(`curl --silent -i -k -G -X POST \
   -d "username="${yourLDAPid} \
   -d "password="${yourLDAPpassword} \
   -d "grant_type=password" \
-  https://sjcoins.testing.softjourn.if.ua/auth/oauth/token \
+  http://localhost:8111/auth/oauth/token \
   | grep -Po "((?<=access_token\":\")[^\"]+)|((?<=refresh_token\":\")[^\"]+)"`)
 
 echo "ACCESS_TOKEN: "${tokens[0]}
 echo "REFRESH_TOKEN: "${tokens[1]}
 
 curl --silent -i -k -G -X POST \
-  https://sjcoins.testing.softjourn.if.ua/vending/v1/machines/7/products/10 \
+  http://localhost:8111/vending/v1/machines/7/products/10 \
   -H "Authorization: Bearer "${tokens[0]}

@@ -2,8 +2,10 @@ package com.softjourn.vending.service;
 
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
+import com.softjourn.vending.dto.SoldProductDTO;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.entity.VendingMachine;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +21,10 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.softjourn.vending.controller.ControllerTestConfig.purchaseFilter;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,8 +34,7 @@ public class PurchaseServiceTest {
 
     private PurchaseRepository purchaseRepository;
 
-    @InjectMocks
-    private PurchaseServiceImpl purchaseService = new PurchaseServiceImpl();
+    private PurchaseServiceImpl purchaseService;
 
     PageRequest pageRequest = new PageRequest(0, 10);
 
@@ -49,13 +52,18 @@ public class PurchaseServiceTest {
     public void prepareDependencies() throws ParseException {
         purchaseRepository = Mockito.mock(PurchaseRepository.class);
         MockitoAnnotations.initMocks(this);
-        purchaseService.setDateTimeFormatter(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.purchaseService = new PurchaseServiceImpl(purchaseRepository, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         when(purchaseRepository.findAllByStartDue(any(), any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
             add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
         when(purchaseRepository.findAllByStartDue(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
             add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
+        List<SoldProductDTO> topResult = new ArrayList<>();
+        for (long i = 10; i > 0; i--) {
+            topResult.add(new SoldProductDTO("some", i));
+        }
+        when(purchaseRepository.findTopProductsByTime(any(Instant.class), any(Instant.class), any(PageRequest.class))).thenReturn(topResult);
     }
 
     @Test
@@ -80,6 +88,18 @@ public class PurchaseServiceTest {
         purchaseService.getAllUsingFilter(purchaseFilter3, pageRequest);
         verify(purchaseRepository).findAllByStartDue(Instant.parse("2016-10-06T04:00:00Z"),
                 Instant.parse("2016-10-09T04:00:00Z"), pageRequest);
+    }
+
+    @Test
+    public void topProductsByTimeRangeTest() {
+        List<SoldProductDTO> topProductsByTimeRange = purchaseService.getTopProductsByTimeRange(10, "2016-10-06T04:00:00Z", "2016-10-06T04:00:00Z");
+        assertEquals(10, topProductsByTimeRange.size());
+        assertEquals(true, topProductsByTimeRange.get(0).getQuantity() >= topProductsByTimeRange.get(9).getQuantity());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void topProductsByTimeRangeTestWithWrongDateTime() {
+        purchaseService.getTopProductsByTimeRange(10, "2016-10-06", "2016-10-06");
     }
 
 

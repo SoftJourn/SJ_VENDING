@@ -1,5 +1,6 @@
 package com.softjourn.vending.dao;
 
+import com.softjourn.vending.dto.SoldProductDTO;
 import com.softjourn.vending.entity.Purchase;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,5 +33,10 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     @Query(value = "SELECT p FROM Purchase p WHERE p.machine.id = ?1 AND p.time >= ?2 AND p.time <= ?3" +
             " Order by p.time Desc")
     Page<Purchase> findAllByStartDue(Integer machineId, Instant from, Instant to, Pageable pageable);
+
+    @Query(value = "select new com.softjourn.vending.dto.SoldProductDTO(p.productName, count(p.productName)) from Purchase p" +
+            " where p.time >= ?1 and p.time <= ?2 group by p.productName ORDER BY count(p.productName) DESC")
+    List<SoldProductDTO> findTopProductsByTime(Instant start, Instant due, Pageable pageable);
+
 
 }

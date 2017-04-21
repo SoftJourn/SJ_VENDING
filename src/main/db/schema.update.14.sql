@@ -1,1 +1,0 @@
-ALTER TABLE products ADD image_urls VARCHAR(255) NULL;

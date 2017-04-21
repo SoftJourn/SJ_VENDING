@@ -3,11 +3,13 @@ package com.softjourn.vending.service;
 import com.softjourn.vending.dao.PurchaseRepository;
 import com.softjourn.vending.dto.PurchaseDTO;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
+import com.softjourn.vending.dto.SoldProductDTO;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.enums.PurchaseDateEnum;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.softjourn.vending.utils.Constants.LAST_MONTH;
 import static com.softjourn.vending.utils.Constants.LAST_WEEK;
@@ -26,12 +30,15 @@ import static com.softjourn.vending.utils.Constants.LAST_WEEK;
 @Transactional
 public class PurchaseServiceImpl implements PurchaseService {
 
-    @Autowired
-    private PurchaseRepository purchaseRepository;
+    private final PurchaseRepository purchaseRepository;
 
-    @Setter
+    private final DateTimeFormatter dateTimeFormatter;
+
     @Autowired
-    private DateTimeFormatter dateTimeFormatter;
+    public PurchaseServiceImpl(PurchaseRepository purchaseRepository, DateTimeFormatter dateTimeFormatter) {
+        this.purchaseRepository = purchaseRepository;
+        this.dateTimeFormatter = dateTimeFormatter;
+    }
 
     @Override
     public Page<PurchaseDTO> getAllUsingFilter(PurchaseFilterDTO filter, Pageable pageable) throws ParseException {
@@ -83,6 +90,25 @@ public class PurchaseServiceImpl implements PurchaseService {
         return null;
     }
 
+    /**
+     * Method returns top products using incoming parameters
+     * @param topSize - how many items are needed in list
+     * @param start - (ISO format like: 2016-10-06T04:00:00Z)
+     * @param due - (ISO format like: 2016-10-06T04:00:00Z)
+     * @return List<SoldProductDTO>
+     */
+    @Override
+    public List<SoldProductDTO> getTopProductsByTimeRange(Integer topSize, String start, String due) {
+        try {
+            Instant startTimestamp = Instant.parse(start);
+            Instant dueTimestamp = Instant.parse(due);
+            Pageable size = new PageRequest(0, topSize);
+            return this.purchaseRepository.findTopProductsByTime(startTimestamp, dueTimestamp, size);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Datetime field should be in ISO format(Example: 2016-10-06T04:00:00Z)");
+        }
+    }
+
 
     private Page<PurchaseDTO> purchaseConverter(Page<Purchase> purchases) {
         return purchases.map(purchase -> {
@@ -95,8 +121,8 @@ public class PurchaseServiceImpl implements PurchaseService {
         });
     }
 
-    private String getPastDate(Integer dayBefore) {
-        return LocalDate.now().minusDays(dayBefore).toString();
+    private String getPastDate(Integer daysBefore) {
+        return LocalDate.now().minusDays(daysBefore).toString();
     }
 
     private Instant getStartDate(String start, Integer timeZoneOffSet) {

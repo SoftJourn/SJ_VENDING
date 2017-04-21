@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
@@ -19,6 +20,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static com.softjourn.vending.controller.VendingControllerTest.field;
@@ -38,6 +40,8 @@ public abstract class ControllerTestConfig {
     public static DashboardDTO dashboard;
     public static PurchaseFilterDTO purchaseFilter;
     public static PurchaseFilterDTO purchaseWrongFilter;
+    public static TopProductsDTO topProductsDTO;
+    public static TopProductsDTO topProductsDTOWrong;
     private static Product product2;
     private static Product product3;
     private static Row row1;
@@ -87,6 +91,8 @@ public abstract class ControllerTestConfig {
         // Zone - Europe/Kiev
         purchaseFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-08");
         purchaseWrongFilter = new PurchaseFilterDTO(1, "Start-Due", -180, "2016-10-06", "2016-10-05");
+        topProductsDTO = new TopProductsDTO(10, "2016-10-05T21:00:00Z", "2016-10-07T21:00:00Z");
+        topProductsDTOWrong = new TopProductsDTO(10, "  ", "  ");
     }
 
     private Field field1;
@@ -277,6 +283,12 @@ public abstract class ControllerTestConfig {
                     add(new PurchaseDTO("ldap", Instant.now(), product.getName(), product.getPrice()));
                     add(new PurchaseDTO("ldap", Instant.now(), product2.getName(), product2.getPrice()));
                 }}));
+
+        List<SoldProductDTO> topResult = new ArrayList<>();
+        for (long i = 10; i > 0; i--) {
+            topResult.add(new SoldProductDTO("some", i));
+        }
+        when(purchaseService.getTopProductsByTimeRange(eq(10), eq("2016-10-05T21:00:00Z"), eq("2016-10-07T21:00:00Z"))).thenReturn(topResult);
 
         return purchaseService;
     }

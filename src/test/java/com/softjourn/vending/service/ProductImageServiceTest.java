@@ -50,7 +50,7 @@ public class ProductImageServiceTest {
     private String imageStoragePath;
     private MockMultipartFile testFile;
     private MockMultipartFile testFile2;
-    private int productTestId = 0;
+    private int productTestId = 1;
 
     @Test
     public void add() throws Exception {

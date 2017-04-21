@@ -17,12 +17,10 @@ CREATE UNIQUE INDEX machines_name_uindex ON machines (name);
 CREATE TABLE products
 (
   id INT PRIMARY KEY NOT NULL IDENTITY,
-  image_url VARCHAR(255),
   name VARCHAR(255) NOT NULL,
   price NUMERIC(19,2) NOT NULL,
   added_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   description LONGVARCHAR,
-  image_data varbinary(262144),
   id_categories BIGINT,
   CONSTRAINT FK_8l3my8ls6adnevblpj5twva2e FOREIGN KEY (id_categories) REFERENCES categories (id)
 );

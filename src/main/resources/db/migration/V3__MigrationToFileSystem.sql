@@ -1,3 +1,14 @@
+# Delete unused links
+DELETE images FROM images
+  LEFT JOIN products ON images.product_id = products.id
+WHERE products.id IS NULL;
+# Add foreign key to product id
+ALTER TABLE images
+  MODIFY product_id INT(11);
+ALTER TABLE images
+  ADD FOREIGN KEY (product_id) REFERENCES products (id)
+  ON DELETE CASCADE;
+# Create procedure to image migration
 DROP PROCEDURE IF EXISTS dump_image;
 DELIMITER //
 CREATE PROCEDURE dump_image()
@@ -21,6 +32,9 @@ CREATE PROCEDURE dump_image()
   END //
 DELIMITER ;
 
+# call procedure
 CALL dump_image();
 
+# Check where allowed to export folder location
 # SHOW VARIABLES LIKE "secure_file_priv";
+

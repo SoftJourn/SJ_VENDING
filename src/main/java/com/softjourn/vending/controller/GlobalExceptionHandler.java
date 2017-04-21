@@ -2,21 +2,7 @@ package com.softjourn.vending.controller;
 
 
 import com.softjourn.vending.dto.ErrorDetail;
-import com.softjourn.vending.exceptions.AlreadyPresentedException;
-import com.softjourn.vending.exceptions.BadRequestException;
-import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
-import com.softjourn.vending.exceptions.MachineBusyException;
-import com.softjourn.vending.exceptions.MachineNotFoundException;
-import com.softjourn.vending.exceptions.NotEnoughAmountException;
-import com.softjourn.vending.exceptions.NotFoundException;
-import com.softjourn.vending.exceptions.NotImageException;
-import com.softjourn.vending.exceptions.PaymentProcessingException;
-import com.softjourn.vending.exceptions.ProductAlreadyInFavoritesException;
-import com.softjourn.vending.exceptions.ProductIsNotInFavoritesException;
-import com.softjourn.vending.exceptions.ProductNotFoundException;
-import com.softjourn.vending.exceptions.ProductNotFoundInMachineException;
-import com.softjourn.vending.exceptions.VendingProcessingException;
-import com.softjourn.vending.exceptions.WrongImageDimensions;
+import com.softjourn.vending.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

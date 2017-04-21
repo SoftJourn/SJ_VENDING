@@ -1,11 +1,12 @@
 package com.softjourn.vending.service;
 
+import com.softjourn.vending.TestHelper;
 import com.softjourn.vending.dao.ProductImageRepository;
 import com.softjourn.vending.dao.ProductRepository;
+import com.softjourn.vending.dao.RefreshableRepositoryImpl;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.ProductImage;
 import com.softjourn.vending.entity.listeners.ListenerConfiguration;
-import com.softjourn.vending.TestHelper;
 import com.softjourn.vending.exceptions.NoImageException;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -17,12 +18,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase
+@EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
 public class ProductImageServiceTest {
 
     private final String testImageName = "test_image.png";

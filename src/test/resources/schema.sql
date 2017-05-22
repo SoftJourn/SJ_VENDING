@@ -107,3 +107,28 @@ CREATE TABLE product_nutrition_facts(
   PRIMARY KEY (product_id, nutrition_facts_key),
   CONSTRAINT FK_product_id FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+CREATE TABLE prices (
+  id         INT PRIMARY KEY NOT NULL IDENTITY,
+  prices     NUMERIC(19, 2)  NOT NULL,
+  time       TIMESTAMP       DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  product_id INT             NOT NULL,
+  CONSTRAINT FK_prices_to_products FOREIGN KEY (product_id) REFERENCES products (id)
+);
+
+ALTER TABLE load_history
+  ADD COLUMN product INT NOT NULL;
+ALTER TABLE load_history
+  ADD COLUMN field INT NOT NULL;
+ALTER TABLE load_history
+  ADD COLUMN "COUNT" INT NOT NULL;
+ALTER TABLE load_history
+  ADD COLUMN total NUMERIC(19,2) NOT NULL;
+ALTER TABLE load_history
+  ADD COLUMN hash VARCHAR(250) NOT NULL;
+
+ALTER TABLE load_history
+  ADD CONSTRAINT FK_load_history_to_products FOREIGN KEY (product) REFERENCES products (id);
+
+ALTER TABLE load_history
+  ADD CONSTRAINT FK_load_history_to_fields FOREIGN KEY (field) REFERENCES fields (id);

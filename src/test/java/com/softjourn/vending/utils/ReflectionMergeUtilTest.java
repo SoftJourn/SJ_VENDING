@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.TreeMap;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -20,7 +22,7 @@ public class ReflectionMergeUtilTest {
         product = new Product();
         product.setId(1);
         product.setName("Cola");
-        product.setPrice(new BigDecimal(10));
+        product.setPrice(new BigDecimal(5));
 
         productUpdater = new Product();
         productUpdater.setId(2);

@@ -55,7 +55,7 @@ public class ValidationTests {
         // --- Entities---
         nameWithNumberCategory = new Category(null, "Sn8ck");
         nameWithSpecialCharProduct = new Product(null, new BigDecimal(20), "Snickers999@",
-                Instant.ofEpochMilli(1_000_000), "Some thing", snacks,null, null);
+                Instant.ofEpochMilli(1_000_000), "Some thing", snacks, null, null);
 
         negativePriceProduct = new Product(null, new BigDecimal(-20), "Snickers",
                 Instant.ofEpochMilli(1_000_000), "Some thing", snacks, null, null);

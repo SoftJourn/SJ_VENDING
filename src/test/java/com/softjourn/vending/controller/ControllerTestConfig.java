@@ -1,15 +1,35 @@
 package com.softjourn.vending.controller;
 
 import com.softjourn.common.auth.OAuthHelper;
-import com.softjourn.vending.dto.*;
-import com.softjourn.vending.entity.*;
-import com.softjourn.vending.service.*;
+import com.softjourn.vending.dto.CategoryDTO;
+import com.softjourn.vending.dto.DashboardDTO;
+import com.softjourn.vending.dto.FeatureDTO;
+import com.softjourn.vending.dto.PurchaseDTO;
+import com.softjourn.vending.dto.PurchaseFilterDTO;
+import com.softjourn.vending.dto.PurchaseProductDto;
+import com.softjourn.vending.dto.SoldProductDTO;
+import com.softjourn.vending.dto.TopProductsDTO;
+import com.softjourn.vending.dto.TransactionDTO;
+import com.softjourn.vending.entity.Category;
+import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Row;
+import com.softjourn.vending.entity.VendingMachine;
+import com.softjourn.vending.service.BuyService;
+import com.softjourn.vending.service.CategoriesService;
+import com.softjourn.vending.service.CoinService;
+import com.softjourn.vending.service.DashboardService;
+import com.softjourn.vending.service.FavoritesService;
+import com.softjourn.vending.service.FieldService;
+import com.softjourn.vending.service.MachineService;
+import com.softjourn.vending.service.ProductService;
+import com.softjourn.vending.service.PurchaseService;
+import com.softjourn.vending.service.VendingService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
@@ -24,7 +44,10 @@ import java.util.UUID;
 
 import static com.softjourn.vending.controller.VendingControllerTest.field;
 import static com.softjourn.vending.controller.VendingControllerTest.row;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

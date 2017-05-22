@@ -1,22 +1,35 @@
 package com.softjourn.vending.service;
 
 
+import com.softjourn.common.export.ExcelExport;
+import com.softjourn.common.export.ExportDefiner;
 import com.softjourn.common.functions.OptionalUtil;
 import com.softjourn.vending.dao.FieldRepository;
 import com.softjourn.vending.dao.LoadHistoryRepository;
 import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.RowRepository;
+import com.softjourn.vending.dto.LoadHistoryRequestDTO;
+import com.softjourn.vending.dto.LoadHistoryResponseDTO;
 import com.softjourn.vending.dto.MerchantDTO;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
-import com.softjourn.vending.entity.*;
+import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.LoadHistory;
+import com.softjourn.vending.entity.Product;
+import com.softjourn.vending.entity.Row;
+import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.ErisAccountNotFoundException;
 import com.softjourn.vending.exceptions.MachineNotFoundException;
 import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,11 +42,22 @@ import org.springframework.web.client.RestTemplate;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.text.ParseException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.softjourn.common.utils.Util.instantToRFC_1123_DATE_TIME;
 
 @Service
 public class VendingService {
@@ -57,7 +81,6 @@ public class VendingService {
                           RowRepository rowRepository,
                           FieldRepository fieldRepository,
                           LoadHistoryRepository loadHistoryRepository,
-                          CoinService coinService,
                           @Lazy MachineService machineService) {
         this.machineRepository = machineRepository;
         this.rowRepository = rowRepository;
@@ -75,7 +98,7 @@ public class VendingService {
 
     static boolean checkCellLimit(VendingMachine machine) {
         return machine.getFields().stream().allMatch(cell ->
-                        cell.getCount() <= machine.getCellLimit() && cell.getCount() > -1);
+                cell.getCount() <= machine.getCellLimit() && cell.getCount() > -1);
     }
 
     @Transactional
@@ -90,8 +113,8 @@ public class VendingService {
             throw new BadRequestException("Requested machine cell out of limit '"
                     + machineToUpdate.getCellLimit() + "'");
         }
+        saveLoadHistory(machine, false);
         updateFields(machineToUpdate, machine);
-        saveLoadHistory(machineToUpdate, false);
 
         machineRepository.refresh(machineToUpdate);
         return machineToUpdate;
@@ -157,23 +180,87 @@ public class VendingService {
         return this.machineRepository.save(machineToUpdate);
     }
 
-    private LoadHistory saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
+    public Page<LoadHistoryResponseDTO> getLoadHistoryByFilter(LoadHistoryRequestDTO requestDTO) {
+        Page<LoadHistory> loadHistory = this.getLoadHistory(requestDTO);
+        List<LoadHistoryResponseDTO> loadDto = loadHistory.getContent().stream()
+                .map(loadHistory1 -> new LoadHistoryResponseDTO(loadHistory1.getTotal(), loadHistory1.getDateAdded(),
+                        loadHistory1.getProduct().getName(),
+                        loadHistory1.getProduct().getPrice(loadHistory1.getDateAdded()),
+                        loadHistory1.getField().getInternalId(),
+                        loadHistory1.getCount()))
+                .collect(Collectors.toList());
+        return new PageImpl<>(loadDto, requestDTO.getPageable(), loadHistory.getTotalElements());
+    }
+
+    public Workbook exportLoadHistory(LoadHistoryRequestDTO requestDTO, TimeZone timeZone) throws ReflectiveOperationException {
+        Page<LoadHistory> loadHistory = this.getLoadHistory(requestDTO);
+        Set<String> hashes = new HashSet<>();
+        List<List<LoadHistory>> groupByHash = new ArrayList<>();
+        loadHistory.getContent().forEach(loadHistory1 -> hashes.add(loadHistory1.getHash()));
+        hashes.forEach(s ->
+                groupByHash.add(loadHistory.getContent().stream()
+                        .filter(loadHistory1 -> loadHistory1.getHash().equals(s)).collect(Collectors.toList()))
+        );
+
+        String sheetName = "Load Report";
+        Integer rowNumberToStart = 0;
+
+        Workbook workbook = new HSSFWorkbook();
+        ExcelExport excelExport = new ExcelExport();
+        excelExport.addSheet(workbook, sheetName);
+        excelExport.addHeader(workbook, sheetName, rowNumberToStart, prepareDefiner(null, null));
+
+        for (List<LoadHistory> loadHistories : groupByHash) {
+            Instant dateAdded = loadHistories.get(0).getDateAdded();
+            List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
+            rowNumberToStart++;
+            // TODO figure out how to count how many columns contains definer
+            excelExport.addDivider(workbook, sheetName, "Load date: " + instantToRFC_1123_DATE_TIME(dateAdded, timeZone.toZoneId()),
+                    rowNumberToStart, 6);
+            rowNumberToStart = excelExport.addContent(workbook, sheetName, rowNumberToStart, definers, loadHistories);
+        }
+
+        return workbook;
+    }
+
+    public Page<LoadHistory> getLoadHistory(Integer machineId, Pageable pageable) {
+        return this.loadHistoryRepository.getLoadHistoryByVendingMachine(machineId, pageable);
+    }
+
+    public Page<LoadHistory> getLoadHistoryByTime(Integer machineId, Instant start, Instant due, Pageable pageable) {
+        return this.loadHistoryRepository.getLoadHistoryByVendingMachineAndTime(machineId, start, due, pageable);
+    }
+
+    private Page<LoadHistory> getLoadHistory(LoadHistoryRequestDTO requestDTO) {
+        Page<LoadHistory> loadHistory;
+        if (requestDTO.getStart() != null && requestDTO.getDue() != null) {
+            loadHistory = getLoadHistoryByTime(requestDTO.getMachineId(), requestDTO.getStart(), requestDTO.getDue(),
+                    requestDTO.getPageable());
+        } else {
+            loadHistory = getLoadHistory(requestDTO.getMachineId(), requestDTO.getPageable());
+        }
+        return loadHistory;
+    }
+
+    private List<LoadHistory> saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
         VendingMachine oldMachineState = Optional
                 .ofNullable(machineRepository.findOne(vendingMachine.getId()))
                 .orElseThrow(() -> new NotFoundException(String.format(
                         "Machine with id %d was not found",
                         vendingMachine.getId())));
 
-        BigDecimal previousMachinePrice = getLoadedPrice(oldMachineState);
-        BigDecimal machinePrice = getLoadedPrice(vendingMachine);
+        List<LoadHistory> histories = new ArrayList<>();
 
-        LoadHistory loadHistory = new LoadHistory();
-        loadHistory.setPrice(machinePrice.subtract(previousMachinePrice));
-        loadHistory.setDateAdded(Instant.now());
-        loadHistory.setIsDistributed(isDistributed);
-        loadHistory.setVendingMachine(vendingMachine);
-
-        return loadHistoryRepository.save(loadHistory);
+        if (!isDistributed) {
+            String hash = UUID.randomUUID().toString();
+            vendingMachine.getFields().stream()
+                    .filter(field -> countChanged(field, oldMachineState) || productChanged(field, oldMachineState))
+                    .filter(field -> field.getProduct() != null)
+                    .forEach(field ->
+                            histories.add(prepareHistory(field, vendingMachine, false, hash))
+                    );
+        }
+        return loadHistoryRepository.save(histories);
     }
 
     private void updateFields(VendingMachine machineToUpdate, VendingMachine machine) {
@@ -181,7 +268,9 @@ public class VendingService {
                 .filter(field -> countChanged(field, machineToUpdate) || productChanged(field, machineToUpdate))
                 .map(field -> fieldMergeUtil.merge(getField(machineToUpdate, field.getId()), field))
                 .peek(field -> field.setLoaded(Instant.now()))
-                .peek(field -> {if (field.getCount() <= 0) field.setProduct(null);})
+                .peek(field -> {
+                    if (field.getCount() <= 0) field.setProduct(null);
+                })
                 .forEach(s -> fieldRepository.saveAndFlush(s));
     }
 
@@ -286,14 +375,6 @@ public class VendingService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getUndistributedPrice() {
-        return loadHistoryRepository.getUndistributedPrice().orElse(BigDecimal.ZERO);
-    }
-
-    public BigDecimal getUndistributedPriceFromMachine(Integer id) {
-        return loadHistoryRepository.getUndistributedPriceFromMachine(id).orElse(BigDecimal.ZERO);
-    }
-
     public void resetEngine(Integer id) {
         AtomicBoolean isActive = new AtomicBoolean();
         Optional.ofNullable(get(id))
@@ -311,5 +392,39 @@ public class VendingService {
                     machine.setIsActive(isActive.get());
                     machineRepository.save(machine);
                 });
+    }
+
+    private LoadHistory prepareHistory(Field field, VendingMachine vendingMachine, Boolean isDistributed, String hash) {
+        BigDecimal price = field.getProduct().getPrice(Instant.now());
+        LoadHistory loadHistory = new LoadHistory();
+        loadHistory.setPrice(price.multiply(BigDecimal.valueOf(field.getCount())));
+        loadHistory.setDateAdded(Instant.now());
+        loadHistory.setHash(hash);
+        loadHistory.setIsDistributed(isDistributed);
+        loadHistory.setVendingMachine(vendingMachine);
+        loadHistory.setProduct(field.getProduct());
+        loadHistory.setField(field);
+        loadHistory.setCount(field.getCount());
+        loadHistory.setTotal(price.multiply(BigDecimal.valueOf(field.getCount())));
+        return loadHistory;
+    }
+
+    private List<ExportDefiner> prepareDefiner(Instant loadDate, TimeZone timeZone) {
+        List<ExportDefiner> definers = new ArrayList<>();
+
+        ExportDefiner product = new ExportDefiner("product", null);
+        product.getDefiners().add(new ExportDefiner("name", "Product"));
+        product.getDefiners().add(new ExportDefiner("getPrice", "Price(Coin)", new Class[]{Instant.class}, loadDate));
+
+        ExportDefiner field = new ExportDefiner("field", null);
+        field.getDefiners().add(new ExportDefiner("internalId", "Cell"));
+
+        definers.add(product);
+        definers.add(field);
+        definers.add(new ExportDefiner("count", "Count"));
+        definers.add(new ExportDefiner("total", "Total(Coin)"));
+        definers.add(new ExportDefiner("dateAddedToDate", "Date", new Class[]{TimeZone.class}, timeZone));
+
+        return definers;
     }
 }

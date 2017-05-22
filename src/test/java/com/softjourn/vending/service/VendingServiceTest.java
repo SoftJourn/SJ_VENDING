@@ -105,8 +105,6 @@ public class VendingServiceTest {
 
         when(machineRepository.findOne(machine1.getId())).thenReturn(machine1);
         when(machineRepository.findOne(machine2.getId())).thenReturn(null);
-
-        when(loadHistoryRepository.getUndistributedPrice()).thenReturn(Optional.of(new BigDecimal(3000)));
     }
 
     @Test(expected = BadRequestException.class)
@@ -221,14 +219,6 @@ public class VendingServiceTest {
     @Test(expected = NotFoundException.class)
     public void getLoadedPriceWhenMachineNotPresentTest() throws Exception {
         service.getLoadedPrice(3);
-    }
-
-    @Test
-    public void getUndistributedPrice() throws Exception {
-        BigDecimal undistributedPrice = service.getUndistributedPrice();
-        BigDecimal expectedUndistributedPrice = new BigDecimal(3000);
-
-        assertEquals(expectedUndistributedPrice, undistributedPrice);
     }
 
     private VendingMachine createMachineWithProducts() {

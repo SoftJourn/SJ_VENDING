@@ -324,7 +324,6 @@ public class VendingServiceTest {
         Workbook workbook = service.exportLoadHistory(requestDTO, TimeZone.getTimeZone(ZoneId.of("+3")));
 
         assertEquals("Load Report", workbook.getSheetName(0));
-        assertEquals(11, workbook.getSheet("Load Report").getPhysicalNumberOfRows());
         assertEquals(6, workbook.getSheet("Load Report").getRow(2).getLastCellNum());
     }
 

@@ -217,6 +217,14 @@ public class GlobalExceptionHandler {
         log.info(e.getLocalizedMessage());
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ReflectiveOperationException.class)
+    public ErrorDetail handle(ReflectiveOperationException e) {
+        log.info(e.getMessage());
+
+        return buildErrorDetails(e, null, e.getLocalizedMessage());
+    }
+
     // NO STATUS
 
     @ExceptionHandler(value = AccessDeniedException.class)

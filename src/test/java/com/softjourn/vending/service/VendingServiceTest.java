@@ -5,13 +5,18 @@ import com.softjourn.vending.dao.FieldRepository;
 import com.softjourn.vending.dao.LoadHistoryRepository;
 import com.softjourn.vending.dao.MachineRepository;
 import com.softjourn.vending.dao.RowRepository;
+import com.softjourn.vending.dto.LoadHistoryRequestDTO;
+import com.softjourn.vending.dto.LoadHistoryResponseDTO;
+import com.softjourn.vending.dto.PageRequestImpl;
 import com.softjourn.vending.dto.VendingMachineBuilderDTO;
 import com.softjourn.vending.entity.Field;
+import com.softjourn.vending.entity.LoadHistory;
 import com.softjourn.vending.entity.Product;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.entity.VendingMachine;
 import com.softjourn.vending.exceptions.BadRequestException;
 import com.softjourn.vending.exceptions.NotFoundException;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,19 +24,35 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import static junit.framework.TestCase.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -105,6 +126,12 @@ public class VendingServiceTest {
 
         when(machineRepository.findOne(machine1.getId())).thenReturn(machine1);
         when(machineRepository.findOne(machine2.getId())).thenReturn(null);
+
+        when(loadHistoryRepository.getLoadHistoryByVendingMachine(anyInt(), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(prepareLoadHistory()));
+        when(loadHistoryRepository.getLoadHistoryByVendingMachineAndTime(anyInt(), any(Instant.class),
+                any(Instant.class), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(prepareLoadHistory()));
     }
 
     @Test(expected = BadRequestException.class)
@@ -221,6 +248,86 @@ public class VendingServiceTest {
         service.getLoadedPrice(3);
     }
 
+    @Test
+    public void getLoadHistoryTest() {
+        Page<LoadHistory> loadHistory = this.service.getLoadHistory(1, new PageRequest(0, 10));
+        assertEquals(5, loadHistory.getContent().size());
+    }
+
+    @Test
+    public void getLoadHistoryByTimeTest() {
+        Page<LoadHistory> loadHistory = this.service.getLoadHistoryByTime(1, Instant.now(),
+                Instant.now(), new PageRequest(0, 10));
+        assertEquals(5, loadHistory.getContent().size());
+    }
+
+    @Test
+    public void saveHistoryTest() {
+        Product p = new Product();
+        p.setId(1);
+        p.setName("Cola");
+        p.setPrice(BigDecimal.valueOf(5));
+        Product p2 = new Product();
+        p2.setId(2);
+        p2.setName("Soda");
+        p2.setPrice(BigDecimal.valueOf(5));
+        Product p3 = new Product();
+        p3.setId(3);
+        p3.setName("Cake");
+        p3.setPrice(BigDecimal.valueOf(5));
+        VendingMachine oldMachine = service.create(builder1, principal);
+        oldMachine.getFields().get(0).setProduct(p);
+        oldMachine.getFields().get(0).setCount(2);
+        oldMachine.getFields().get(1).setProduct(p2);
+        oldMachine.getFields().get(1).setCount(2);
+
+        VendingMachine newMachine = service.create(builder1, principal);
+        newMachine.getFields().get(0).setProduct(p);
+        newMachine.getFields().get(0).setCount(3);
+        newMachine.getFields().get(1).setProduct(p2);
+        newMachine.getFields().get(1).setCount(3);
+        newMachine.getFields().get(2).setProduct(p3);
+        newMachine.getFields().get(2).setCount(1);
+
+        for (int i = 0; i < oldMachine.getFields().size(); i++) {
+            oldMachine.getFields().get(i).setId(i + 1);
+            newMachine.getFields().get(i).setId(i + 1);
+        }
+
+        when(loadHistoryRepository.save(any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+        when(machineRepository.findOne(1)).thenReturn(oldMachine);
+
+        assertEquals(3, service.saveLoadHistory(newMachine, false).size());
+    }
+
+    @Test
+    public void getLoadHistoryByFilterTest() {
+        LoadHistoryRequestDTO requestDTO = new LoadHistoryRequestDTO();
+        requestDTO.setMachineId(1);
+        requestDTO.setPageable(new PageRequestImpl(10, 0, null));
+
+        assertEquals(5, service.getLoadHistoryByFilter(requestDTO).getContent().size());
+        assertEquals(true, service.getLoadHistoryByFilter(requestDTO).getContent().get(0) instanceof LoadHistoryResponseDTO);
+
+        requestDTO.setDue(Instant.now());
+        requestDTO.setStart(Instant.now());
+
+        assertEquals(5, service.getLoadHistoryByFilter(requestDTO).getContent().size());
+        assertEquals(true, service.getLoadHistoryByFilter(requestDTO).getContent().get(0) instanceof LoadHistoryResponseDTO);
+    }
+
+    @Test
+    public void exportLoadHistoryTest() throws ReflectiveOperationException {
+        LoadHistoryRequestDTO requestDTO = new LoadHistoryRequestDTO();
+        requestDTO.setMachineId(1);
+        requestDTO.setPageable(new PageRequestImpl(10, 0, null));
+        Workbook workbook = service.exportLoadHistory(requestDTO, TimeZone.getTimeZone(ZoneId.of("+3")));
+
+        assertEquals("Load Report", workbook.getSheetName(0));
+        assertEquals(10, workbook.getSheet("Load Report").getLastRowNum());
+        assertEquals(6, workbook.getSheet("Load Report").getRow(2).getLastCellNum());
+    }
+
     private VendingMachine createMachineWithProducts() {
         Product product1 = new Product();
         product1.setName("Pepsi");
@@ -234,5 +341,39 @@ public class VendingServiceTest {
         });
 
         return vendingMachine;
+    }
+
+    private List<LoadHistory> prepareLoadHistory() {
+        List<Instant> instants = new ArrayList<>();
+        instants.add(LocalDateTime.of(2016, 5, 10, 17, 11, 10).toInstant(ZoneOffset.UTC));
+        instants.add(LocalDateTime.of(2016, 5, 10, 17, 12, 10).toInstant(ZoneOffset.UTC));
+        instants.add(LocalDateTime.of(2016, 5, 10, 17, 13, 10).toInstant(ZoneOffset.UTC));
+        instants.add(LocalDateTime.of(2016, 5, 10, 17, 14, 10).toInstant(ZoneOffset.UTC));
+        instants.add(LocalDateTime.of(2016, 5, 10, 17, 15, 10).toInstant(ZoneOffset.UTC));
+
+        List<LoadHistory> histories = new ArrayList<>();
+        Product product = new Product();
+        product.setName("Pepsi");
+        product.setPrice(new BigDecimal(100));
+        Field field = new Field();
+        field.setProduct(product);
+        VendingMachine machine = new VendingMachine();
+        machine.setId(1);
+        machine.setUrl("some url");
+
+        for (Instant instant : instants) {
+            LoadHistory history = new LoadHistory();
+            history.setId(1L);
+            history.setField(field);
+            history.setVendingMachine(machine);
+            history.setProduct(product);
+            history.setCount(5);
+            history.setPrice(BigDecimal.valueOf(500));
+            history.setTotal(BigDecimal.valueOf(500));
+            history.setDateAdded(instant);
+            history.setHash(UUID.randomUUID().toString());
+            histories.add(history);
+        }
+        return histories;
     }
 }

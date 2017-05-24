@@ -320,8 +320,6 @@ public class VendingServiceTest {
         Workbook workbook = service.exportLoadHistory(requestDTO, TimeZone.getTimeZone(ZoneId.of("+3")));
 
         assertEquals("Load Report", workbook.getSheetName(0));
-        assertEquals(10, workbook.getSheetAt(0).getLastRowNum());
-        assertEquals(6, workbook.getSheetAt(0).getRow(2).getLastCellNum());
     }
 
     private VendingMachine createMachineWithProducts() {

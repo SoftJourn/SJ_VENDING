@@ -211,7 +211,8 @@ public class VendingService {
         excelExport.addHeader(workbook, sheetName, rowNumberToStart, prepareDefiner(null, null));
         rowNumberToStart++;
 
-        for (List<LoadHistory> loadHistories : groupByHash) {
+        for (int i = 0; i < groupByHash.size(); i++) {
+            List<LoadHistory> loadHistories = groupByHash.get(i);
             Instant dateAdded = loadHistories.get(0).getDateAdded();
             List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
             // TODO figure out how to count how many columns contains definer

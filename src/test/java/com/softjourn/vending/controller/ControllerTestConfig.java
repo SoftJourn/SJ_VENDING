@@ -4,6 +4,8 @@ import com.softjourn.common.auth.OAuthHelper;
 import com.softjourn.vending.dto.CategoryDTO;
 import com.softjourn.vending.dto.DashboardDTO;
 import com.softjourn.vending.dto.FeatureDTO;
+import com.softjourn.vending.dto.LoadHistoryRequestDTO;
+import com.softjourn.vending.dto.LoadHistoryResponseDTO;
 import com.softjourn.vending.dto.PurchaseDTO;
 import com.softjourn.vending.dto.PurchaseFilterDTO;
 import com.softjourn.vending.dto.PurchaseProductDto;
@@ -25,11 +27,13 @@ import com.softjourn.vending.service.MachineService;
 import com.softjourn.vending.service.ProductService;
 import com.softjourn.vending.service.PurchaseService;
 import com.softjourn.vending.service.VendingService;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
@@ -40,6 +44,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static com.softjourn.vending.controller.VendingControllerTest.field;
@@ -161,7 +166,7 @@ public abstract class ControllerTestConfig {
     }
 
     @Bean
-    public VendingService vendingService() {
+    public VendingService vendingService() throws ReflectiveOperationException {
         field = new Field("A1", 0);
         field1 = new Field("A2", 1);
         field2 = new Field("B1", 0);
@@ -208,11 +213,17 @@ public abstract class ControllerTestConfig {
 
         VendingService vendingService = Mockito.mock(VendingService.class);
 
+
+        PageImpl<LoadHistoryResponseDTO> histories = new PageImpl<>(new ArrayList<LoadHistoryResponseDTO>() {{
+            add(new LoadHistoryResponseDTO(BigDecimal.valueOf(2), Instant.now(), "Cola", BigDecimal.valueOf(1), "A1", 2));
+        }}, new PageRequest(0, 10), 20);
+
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
         when(vendingService.create(any(), any())).thenReturn(vendingMachine);
         when(vendingService.getAll()).thenReturn(Collections.singletonList(vendingMachine));
         when(vendingService.getAllAvailable()).thenReturn(Collections.singletonList(vendingMachine));
-
+        when(vendingService.getLoadHistoryByFilter(any(LoadHistoryRequestDTO.class))).thenReturn(histories);
+        when(vendingService.exportLoadHistory(any(LoadHistoryRequestDTO.class), any(TimeZone.class))).thenReturn(new HSSFWorkbook());
         return vendingService;
     }
 

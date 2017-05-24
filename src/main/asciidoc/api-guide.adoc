@@ -458,8 +458,6 @@ include::{snippets}/filtered-purchases-response/response-fields.adoc[]
 include::{snippets}/filtered-purchases-error/http-response.adoc[]
 include::{snippets}/filtered-purchases-error/response-fields.adoc[]
 
-Make request to get top products by purchases
-
 === Getting top products by purchases
 
 A `POST` request to get user purchases with pagination.
@@ -479,3 +477,34 @@ include::{snippets}/topProducts-purchases-response/response-fields.adoc[]
 ==== Example error response
 include::{snippets}/topProducts-purchases-error/http-response.adoc[]
 include::{snippets}/topProducts-purchases-error/response-fields.adoc[]
+
+Make request to get load history by machine
+
+=== Getting load history by machine
+
+A `POST` request to get load history by machine with pagination.
+
+[[loads-request]]
+==== Example request
+
+include::{snippets}/loads-request/http-request.adoc[]
+include::{snippets}/loads-request/request-fields.adoc[]
+
+[[topProducts-purchases-response]]
+==== Example response
+include::{snippets}/loads-response/http-response.adoc[]
+include::{snippets}/loads-response/response-fields.adoc[]
+
+=== Export load history by machine
+
+A `POST` request to get load history by machine like excel in base64 format.
+
+[[loads-request]]
+==== Example request
+
+include::{snippets}/loads-export-request/http-request.adoc[]
+include::{snippets}/loads-export-request/request-fields.adoc[]
+
+[[topProducts-purchases-response]]
+==== Example response
+include::{snippets}/loads-export-response/http-response.adoc[]

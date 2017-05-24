@@ -30,4 +30,14 @@ public class LoadHistoryRequestDTO {
     public Pageable getPageable() {
         return pageable.toPageable();
     }
+
+    @Override
+    public String toString() {
+        return "LoadHistoryRequestDTO{" +
+                "machineId=" + machineId +
+                ", start=" + start +
+                ", due=" + due +
+                ", pageable=" + pageable +
+                '}';
+    }
 }

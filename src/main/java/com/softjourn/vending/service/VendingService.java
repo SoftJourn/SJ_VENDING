@@ -209,14 +209,15 @@ public class VendingService {
         ExcelExport excelExport = new ExcelExport();
         excelExport.addSheet(workbook, sheetName);
         excelExport.addHeader(workbook, sheetName, rowNumberToStart, prepareDefiner(null, null));
+        rowNumberToStart++;
 
         for (List<LoadHistory> loadHistories : groupByHash) {
             Instant dateAdded = loadHistories.get(0).getDateAdded();
             List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
-            rowNumberToStart++;
             // TODO figure out how to count how many columns contains definer
             excelExport.addDivider(workbook, sheetName, "Load date: " + instantToRFC_1123_DATE_TIME(dateAdded, timeZone.toZoneId()),
-                    rowNumberToStart, 6);
+                    rowNumberToStart, 5);
+            rowNumberToStart++;
             rowNumberToStart = excelExport.addContent(workbook, sheetName, rowNumberToStart, definers, loadHistories);
         }
 
@@ -242,7 +243,14 @@ public class VendingService {
         return loadHistory;
     }
 
-    private List<LoadHistory> saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
+    /**
+     * Method compare old machine state with new machine state, gets changes and saves them
+     *
+     * @param vendingMachine - new vending machine state
+     * @param isDistributed
+     * @return List<LoadHistory> - changes
+     */
+    public List<LoadHistory> saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
         VendingMachine oldMachineState = Optional
                 .ofNullable(machineRepository.findOne(vendingMachine.getId()))
                 .orElseThrow(() -> new NotFoundException(String.format(
@@ -257,7 +265,7 @@ public class VendingService {
                     .filter(field -> countChanged(field, oldMachineState) || productChanged(field, oldMachineState))
                     .filter(field -> field.getProduct() != null)
                     .forEach(field ->
-                            histories.add(prepareHistory(field, vendingMachine, false, hash))
+                            histories.add(prepareHistory(field, vendingMachine, isDistributed, hash))
                     );
         }
         return loadHistoryRepository.save(histories);
@@ -293,12 +301,6 @@ public class VendingService {
                 .filter(field -> field.getId().equals(id))
                 .findAny()
                 .orElseThrow(() -> new NotFoundException("Field with id " + id + " not found in machine " + vendingMachine.getName() + "."));
-    }
-
-    private HttpEntity<Object> prepareRequest(Principal principal) {
-        return new HttpEntity<>(new HttpHeaders() {{
-            put("Authorization", Collections.singletonList(getTokenHeader(principal)));
-        }});
     }
 
     private HttpEntity<Object> prepareRequest(Object body, Principal principal) {

@@ -316,7 +316,7 @@ public class VendingServiceTest {
         assertEquals(true, service.getLoadHistoryByFilter(requestDTO).getContent().get(0) instanceof LoadHistoryResponseDTO);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void exportLoadHistoryTest() throws ReflectiveOperationException {
         LoadHistoryRequestDTO requestDTO = new LoadHistoryRequestDTO();
         requestDTO.setMachineId(1);
@@ -324,7 +324,7 @@ public class VendingServiceTest {
         Workbook workbook = service.exportLoadHistory(requestDTO, TimeZone.getTimeZone(ZoneId.of("+3")));
 
         assertEquals("Load Report", workbook.getSheetName(0));
-        assertEquals(10, workbook.getSheet("Load Report").getLastRowNum());
+        assertEquals(11, workbook.getSheet("Load Report").getPhysicalNumberOfRows());
         assertEquals(6, workbook.getSheet("Load Report").getRow(2).getLastCellNum());
     }
 

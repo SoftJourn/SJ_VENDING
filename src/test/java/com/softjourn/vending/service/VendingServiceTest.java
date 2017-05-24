@@ -316,7 +316,7 @@ public class VendingServiceTest {
         assertEquals(true, service.getLoadHistoryByFilter(requestDTO).getContent().get(0) instanceof LoadHistoryResponseDTO);
     }
 
-    @Test
+    @Test(timeout = 200)
     public void exportLoadHistoryTest() throws ReflectiveOperationException {
         LoadHistoryRequestDTO requestDTO = new LoadHistoryRequestDTO();
         requestDTO.setMachineId(1);

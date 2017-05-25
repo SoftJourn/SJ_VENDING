@@ -209,15 +209,15 @@ public class VendingService {
         ExcelExport excelExport = new ExcelExport();
         excelExport.addSheet(workbook, sheetName);
         excelExport.addHeader(workbook, sheetName, rowNumberToStart, prepareDefiner(null, null));
-        rowNumberToStart++;
 
         for (int i = 0; i < groupByHash.size(); i++) {
             List<LoadHistory> loadHistories = groupByHash.get(i);
             Instant dateAdded = loadHistories.get(0).getDateAdded();
             List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
             // TODO figure out how to count how many columns contains definer
+            rowNumberToStart++;
             excelExport.addDivider(workbook, sheetName, "Load date: " + instantToRFC_1123_DATE_TIME(dateAdded, timeZone.toZoneId()),
-                    rowNumberToStart, 5);
+                    rowNumberToStart, 6);
             rowNumberToStart++;
             rowNumberToStart = excelExport.addContent(workbook, sheetName, rowNumberToStart, definers, loadHistories);
         }

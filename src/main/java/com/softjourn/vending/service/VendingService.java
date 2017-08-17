@@ -246,10 +246,8 @@ public class VendingService {
             vendingMachine.getFields().stream()
                     .filter(field -> countChanged(field, oldMachineState) || productChanged(field, oldMachineState))
                     .filter(field -> field.getProduct() != null)
-                    .forEach(field -> {
-                                field.setCount(getChangedCount(field, oldMachineState));
-                                histories.add(prepareHistory(field, vendingMachine, isDistributed, hash));
-                            }
+                    .forEach(field ->
+                            histories.add(prepareHistory(field, vendingMachine, isDistributed, hash, getChangedCount(field, oldMachineState)))
                     );
         }
         return loadHistoryRepository.save(histories);
@@ -384,18 +382,18 @@ public class VendingService {
                 });
     }
 
-    private LoadHistory prepareHistory(Field field, VendingMachine vendingMachine, Boolean isDistributed, String hash) {
+    private LoadHistory prepareHistory(Field field, VendingMachine vendingMachine, Boolean isDistributed, String hash, Integer newCount) {
         BigDecimal price = field.getProduct().getPrice(Instant.now());
         LoadHistory loadHistory = new LoadHistory();
-        loadHistory.setPrice(price.multiply(BigDecimal.valueOf(field.getCount())));
+        loadHistory.setPrice(price);
         loadHistory.setDateAdded(Instant.now());
         loadHistory.setHash(hash);
         loadHistory.setIsDistributed(isDistributed);
         loadHistory.setVendingMachine(vendingMachine);
         loadHistory.setProduct(field.getProduct());
         loadHistory.setField(field);
-        loadHistory.setCount(field.getCount());
-        loadHistory.setTotal(price.multiply(BigDecimal.valueOf(field.getCount())));
+        loadHistory.setCount(newCount);
+        loadHistory.setTotal(price.multiply(BigDecimal.valueOf(newCount)));
         return loadHistory;
     }
 

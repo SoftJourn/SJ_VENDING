@@ -39,7 +39,7 @@ public class LoadHistory {
     @Column(name = "date_added")
     private Instant dateAdded;
 
-    // load identifier
+    // load identifier(to differentiate loads)
     @JsonIgnore
     private String hash;
 

@@ -42,22 +42,17 @@ import org.springframework.web.client.RestTemplate;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.softjourn.common.utils.Util.instantToRFC_1123_DATE_TIME;
 
 @Service
 public class VendingService {
@@ -194,13 +189,7 @@ public class VendingService {
 
     public Workbook exportLoadHistory(LoadHistoryRequestDTO requestDTO, TimeZone timeZone) throws ReflectiveOperationException {
         Page<LoadHistory> loadHistory = this.getLoadHistory(requestDTO);
-        Set<String> hashes = new HashSet<>();
-        List<List<LoadHistory>> groupByHash = new ArrayList<>();
-        loadHistory.getContent().forEach(loadHistory1 -> hashes.add(loadHistory1.getHash()));
-        hashes.forEach(s ->
-                groupByHash.add(loadHistory.getContent().stream()
-                        .filter(loadHistory1 -> loadHistory1.getHash().equals(s)).collect(Collectors.toList()))
-        );
+        List<LoadHistory> histories = loadHistory.getContent();
 
         String sheetName = "Load Report";
         Integer rowNumberToStart = 0;
@@ -210,17 +199,9 @@ public class VendingService {
         excelExport.addSheet(workbook, sheetName);
         excelExport.addHeader(workbook, sheetName, rowNumberToStart, prepareDefiner(null, null));
 
-        for (int i = 0; i < groupByHash.size(); i++) {
-            List<LoadHistory> loadHistories = groupByHash.get(i);
-            Instant dateAdded = loadHistories.get(0).getDateAdded();
-            List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
-            // TODO figure out how to count how many columns contains definer
-            rowNumberToStart++;
-            excelExport.addDivider(workbook, sheetName, "Load date: " + instantToRFC_1123_DATE_TIME(dateAdded, timeZone.toZoneId()),
-                    rowNumberToStart, 6);
-            rowNumberToStart++;
-            rowNumberToStart = excelExport.addContent(workbook, sheetName, rowNumberToStart, definers, loadHistories);
-        }
+        Instant dateAdded = histories.get(0).getDateAdded();
+        List<ExportDefiner> definers = prepareDefiner(dateAdded, timeZone);
+        excelExport.addContent(workbook, sheetName, rowNumberToStart + 1, definers, histories);
 
         return workbook;
     }
@@ -265,8 +246,10 @@ public class VendingService {
             vendingMachine.getFields().stream()
                     .filter(field -> countChanged(field, oldMachineState) || productChanged(field, oldMachineState))
                     .filter(field -> field.getProduct() != null)
-                    .forEach(field ->
-                            histories.add(prepareHistory(field, vendingMachine, isDistributed, hash))
+                    .forEach(field -> {
+                                field.setCount(getChangedCount(field, oldMachineState));
+                                histories.add(prepareHistory(field, vendingMachine, isDistributed, hash));
+                            }
                     );
         }
         return loadHistoryRepository.save(histories);
@@ -295,6 +278,10 @@ public class VendingService {
 
     private boolean countChanged(Field field, VendingMachine machine) {
         return !getField(machine, field.getId()).getCount().equals(field.getCount());
+    }
+
+    private Integer getChangedCount(Field field, VendingMachine machine) {
+        return field.getCount() - getField(machine, field.getId()).getCount();
     }
 
     private Field getField(VendingMachine vendingMachine, Integer id) {

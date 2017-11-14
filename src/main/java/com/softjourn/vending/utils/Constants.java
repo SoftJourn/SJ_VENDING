@@ -8,8 +8,8 @@ public interface Constants {
 
     // Image files
     int IMAGE_FILE_MAX_SIZE = 1024 * 256;
-    int IMAGE_DIMENSIONS_MAX_WIDTH = 205;
-    int IMAGE_DIMENSIONS_MAX_HEIGHT = 205;
+    int IMAGE_DIMENSIONS_MAX_WIDTH = 1024;
+    int IMAGE_DIMENSIONS_MAX_HEIGHT = 1024;
 
     // Dates
     Integer LAST_WEEK = 7;

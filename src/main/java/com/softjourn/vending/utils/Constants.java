@@ -7,7 +7,7 @@ public interface Constants {
     Integer SQL_CANNOT_DELETE_OR_UPDATE_PARENT_ROW = 1451;
 
     // Image files
-    int IMAGE_FILE_MAX_SIZE = 1024 * 256;
+    int IMAGE_FILE_MAX_SIZE = 1024 * 512;
     int IMAGE_DIMENSIONS_MAX_WIDTH = 1024;
     int IMAGE_DIMENSIONS_MAX_HEIGHT = 1024;
 

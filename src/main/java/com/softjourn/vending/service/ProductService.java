@@ -159,7 +159,7 @@ public class ProductService {
 
     private void validateImage(@NonNull MultipartFile file) throws IOException {
         this.validateImageMimeType(file);
-        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
+//        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 
 

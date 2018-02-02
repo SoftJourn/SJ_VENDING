@@ -95,11 +95,6 @@ public class ProductServiceIntegrationTest {
         assertEquals(1,count);
     }
 
-    @Test
-    public void getImageUrl() throws Exception {
-
-    }
-
     @Before
     public void setUp() throws Exception {
 

@@ -95,8 +95,10 @@ public class BuyService {
                     .filter(VendingMachine::getIsActive)
                     .orElseThrow(() -> new MachineBusyException(machineId));
 
+            if(!machine.getIsVirtual()){
+                machineService.buy(machineId, itemId);
+            }
             tx = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
-            machineService.buy(machineId, itemId);
             decreaseProductsCount(machineId, itemId);
             savePurchase(machineId, product, principal);
             return tx.getRemain();

@@ -45,6 +45,9 @@ public class VendingMachine {
 
     private boolean isActive;
 
+    @Column(name = "is_virtual")
+    private boolean isVirtual;
+
     @JsonIgnore
     public List<Field> getFields() {
         return rows.stream()
@@ -67,5 +70,13 @@ public class VendingMachine {
 
     public void setIsActive(boolean active) {
         isActive = active;
+    }
+
+    public boolean getIsVirtual() {
+        return isVirtual;
+    }
+
+    public void setIsVirtual(boolean virtual) {
+        isVirtual = virtual;
     }
 }

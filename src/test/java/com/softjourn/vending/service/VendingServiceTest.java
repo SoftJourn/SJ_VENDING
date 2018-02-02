@@ -87,6 +87,7 @@ public class VendingServiceTest {
         builder1.setRowsNumbering(VendingMachineBuilderDTO.Numbering.ALPHABETICAL);
         builder1.setCellLimit(5);
         builder1.setIsActive(true);
+        builder1.setIsVirtual(false);
         builder1.setName("Machine1");
 
         builder2 = new VendingMachineBuilderDTO();
@@ -95,6 +96,7 @@ public class VendingServiceTest {
         builder2.setRowsCount(8);
         builder2.setRowsNumbering(VendingMachineBuilderDTO.Numbering.NUMERICAL);
         builder2.setIsActive(true);
+        builder2.setIsVirtual(false);
         builder2.setName("Machine2");
 
         VendingMachine machine = new VendingMachine();

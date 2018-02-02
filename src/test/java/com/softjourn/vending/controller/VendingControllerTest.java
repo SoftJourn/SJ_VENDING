@@ -68,6 +68,7 @@ public class VendingControllerTest {
         vendingMachineBuilder.setColumnsNumbering(NUMERICAL);
         vendingMachineBuilder.setCellLimit(2);
         vendingMachineBuilder.setIsActive(false);
+        vendingMachineBuilder.setIsVirtual(false);
         vendingMachineBuilder.setUrl("http://url.com");
     }
 
@@ -90,6 +91,7 @@ public class VendingControllerTest {
                                 fieldWithPath("name").description("Vending machine name."),
                                 fieldWithPath("url").description("Vending machine url."),
                                 fieldWithPath("isActive").description("Vending machine is active."),
+                                fieldWithPath("isVirtual").description("Vending machine is virtual(Should work without real vending machine)."),
                                 fieldWithPath("uniqueId").description("Vending machine unique Id used in Coins server."),
                                 fieldWithPath("size").description("Vending machine size."),
                                 fieldWithPath("size.rows").description("Vending machine rows count."),

@@ -140,6 +140,7 @@ public class VendingService {
             machine.setUrl(builder.getUrl());
             machine.setCellLimit(builder.getCellLimit());
             machine.setIsActive(builder.getIsActive());
+            machine.setIsVirtual(builder.getIsVirtual());
             List<Row> rows = getRows(builder);
             rows.stream()
                     .peek(r -> fieldRepository.save(r.getFields()))
@@ -172,6 +173,7 @@ public class VendingService {
         machineToUpdate.setName(machine.getName());
         machineToUpdate.setUrl(machine.getUrl());
         machineToUpdate.setIsActive(machine.getIsActive());
+        machineToUpdate.setIsVirtual(machine.getIsVirtual());
         return this.machineRepository.save(machineToUpdate);
     }
 

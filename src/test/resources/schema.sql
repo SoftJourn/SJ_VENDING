@@ -132,3 +132,6 @@ ALTER TABLE load_history
 
 ALTER TABLE load_history
   ADD CONSTRAINT FK_load_history_to_fields FOREIGN KEY (field) REFERENCES fields (id);
+
+ALTER TABLE machines
+  ADD COLUMN is_virtual BOOLEAN NOT NULL;

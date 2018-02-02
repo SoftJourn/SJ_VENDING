@@ -20,6 +20,8 @@ public class VendingMachineBuilderDTO {
 
     private Boolean isActive;
 
+    private Boolean isVirtual;
+
     private Integer cellLimit;
 
     public enum Numbering {

@@ -98,7 +98,6 @@ public class BuyService {
                     .orElseThrow(() -> new MachineBusyException(machineId));
 
             tx = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
-            log.info(format("Transaction %s", tx.toString()));
             decreaseProductsCount(machineId, itemId);
             savePurchase(machineId, product, principal);
             if (!machine.getIsVirtual()) {

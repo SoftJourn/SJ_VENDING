@@ -29,4 +29,19 @@ public class TransactionDTO {
     private BigDecimal remain;
 
     private String error;
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "id=" + id +
+                ", account='" + account + '\'' +
+                ", destination='" + destination + '\'' +
+                ", amount=" + amount.toString() +
+                ", comment='" + comment + '\'' +
+                ", created=" + created +
+                ", status='" + status + '\'' +
+                ", remain=" + remain +
+                ", error='" + error + '\'' +
+                '}';
+    }
 }

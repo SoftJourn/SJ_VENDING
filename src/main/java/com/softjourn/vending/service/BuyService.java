@@ -28,6 +28,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
+
 @Service
 @Setter
 @Slf4j
@@ -96,9 +98,10 @@ public class BuyService {
                     .orElseThrow(() -> new MachineBusyException(machineId));
 
             tx = coinService.spent(principal, product.getPrice(), machine.getUniqueId());
+            log.info(format("Transaction $s", tx.toString()));
             decreaseProductsCount(machineId, itemId);
             savePurchase(machineId, product, principal);
-            if(!machine.getIsVirtual()){
+            if (!machine.getIsVirtual()) {
                 machineService.buy(machineId, itemId);
             }
             return tx.getRemain();
@@ -215,7 +218,7 @@ public class BuyService {
                 .filter(field -> field.getCount() > 0)
                 .findFirst()
                 .map(Field::getInternalId)
-                .orElseThrow(() -> new ProductNotFoundInMachineException(String.format(
+                .orElseThrow(() -> new ProductNotFoundInMachineException(format(
                         "Product not found in machine with id %d",
                         machineId))
                 );
@@ -226,7 +229,7 @@ public class BuyService {
         if (field.getCount() > 0 && field.getProduct() != null) {
             return field.getProduct();
         } else {
-            throw new ProductNotFoundInMachineException(String.format("Product not found in machine with id %d", machineId));
+            throw new ProductNotFoundInMachineException(format("Product not found in machine with id %d", machineId));
         }
     }
 

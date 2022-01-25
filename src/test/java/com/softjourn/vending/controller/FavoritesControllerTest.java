@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest(FavoritesController.class)
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class FavoritesControllerTest {
 
@@ -51,7 +51,17 @@ public class FavoritesControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("favorites", preprocessResponse(prettyPrint()),
                         responseFields(
-                                fieldWithPath("[]").description("All user's favorites products.")
+                                fieldWithPath("[]").description("All user's favorites products."),
+                                fieldWithPath("[0]").description("Product."),
+                                fieldWithPath("[0].id").description("Product id."),
+                                fieldWithPath("[0].name").description("Product name."),
+                                fieldWithPath("[0].price").description("Product price."),
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
+                                fieldWithPath("[0].nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("[0].description").description("Product description.")
                         )));
     }
 

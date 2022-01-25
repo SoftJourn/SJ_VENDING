@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -98,7 +99,7 @@ public class ProductServiceTest {
     public void deleteTest() {
         productService.delete(1);
 
-        verify(productRepository, times(1)).delete(1);
+        verify(productRepository, times(1)).deleteById(1);
     }
 
     @Test
@@ -128,7 +129,7 @@ public class ProductServiceTest {
         updated.setCategory(new Category(1L, "Drink"));
 
 
-        when(productRepository.findOne(1)).thenReturn(product);
+        when(productRepository.findById(1)).thenReturn(Optional.of(product));
         when(productRepository.findAll()).thenReturn(Collections.singletonList(product));
         when(productRepository.getProductByCategory_Name(anyString())).thenReturn(Collections.singletonList(product));
 

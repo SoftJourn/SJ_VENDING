@@ -60,15 +60,15 @@ public class VendingService {
     @Value("${coins.server.host}")
     private String coinsServerHost;
 
-    private MachineRepository machineRepository;
-    private RowRepository rowRepository;
-    private FieldRepository fieldRepository;
-    private LoadHistoryRepository loadHistoryRepository;
-    private RestTemplate coinRestTemplate;
+    private final MachineRepository machineRepository;
+    private final RowRepository rowRepository;
+    private final FieldRepository fieldRepository;
+    private final LoadHistoryRepository loadHistoryRepository;
+    private final RestTemplate coinRestTemplate;
 
-    private MachineService machineService;
+    private final MachineService machineService;
 
-    private ReflectionMergeUtil<Field> fieldMergeUtil;
+    private final ReflectionMergeUtil<Field> fieldMergeUtil;
 
 
     @Autowired
@@ -99,10 +99,7 @@ public class VendingService {
     @Transactional
     public VendingMachine refill(VendingMachine machine, Principal principal) {
 
-        VendingMachine machineToUpdate = machineRepository.findOne(machine.getId());
-        if (machineToUpdate == null) {
-            throw new BadRequestException("Requested machine does not exists");
-        }
+        VendingMachine machineToUpdate = machineRepository.findById(machine.getId()).orElseThrow(() -> new BadRequestException("Requested machine does not exists"));
         machine.setCellLimit(machineToUpdate.getCellLimit());
         if (!VendingService.checkCellLimit(machine)) {
             throw new BadRequestException("Requested machine cell out of limit '"
@@ -124,10 +121,7 @@ public class VendingService {
     }
 
     public VendingMachine get(Integer id) {
-        VendingMachine machine = machineRepository.findOne(id);
-        if (machine == null)
-            throw new MachineNotFoundException(String.format("There is not such machine with id %d", id));
-        return machine;
+        return machineRepository.findById(id).orElseThrow(() -> new MachineNotFoundException(String.format("There is not such machine with id %d", id)));
     }
 
     @Transactional
@@ -143,9 +137,10 @@ public class VendingService {
             machine.setIsVirtual(builder.getIsVirtual());
             List<Row> rows = getRows(builder);
             rows.stream()
-                    .peek(r -> fieldRepository.save(r.getFields()))
-                    .forEach(row -> rowRepository.save(row));
-
+                    .forEach(row -> {
+                        fieldRepository.saveAll(row.getFields());
+                        rowRepository.save(row);
+                    });
             machine.setRows(rows);
         } catch (NullPointerException e) {
             throw new BadRequestException("Request has null values");
@@ -169,7 +164,7 @@ public class VendingService {
     }
 
     public VendingMachine update(VendingMachine machine) {
-        VendingMachine machineToUpdate = this.machineRepository.getOne(machine.getId());
+        VendingMachine machineToUpdate = this.machineRepository.getById(machine.getId());
         machineToUpdate.setName(machine.getName());
         machineToUpdate.setUrl(machine.getUrl());
         machineToUpdate.setIsActive(machine.getIsActive());
@@ -194,7 +189,7 @@ public class VendingService {
         List<LoadHistory> histories = loadHistory.getContent();
 
         String sheetName = "Load Report";
-        Integer rowNumberToStart = 0;
+        int rowNumberToStart = 0;
 
         Workbook workbook = new HSSFWorkbook();
         ExcelExport excelExport = new ExcelExport();
@@ -235,8 +230,7 @@ public class VendingService {
      * @return List<LoadHistory> - changes
      */
     public List<LoadHistory> saveLoadHistory(VendingMachine vendingMachine, Boolean isDistributed) {
-        VendingMachine oldMachineState = Optional
-                .ofNullable(machineRepository.findOne(vendingMachine.getId()))
+        VendingMachine oldMachineState = machineRepository.findById(vendingMachine.getId())
                 .orElseThrow(() -> new NotFoundException(String.format(
                         "Machine with id %d was not found",
                         vendingMachine.getId())));
@@ -252,7 +246,7 @@ public class VendingService {
                             histories.add(prepareHistory(field, vendingMachine, isDistributed, hash, getChangedCount(field, oldMachineState)))
                     );
         }
-        return loadHistoryRepository.save(histories);
+        return loadHistoryRepository.saveAll(histories);
     }
 
     private void updateFields(VendingMachine machineToUpdate, VendingMachine machine) {
@@ -309,7 +303,7 @@ public class VendingService {
     @Transactional
     public void delete(Integer id) {
         loadHistoryRepository.deleteByMachineId(id);
-        machineRepository.delete(id);
+        machineRepository.deleteById(id);
     }
 
     private List<Row> getRows(VendingMachineBuilderDTO builder) {
@@ -353,7 +347,7 @@ public class VendingService {
     }
 
     public BigDecimal getLoadedPrice(Integer id) {
-        return Optional.ofNullable(machineRepository.findOne(id))
+        return machineRepository.findById(id)
                 .map(this::getLoadedPrice)
                 .orElseThrow(() -> new NotFoundException(String.format("Machine with id %d was not found", id)));
     }

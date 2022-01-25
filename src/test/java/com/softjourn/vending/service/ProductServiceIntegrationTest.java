@@ -13,8 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringRunner.class)
-@AutoConfigureTestDatabase
 @DataJpaTest
 @EnableJpaRepositories(basePackages = "com.softjourn.vending.dao", repositoryBaseClass = RefreshableRepositoryImpl.class)
 @Log
@@ -68,8 +68,7 @@ public class ProductServiceIntegrationTest {
     public void addImage() throws Exception {
         this.productService.addProductImage(this.imageJpg, testProductId);
         this.productService.addProductImage(this.imagePng, testProductId);
-        Product product;
-        product = this.productRepository.findOne(testProductId);
+        Product product = this.productRepository.findById(testProductId).orElseThrow();
         assertNotNull(product.getImageUrls());
     }
 

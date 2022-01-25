@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -18,7 +18,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 
@@ -81,8 +80,8 @@ public class FavoritesServiceTest {
         when(favoritesRepository.getByAcount(anyString())).thenReturn(favorites);
 
         when(productService.getProduct(0)).thenReturn(product);
-        when(productService.getProduct(1)).thenReturn(product1);
-        when(productService.getProduct(2)).thenReturn(product2);
+        lenient().when(productService.getProduct(1)).thenReturn(product1);
+        lenient().when(productService.getProduct(2)).thenReturn(product2);
 
 
     }

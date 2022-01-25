@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest(PurchaseController.class)
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class PurchaseControllerTest {
 
@@ -85,7 +85,12 @@ public class PurchaseControllerTest {
                                 fieldWithPath("last").description("Is page last"),
                                 fieldWithPath("totalPages").description("Pages quantity"),
                                 fieldWithPath("totalElements").description("Elements quantity"),
+                                fieldWithPath("pageable").ignored(),
                                 fieldWithPath("sort").description("Sorting"),
+                                fieldWithPath("sort.sorted").ignored(),
+                                fieldWithPath("sort.unsorted").ignored(),
+                                fieldWithPath("sort.empty").ignored(),
+                                fieldWithPath("empty").ignored(),
                                 fieldWithPath("first").description("Is page first"),
                                 fieldWithPath("numberOfElements").description("The number of elements currently on this page"),
                                 fieldWithPath("size").description("The size of the page"),

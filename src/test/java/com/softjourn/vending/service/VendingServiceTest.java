@@ -24,7 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,14 +41,15 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -111,7 +112,7 @@ public class VendingServiceTest {
 
             return vendingMachine;
         });
-        when(machineRepository.findOne(1)).thenReturn(machine);
+        when(machineRepository.findById(1)).thenReturn(Optional.of(machine));
 
         ReflectionTestUtils.setField(service, "coinsServerHost", "http://localhost");
         ReflectionTestUtils.setField(service, "coinRestTemplate", mock(RestTemplate.class));
@@ -122,8 +123,8 @@ public class VendingServiceTest {
         VendingMachine machine2 = createMachineWithProducts();
         machine2.setId(3);
 
-        when(machineRepository.findOne(machine1.getId())).thenReturn(machine1);
-        when(machineRepository.findOne(machine2.getId())).thenReturn(null);
+        when(machineRepository.findById(machine1.getId())).thenReturn(Optional.of(machine1));
+        when(machineRepository.findById(machine2.getId())).thenReturn(Optional.ofNullable(null));
 
         when(loadHistoryRepository.getLoadHistoryByVendingMachine(anyInt(), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(prepareLoadHistory()));
@@ -248,14 +249,14 @@ public class VendingServiceTest {
 
     @Test
     public void getLoadHistoryTest() {
-        Page<LoadHistory> loadHistory = this.service.getLoadHistory(1, new PageRequest(0, 10));
+        Page<LoadHistory> loadHistory = this.service.getLoadHistory(1, PageRequest.of(0, 10));
         assertEquals(5, loadHistory.getContent().size());
     }
 
     @Test
     public void getLoadHistoryByTimeTest() {
         Page<LoadHistory> loadHistory = this.service.getLoadHistoryByTime(1, Instant.now(),
-                Instant.now(), new PageRequest(0, 10));
+                Instant.now(), PageRequest.of(0, 10));
         assertEquals(5, loadHistory.getContent().size());
     }
 
@@ -292,8 +293,8 @@ public class VendingServiceTest {
             newMachine.getFields().get(i).setId(i + 1);
         }
 
-        when(loadHistoryRepository.save(any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
-        when(machineRepository.findOne(1)).thenReturn(oldMachine);
+        when(loadHistoryRepository.saveAll(any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+        when(machineRepository.findById(1)).thenReturn(Optional.of(oldMachine));
 
         assertEquals(3, service.saveLoadHistory(newMachine, false).size());
     }

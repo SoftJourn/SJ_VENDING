@@ -216,7 +216,7 @@ public abstract class ControllerTestConfig {
 
         PageImpl<LoadHistoryResponseDTO> histories = new PageImpl<>(new ArrayList<LoadHistoryResponseDTO>() {{
             add(new LoadHistoryResponseDTO(BigDecimal.valueOf(2), Instant.now(), "Cola", BigDecimal.valueOf(1), "A1", 2));
-        }}, new PageRequest(0, 10), 20);
+        }}, PageRequest.of(0, 10), 20);
 
         when(vendingService.get(anyInt())).thenReturn(vendingMachine);
         when(vendingService.create(any(), any())).thenReturn(vendingMachine);

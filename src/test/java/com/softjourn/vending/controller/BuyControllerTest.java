@@ -26,16 +26,18 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest(BuyController.class)
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class BuyControllerTest {
     @Autowired
@@ -65,7 +67,8 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].name").description("Vending machine name."),
                                 fieldWithPath("[0].size").description("Vending machine size."),
                                 fieldWithPath("[0].size.rows").description("Vending machine rows count."),
-                                fieldWithPath("[0].size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines).")
+                                fieldWithPath("[0].size.columns").description("Vending machine columns count(Works correctly only for \"rectangular\" machines)."),
+                                fieldWithPath("[0].size.cellLimit").description("Vending machine cell limit).")
                         )));
     }
 
@@ -104,8 +107,13 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].id").description("Product id."),
                                 fieldWithPath("[0].name").description("Product name."),
                                 fieldWithPath("[0].price").description("Product price."),
-                                fieldWithPath("[0].imageUrl").description("Relative path to product image.")
-                        )));
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("[0].category").description("Category."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
+                                fieldWithPath("[0].nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("[0].description").description("Product description.")                              )));
     }
 
     @Test
@@ -129,8 +137,13 @@ public class BuyControllerTest {
                                 fieldWithPath("[0].id").description("Product id."),
                                 fieldWithPath("[0].name").description("Product name."),
                                 fieldWithPath("[0].price").description("Product price."),
-                                fieldWithPath("[0].imageUrl").description("Relative path to product image.")
-                        )
+                                fieldWithPath("[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("[0].imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("[0].category").description("Category."),
+                                fieldWithPath("[0].category.id").description("Category id."),
+                                fieldWithPath("[0].category.name").description("Category name."),
+                                fieldWithPath("[0].nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("[0].description").description("Product description.")                        )
                 ));
     }
 
@@ -147,8 +160,22 @@ public class BuyControllerTest {
                         responseFields(
                                 fieldWithPath("lastAdded").description("Top 10 newest products."),
                                 fieldWithPath("bestSellers").description("Top 10 best sellers products."),
-                                fieldWithPath("categories").description("Products grouped by categories")
-                                )));
+                                fieldWithPath("categories").description("Products grouped by categories"),
+                                fieldWithPath("categories[0]").description("Category"),
+                                fieldWithPath("categories[0].name").description("Category name"),
+                                fieldWithPath("categories[0].products").description("Products list in the category"),
+                                fieldWithPath("categories[0].products[0]").description("Product."),
+                                fieldWithPath("categories[0].products[0].id").description("Product id."),
+                                fieldWithPath("categories[0].products[0].name").description("Product name."),
+                                fieldWithPath("categories[0].products[0].price").description("Product price."),
+                                fieldWithPath("categories[0].products[0].imageUrl").description("Relative path to product image."),
+                                fieldWithPath("categories[0].products[0].imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("categories[0].products[0].category").description("Category."),
+                                fieldWithPath("categories[0].products[0].category.id").description("Category id."),
+                                fieldWithPath("categories[0].products[0].category.name").description("Category name."),
+                                fieldWithPath("categories[0].products[0].nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("categories[0].products[0].description").description("Product description.")                        )
+                                ));
     }
 
     @Test
@@ -163,9 +190,9 @@ public class BuyControllerTest {
                         preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("[]").description("The 10 last purchases of user"),
-                                fieldWithPath("[0].name").description("Product name."),
-                                fieldWithPath("[0].price").description("Product price."),
-                                fieldWithPath("[0].time").description("Purchase date.")
+                                fieldWithPath("[0].name").optional().type(STRING).description("Product name."),
+                                fieldWithPath("[0].price").optional().type(NUMBER).description("Product price."),
+                                fieldWithPath("[0].time").optional().type(OBJECT).description("Purchase date.")
                         )));
     }
 

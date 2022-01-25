@@ -28,16 +28,16 @@ import java.time.format.DateTimeFormatter;
 @EnableTransactionManagement
 public class VendingConfiguration extends ResourceServerConfigurerAdapter {
 
-    @Value("${auth.client.id}")
+    @Value("${auth.client.client-id}")
     private String clientId;
 
     @Value("${authPublicKeyFile}")
     private String authPublicKeyFile;
 
-    @Value("${auth.server.host}")
+    @Value("${auth.server.url}")
     private String authServerHost;
 
-    @Value("${auth.client.secret}")
+    @Value("${auth.client.client-secret}")
     private String clientSecret;
 
     @Bean

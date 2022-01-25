@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -24,9 +24,16 @@ import java.util.List;
 import static com.softjourn.vending.controller.ControllerTestConfig.drinks;
 import static junit.framework.TestCase.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+//import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BuyServiceTest {
@@ -184,7 +191,7 @@ public class BuyServiceTest {
         TransactionDTO transactionDTO = mock(TransactionDTO.class);
         when(transactionDTO.getRemain()).thenReturn(new BigDecimal(10));
 
-        when(coinService.spent(any(), any(), anyString())).thenReturn(transactionDTO);
+        when(coinService.spent(any(), any(), nullable(String.class))).thenReturn(transactionDTO);
 
 
     }
@@ -208,7 +215,7 @@ public class BuyServiceTest {
         assertEquals(buyService.buy(1, "A0", principal), new BigDecimal(10));
 
         verify(vendingService, times(4)).get(1);
-        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
+        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), nullable(String.class));
         verify(machineService, times(1)).buy(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
@@ -223,7 +230,7 @@ public class BuyServiceTest {
         assertEquals(buyService.buy(1, "A0", principal), new BigDecimal(10));
 
         verify(vendingService, times(4)).get(1);
-        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
+        verify(coinService, times(1)).spent(eq(principal), eq(new BigDecimal(5)), nullable(String.class));
         verify(machineService, times(1)).buy(1, "A0");
         verify(fieldService, times(1)).update(anyInt(), argumentCaptor.capture(), anyInt());
         verify(purchaseRepository, times(1)).save(any(Purchase.class));
@@ -239,7 +246,7 @@ public class BuyServiceTest {
         assertEquals(buyService.buy(1, "B0", principal), new BigDecimal(10));
 
         verify(vendingService, times(2)).get(1);
-        verify(coinService, times(0)).spent(eq(principal), eq(new BigDecimal(5)), anyString());
+        verify(coinService, times(0)).spent(eq(principal), eq(new BigDecimal(5)), nullable(String.class));
         verify(machineService, times(0)).buy(1, "B0");
         verify(fieldService, times(0)).update(anyInt(), any(Field.class), anyInt());
         verify(purchaseRepository, times(0)).save(any(Purchase.class));

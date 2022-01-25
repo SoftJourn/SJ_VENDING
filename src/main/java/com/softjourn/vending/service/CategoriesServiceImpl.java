@@ -30,12 +30,12 @@ public class CategoriesServiceImpl implements CategoriesService {
 
     @Override
     public Category get(Long id) {
-        return categoriesRepository.findOne(id);
+        return categoriesRepository.findById(id).orElse(null);
     }
 
     @Override
     public void delete(Long id) {
-        categoriesRepository.delete(id);
+        categoriesRepository.deleteById(id);
     }
 
     @Override

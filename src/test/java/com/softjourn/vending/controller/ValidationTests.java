@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class ValidationTests {
 

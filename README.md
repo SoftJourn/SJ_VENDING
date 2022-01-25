@@ -1,5 +1,37 @@
 # SJ Coin Vending
 
+## Prepare stage
+#### Setup environment variables.
+```
+SJ_VENDING_SERVER_DATASOURCE_URL=jdbc:mysql://localhost:3306/sj_coins?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+SJ_VENDING_SERVER_DATASOURCE_USERNAME=sj
+SJ_VENDING_SERVER_DATASOURCE_PASSWORD=password
+SJ_VENDING_SERVER_LOGGING_CONFIG_FILE=/path/to/coins/logback.xml
+SJ_VENDING_SERVER_COINS_SERVER_URL=http://127.0.0.1:8080/coins/v1
+SJ_VENDING_SERVER_AUTH_SERVER_URL=http://127.0.0.1:8081
+SJ_VENDING_SERVER_AUTH_CLIENT_ID=vending_server
+SJ_VENDING_SERVER_AUTH_CLIENT_SECRET=<client_secret>
+SJ_VENDING_SERVER_AUTH_PUBKEY_PATH=/path/to/vending/auth.pub
+SJ_VENDING_MACHINE_KEYSTORE_PATH=/path/to/vending/vending.jks
+SJ_VENDING_MACHINE_KEYSTORE_PASSWORD=<keystore_password>
+SJ_VENDING_MACHINE_KEYSTORE_ALIAS=vending
+```
+Or with export:
+```
+export SJ_VENDING_SERVER_DATASOURCE_URL='jdbc:mysql://localhost:3306/sj_coins?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false'
+export SJ_VENDING_SERVER_DATASOURCE_USERNAME='sj'
+export SJ_VENDING_SERVER_DATASOURCE_PASSWORD='password'
+export SJ_VENDING_SERVER_LOGGING_CONFIG_FILE='/path/to/coins/logback.xml'
+export SJ_VENDING_SERVER_COINS_SERVER_URL='http://127.0.0.1:8080/coins/v1'
+export SJ_VENDING_SERVER_AUTH_SERVER_URL='http://127.0.0.1:8081'
+export SJ_VENDING_SERVER_AUTH_CLIENT_ID='vending_server'
+export SJ_VENDING_SERVER_AUTH_CLIENT_SECRET='<client_secret>'
+export SJ_VENDING_SERVER_AUTH_PUBKEY_PATH='/path/to/vending/auth.pub'
+export SJ_VENDING_MACHINE_KEYSTORE_PATH='/path/to/vending/vending.jks'
+export SJ_VENDING_MACHINE_KEYSTORE_PASSWORD='<keystore_password>'
+export SJ_VENDING_MACHINE_KEYSTORE_ALIAS='vending'
+```
+
 ## Start up documentation
 
 ### Step 1: Create databases structure
@@ -36,33 +68,7 @@ openssl x509 -inform der -pubkey -noout -in vending.cer > vending.pub
 ```bash
 mkdir $HOME/.vending
 mkdir $HOME/.vending/images
-touch application.properties
 ```
-
-Add this properties to the previously created file
-
-```properties
-coins.server.host=https://somehostname/v1
-image.storage.path=${HOME}/.vending/images
-
-#AUTH
-auth.server.host=http://somehostname
-auth.client.id=someClientId
-auth.client.secret=someSecret
-authPublicKeyFile=/home/username/.vending/auth.pub
-
-# Datasource
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
-spring.datasource.url=jdbc:mysql://127.0.0.1:3306/sj_vending?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false&CharSet=utf8&characterEncoding=utf8&useUnicode=true
-spring.datasource.username=sj_vending
-spring.datasource.password=somePassword
-
-# Machine
-machine.request.signer.keystore.file=/home/username/.vending/vending.jks
-machine.request.signer.keystore.password=somePassword
-machine.request.signer.keystore.alias=vending
-```
-
 
 ### Step 4: Add logback configuration
 

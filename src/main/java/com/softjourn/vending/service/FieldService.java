@@ -6,6 +6,7 @@ import com.softjourn.vending.dao.RowRepository;
 import com.softjourn.vending.entity.Field;
 import com.softjourn.vending.entity.Row;
 import com.softjourn.vending.exceptions.AlreadyPresentedException;
+import com.softjourn.vending.exceptions.NotFoundException;
 import com.softjourn.vending.utils.ReflectionMergeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,10 @@ import java.util.stream.Stream;
 @Service
 public class FieldService {
 
-    private FieldRepository fieldRepository;
-    private RowRepository rowRepository;
+    private final FieldRepository fieldRepository;
+    private final RowRepository rowRepository;
 
-    private ReflectionMergeUtil<Field> fieldMergeUtil;
+    private final ReflectionMergeUtil<Field> fieldMergeUtil;
 
     @Autowired
     public FieldService(FieldRepository fieldRepository, RowRepository rowRepository) {
@@ -35,14 +36,14 @@ public class FieldService {
     }
 
     public synchronized Field update(Integer id, Field field, Integer machineId) {
-        Field old = fieldRepository.findOne(id);
+        Field old = fieldRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Field with id %d not found.", id)));
         checkNewInternalId(old, field.getInternalId(), machineId);
         Field newField = fieldMergeUtil.merge(old, field);
         return fieldRepository.save(newField);
     }
 
     public synchronized Row updateFieldsCountInRow(Integer id, Integer fieldsCount) {
-        Row old = rowRepository.findOne(id);
+        Row old = rowRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Row with id %d not found.", id)));
         if (old.getFields().size() == fieldsCount) return old;
         if (old.getFields().size() > fieldsCount) {
             removeRestFields(old, fieldsCount);
@@ -65,7 +66,6 @@ public class FieldService {
                 .skip(count)
                 .peek(fieldRepository::delete)
                 .collect(Collectors.toList());
-
         row.removeFields(fields);
     }
 
@@ -90,8 +90,10 @@ public class FieldService {
         stream.limit(count - row.getFields().size())
                 .map(x -> row.getRowId() + x)
                 .map(id-> new Field((String)id, row.getFields().size()))
-                .peek(f -> fieldRepository.save((Field) f))
-                .forEach(f -> row.adField((Field)f));
+                .forEach(f -> {
+                    fieldRepository.save((Field) f);
+                    row.adField((Field)f);
+                });
 
     }
 }

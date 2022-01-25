@@ -35,7 +35,7 @@
 <!--        <org.flywaydb.version>8.4.1</org.flywaydb.version>-->
         <junit.version>4.13.2</junit.version>
         <org.mockito.version>3.12.4</org.mockito.version>
-        <com.h2database.version>2.0.206</com.h2database.version>
+        <com.h2database.version>2.1.210</com.h2database.version>
         <org.springframework.restdocs.version>2.0.5.RELEASE</org.springframework.restdocs.version>
         <commons-io.version>2.11.0</commons-io.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>

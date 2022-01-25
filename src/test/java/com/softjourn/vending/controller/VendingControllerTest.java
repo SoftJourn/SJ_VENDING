@@ -39,8 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest(VendingController.class)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
-@AutoConfigureMockMvc(secure = false)
 public class VendingControllerTest {
 
     static Field field;
@@ -99,13 +99,23 @@ public class VendingControllerTest {
                                 fieldWithPath("size.cellLimit").description("Vending machine product limitation in a cell"),
                                 fieldWithPath("rows").description("Array of vending machine rows of fields."),
                                 fieldWithPath("rows[0]").description("Vending machine row."),
+                                fieldWithPath("rows[0].id").ignored(),
+                                fieldWithPath("rows[0].rowId").description("Row id in the vending machine."),
                                 fieldWithPath("rows[0].fields").description("Array of fields in row."),
-                                fieldWithPath("rows[0].fields[0]").description("Vending machine field."),
+                                fieldWithPath("rows[0].fields[0].position").description("Vending machine field."),
                                 fieldWithPath("rows[0].fields[0].id").description("Vending machine field id."),
                                 fieldWithPath("rows[0].fields[0].internalId").description("Vending machine field internal id in machine."),
+                                fieldWithPath("rows[0].fields[0].count").description("Count of products that is contained in this field."),
                                 fieldWithPath("rows[0].fields[0].product").description("Product that this field contains."),
-                                fieldWithPath("rows[0].fields[0].count").description("Count of products that is contained in this field.")
-                        )));
+                                fieldWithPath("rows[0].fields[0].product.id").description("Product id."),
+                                fieldWithPath("rows[0].fields[0].product.name").description("Product name."),
+                                fieldWithPath("rows[0].fields[0].product.price").description("Product price."),
+                                fieldWithPath("rows[0].fields[0].product.imageUrl").description("Relative path to product image."),
+                                fieldWithPath("rows[0].fields[0].product.imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("rows[0].fields[0].product.category.id").description("Category id."),
+                                fieldWithPath("rows[0].fields[0].product.category.name").description("Category name."),
+                                fieldWithPath("rows[0].fields[0].product.nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("rows[0].fields[0].product.description").description("Product description.")                                )));
     }
 
 
@@ -138,7 +148,16 @@ public class VendingControllerTest {
                                 fieldWithPath("internalId").description("Field id in machine(usually contains row and column number)."),
                                 fieldWithPath("position").description("Position in row."),
                                 fieldWithPath("count").description("Count of products that is in this field."),
-                                fieldWithPath("product").description("Product that is in this field.")
+                                fieldWithPath("product").description("Product that is in this field."),
+                                fieldWithPath("product.id").description("Product id."),
+                                fieldWithPath("product.name").description("Product name."),
+                                fieldWithPath("product.price").description("Product price."),
+                                fieldWithPath("product.imageUrl").description("Relative path to product image."),
+                                fieldWithPath("product.imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("product.category.id").description("Category id."),
+                                fieldWithPath("product.category.name").description("Category name."),
+                                fieldWithPath("product.nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("product.description").description("Product description.")
                         )));
     }
 
@@ -158,8 +177,22 @@ public class VendingControllerTest {
                         responseFields(
                                 fieldWithPath("id").description("Row id in db."),
                                 fieldWithPath("rowId").description("Row id in machine(usually ALPHABETICAL character)."),
-                                fieldWithPath("fields").description("Fields in this row.")
-                        )));
+                                fieldWithPath("fields").description("Fields in this row."),
+                                fieldWithPath("fields[0]").description("Field."),
+                                fieldWithPath("fields[0].id").description("Field id."),
+                                fieldWithPath("fields[0].internalId").description("Field internal id."),
+                                fieldWithPath("fields[0].position").description("Field position."),
+                                fieldWithPath("fields[0].count").description("Fields count."),
+                                fieldWithPath("fields[0].product").description("Product."),
+                                fieldWithPath("fields[0].product.id").description("Product id."),
+                                fieldWithPath("fields[0].product.name").description("Product name."),
+                                fieldWithPath("fields[0].product.price").description("Product price."),
+                                fieldWithPath("fields[0].product.imageUrl").description("Relative path to product image."),
+                                fieldWithPath("fields[0].product.imageUrls").description("Relative path to all product images."),
+                                fieldWithPath("fields[0].product.category.id").description("Category id."),
+                                fieldWithPath("fields[0].product.category.name").description("Category name."),
+                                fieldWithPath("fields[0].product.nutritionFacts").description("Product nutrition facts."),
+                                fieldWithPath("fields[0].product.description").description("Product description.")                        )));
     }
 
     @Test
@@ -180,10 +213,10 @@ public class VendingControllerTest {
                                 fieldWithPath("machineId")
                                         .description("Machine identifier(Required field)")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("start")
+                                fieldWithPath("start").optional()
                                         .description("Start datetime to search(Can be null)")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("due")
+                                fieldWithPath("due").optional()
                                         .description("Due datetime to search(Can be null)")
                                         .type(JsonFieldType.STRING),
                                 fieldWithPath("pageable.pageNumber")
@@ -194,8 +227,13 @@ public class VendingControllerTest {
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("pageable.sort")
                                         .description("Sort conditions to order(Can be null)")
-                                        .type(JsonFieldType.OBJECT)
-                                , fieldWithPath("pageable.offset")
+                                        .type(JsonFieldType.OBJECT),
+                                fieldWithPath("pageable.sort.sorted").ignored(),
+                                fieldWithPath("pageable.sort.empty").ignored(),
+                                fieldWithPath("pageable.sort.unsorted").ignored(),
+                                fieldWithPath("pageable.paged").ignored(),
+                                fieldWithPath("pageable.unpaged").ignored(),
+                                fieldWithPath("pageable.offset")
                                         .description("Offset(Can be null)")
                                         .type(JsonFieldType.NUMBER)
                         )))
@@ -212,10 +250,32 @@ public class VendingControllerTest {
                                 fieldWithPath("totalPages").description("Pages quantity"),
                                 fieldWithPath("totalElements").description("Elements quantity"),
                                 fieldWithPath("sort").description("Sorting"),
+                                fieldWithPath("sort.sorted").ignored(),
+                                fieldWithPath("sort.empty").ignored(),
+                                fieldWithPath("sort.unsorted").ignored(),
+                                fieldWithPath("empty").ignored(),
                                 fieldWithPath("first").description("Is page first"),
                                 fieldWithPath("numberOfElements").description("The number of elements currently on this page"),
                                 fieldWithPath("size").description("The size of the page"),
-                                fieldWithPath("number").description("The number of the current page")
+                                fieldWithPath("number").description("The number of the current page"),
+                                fieldWithPath("pageable.pageNumber")
+                                        .description("Size to return(Required field)")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("pageable.pageSize")
+                                        .description("Page to return(Required field)")
+                                        .type(JsonFieldType.NUMBER),
+                                fieldWithPath("pageable.sort")
+                                        .description("Sort conditions to order(Can be null)")
+                                        .type(JsonFieldType.OBJECT),
+                                fieldWithPath("pageable.sort.sorted").ignored(),
+                                fieldWithPath("pageable.sort.empty").ignored(),
+                                fieldWithPath("pageable.sort.unsorted").ignored(),
+                                fieldWithPath("pageable.paged").ignored(),
+                                fieldWithPath("pageable.unpaged").ignored(),
+                                fieldWithPath("pageable.offset")
+                                        .description("Offset(Can be null)")
+                                        .type(JsonFieldType.NUMBER)
+
                         )));
     }
 
@@ -237,10 +297,10 @@ public class VendingControllerTest {
                                 fieldWithPath("machineId")
                                         .description("Machine identifier(Required field)")
                                         .type(JsonFieldType.NUMBER),
-                                fieldWithPath("start")
+                                fieldWithPath("start").optional()
                                         .description("Start datetime to search(Can be null)")
                                         .type(JsonFieldType.STRING),
-                                fieldWithPath("due")
+                                fieldWithPath("due").optional()
                                         .description("Due datetime to search(Can be null)")
                                         .type(JsonFieldType.STRING),
                                 fieldWithPath("pageable.pageNumber")
@@ -251,8 +311,13 @@ public class VendingControllerTest {
                                         .type(JsonFieldType.NUMBER),
                                 fieldWithPath("pageable.sort")
                                         .description("Sort conditions to order(Can be null)")
-                                        .type(JsonFieldType.OBJECT)
-                                , fieldWithPath("pageable.offset")
+                                        .type(JsonFieldType.OBJECT),
+                                fieldWithPath("pageable.sort.sorted").ignored(),
+                                fieldWithPath("pageable.sort.empty").ignored(),
+                                fieldWithPath("pageable.sort.unsorted").ignored(),
+                                fieldWithPath("pageable.paged").ignored(),
+                                fieldWithPath("pageable.unpaged").ignored(),
+                                fieldWithPath("pageable.offset")
                                         .description("Offset(Can be null)")
                                         .type(JsonFieldType.NUMBER)
                         )))

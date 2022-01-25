@@ -19,7 +19,7 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
 public class ProductsController {
 
-    private ProductService productService;
+    private final ProductService productService;
 
     @Autowired
     public ProductsController(ProductService productService) {
@@ -28,74 +28,73 @@ public class ProductsController {
 
     // POST
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping()
     public Product addProduct(@Valid @RequestBody Product product) {
         return productService.add(product);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.POST)
+    @PostMapping(path = "/{id}")
     public Product updateProduct(@PathVariable Integer id, @Valid @RequestBody Product updater) {
         return productService.update(id, updater);
     }
 
-    @RequestMapping(path = "/{id}/image", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void updateCoverImage(@RequestParam MultipartFile file, @PathVariable Integer id) throws IOException {
         productService.updateCoverImage(file, id);
     }
 
-    @RequestMapping(path = "/{id}/images", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void addProductImage(@RequestParam MultipartFile files[], @PathVariable Integer id) throws IOException {
+    @PostMapping(path = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void addProductImage(@RequestParam MultipartFile[] files, @PathVariable Integer id) throws IOException {
         productService.addProductImage(files, id);
     }
 
-    @RequestMapping(path = "/{productId}/set/cover/{imgId}", method = RequestMethod.POST)
-    public void setCoverByImgId(@PathVariable Integer productId, @PathVariable Long imgId) throws IOException {
+    @PostMapping(path = "/{productId}/set/cover/{imgId}")
+    public void setCoverByImgId(@PathVariable Integer productId, @PathVariable Long imgId) {
         productService.setCoverByImgId(productId, imgId);
     }
 
     // GET
 
     @PreAuthorize("authenticated")
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping()
     public Iterable<Product> getProducts() {
         return productService.getProducts();
     }
-
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public List<Product> getProductsByNameThatContain(@RequestParam("name") String name) {
-        return productService.getProductsByNameThatContain(name);
-    }
-
-    @PreAuthorize("authenticated")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Product getProduct(@PathVariable Integer id) {
-        return productService.getProduct(id);
-    }
-
-    @PreAuthorize("permitAll")
-    @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.GET)
-    public byte[] getImage(@PathVariable Integer productId, @PathVariable Long imageId) {
-        return productService.getImageById(productId, imageId);
-    }
-
-    // DELETE
-
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable Integer id) {
-        productService.delete(id);
-    }
-
-    @RequestMapping(path = "/{productId}/images/{imageId}", method = RequestMethod.DELETE)
-    public void deleteImage(@PathVariable Integer productId, @PathVariable Long imageId) {
-        productService.deleteImage(productId, imageId);
-    }
-
-    // ALL
 
     @PreAuthorize("authenticated")
     @GetMapping("/category/{categoryName}")
     public List<Product> getProductsByCategory(@PathVariable String categoryName) {
         return productService.getProductsByCategory(categoryName);
     }
+
+    @GetMapping(value = "/search")
+    public List<Product> getProductsByNameThatContain(@RequestParam("name") String name) {
+        return productService.getProductsByNameThatContain(name);
+    }
+
+    @PreAuthorize("authenticated")
+    @GetMapping(value = "/{id}")
+    public Product getProduct(@PathVariable Integer id) {
+        return productService.getProduct(id);
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping(path = "/{productId}/images/{imageId:[\\d]+}{extension:(?:\\.(?:jpeg|png|jpg|apng|svg|bmp))?}")
+    public byte[] getImage(@PathVariable Integer productId, @PathVariable Long imageId) {
+        return productService.getImageById(productId, imageId);
+    }
+
+    // DELETE
+
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.delete(id);
+    }
+
+    @DeleteMapping(path = "/{productId}/images/{imageId:[\\d]+}{extension:(?:\\.(?:jpeg|png|jpg|apng|svg|bmp))?}")
+    public void deleteImage(@PathVariable Integer productId, @PathVariable Long imageId) {
+        productService.deleteImage(productId, imageId);
+    }
+
 }

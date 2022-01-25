@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @Import(ControllerTestConfig.class)
 @WebMvcTest(DashboardController.class)
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc(addFilters=false)
 @AutoConfigureRestDocs("target/generated-snippets")
 public class DashboardControllerTest {
 

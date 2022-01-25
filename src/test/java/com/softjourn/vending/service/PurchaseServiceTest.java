@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -25,7 +25,8 @@ import java.util.List;
 
 import static com.softjourn.vending.controller.ControllerTestConfig.purchaseFilter;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +37,7 @@ public class PurchaseServiceTest {
 
     private PurchaseServiceImpl purchaseService;
 
-    PageRequest pageRequest = new PageRequest(0, 10);
+    PageRequest pageRequest = PageRequest.of(0, 10);
 
     public PurchaseFilterDTO purchaseFilter2;
     public PurchaseFilterDTO purchaseFilter3;
@@ -49,14 +50,14 @@ public class PurchaseServiceTest {
     }
 
     @Before
-    public void prepareDependencies() throws ParseException {
+    public void prepareDependencies() {
         purchaseRepository = Mockito.mock(PurchaseRepository.class);
         MockitoAnnotations.initMocks(this);
         this.purchaseService = new PurchaseServiceImpl(purchaseRepository, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        when(purchaseRepository.findAllByStartDue(any(), any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
+        when(purchaseRepository.findAllByStartDue(any(), any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<>() {{
             add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
-        when(purchaseRepository.findAllByStartDue(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<Purchase>() {{
+        when(purchaseRepository.findAllByStartDue(any(), any(), any())).thenReturn(new PageImpl<>(new ArrayList<>() {{
             add(new Purchase("ldap", "productName", new BigDecimal(10), new VendingMachine(), Instant.now()));
         }}));
         List<SoldProductDTO> topResult = new ArrayList<>();
@@ -94,7 +95,7 @@ public class PurchaseServiceTest {
     public void topProductsByTimeRangeTest() {
         List<SoldProductDTO> topProductsByTimeRange = purchaseService.getTopProductsByTimeRange(10, "2016-10-06T04:00:00Z", "2016-10-06T04:00:00Z");
         assertEquals(10, topProductsByTimeRange.size());
-        assertEquals(true, topProductsByTimeRange.get(0).getQuantity() >= topProductsByTimeRange.get(9).getQuantity());
+        assertTrue(topProductsByTimeRange.get(0).getQuantity() >= topProductsByTimeRange.get(9).getQuantity());
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -19,7 +19,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.awt.image.BufferedImage;
@@ -37,15 +36,16 @@ import static com.softjourn.vending.utils.Constants.IMAGE_DIMENSIONS_MAX_WIDTH;
 @Slf4j
 public class ProductService {
 
-    private final static String PRODUCTS_RELATIVE_ENDPOINT = "products";
-    private final static String IMAGES_ENDPOINT = "images";
+    private static final String PRODUCTS_RELATIVE_ENDPOINT = "products";
+    private static final String IMAGES_ENDPOINT = "images";
 
-    private FavoritesRepository favoritesRepository;
-    private ImageRepository imageRepository;
+    private final FavoritesRepository favoritesRepository;
 
-    private ProductRepository productRepository;
+    private final ImageRepository imageRepository;
 
-    private ReflectionMergeUtil<Product> mergeUtil;
+    private final ProductRepository productRepository;
+
+    private final ReflectionMergeUtil<Product> mergeUtil;
 
     @Autowired
     public ProductService(@NonNull ProductRepository productRepository,
@@ -73,11 +73,7 @@ public class ProductService {
     }
 
     public Product getProduct(@NonNull Integer id) {
-        Product product = productRepository.findOne(id);
-        if (product == null) {
-            throw new ProductNotFoundException(String.format("Product with id %d not found.", id));
-        }
-        return product;
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(String.format("Product with id %d not found.", id)));
     }
 
 
@@ -95,9 +91,7 @@ public class ProductService {
 
     @Transactional
     public synchronized Image addProductImage(@NonNull MultipartFile file, Integer productId) throws IOException {
-        Product product = productRepository.findOne(productId);
-        if (product == null)
-            throw new ProductNotFoundException(String.format("Product with id %d not found.", productId));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(String.format("Product with id %d not found.", productId)));
         Set<Image> productImages = product.getImageUrls();
         Image image = saveImage(file, productId);
         productImages.add(image);
@@ -106,7 +100,7 @@ public class ProductService {
     }
 
     @Transactional
-    public synchronized void addProductImage(@NonNull MultipartFile files[], Integer productId) throws IOException {
+    public synchronized void addProductImage(@NonNull MultipartFile[] files, Integer productId) throws IOException {
         for (MultipartFile file : files) {
             this.saveImage(file, productId);
         }
@@ -129,43 +123,41 @@ public class ProductService {
     public synchronized void delete(@NonNull Integer id) {
         try {
             favoritesRepository.deleteByProduct(id);
-            productRepository.delete(id);
+            productRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new ProductNotFoundException("Product with id " + id + " not found", e);
         }
     }
 
     public byte[] getImageById(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
-        if (image == null)
-            throw new NotFoundException("There is no images passed id");
-        else {
-            if (!productId.equals(image.getProductId()))
-                throw new NotFoundException("There is no images passed id");
-            return image.getData();
+        String errorMsg = "There is no images passed id";
+        Image image = this.imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException(errorMsg));
+        if (!productId.equals(image.getProductId())) {
+            throw new NotFoundException(errorMsg);
         }
+        return image.getData();
     }
 
     public void deleteImage(Integer productId, Long imageId) {
-        Image image = this.imageRepository.findOne(imageId);
+        Image image = this.imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException("There is no images passed id"));
         validateImage(productId, image);
         this.imageRepository.delete(image);
     }
 
-    public void setCoverByImgId(Integer productId, Long imgId) {
-        Image image = this.imageRepository.findOne(imgId);
+    public void setCoverByImgId(Integer productId, Long imageId) {
+        Image image = this.imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException("There is no images passed id"));
         this.validateImage(productId, image);
     }
 
-    private void validateImage(@NonNull MultipartFile file) throws IOException {
+    private void validateImage(@NonNull MultipartFile file) {
         this.validateImageMimeType(file);
-//        this.validateImageDimensions(ImageIO.read(file.getInputStream()));
     }
 
 
     private void validateImageMimeType(MultipartFile file) {
         String supportedTypes = "image/(?:jpeg|png|jpg|apng|svg|bmp)";
-        if (!file.getContentType().matches(supportedTypes)) {
+        String contentType = file.getContentType();
+        if (contentType != null &&  !contentType.matches(supportedTypes)) {
             throw new NotImageException("File is not image");
         }
     }
@@ -193,9 +185,10 @@ public class ProductService {
 
     private void dropCover(Integer productId) {
         this.imageRepository.findByProductIdAndIsCover(productId, true)
-            .stream()
-            .peek(image -> image.setCover(false))
-            .forEach(image -> this.imageRepository.save(image));
+            .forEach(image -> {
+                image.setCover(false);
+                this.imageRepository.save(image);
+            });
     }
 
     private Image setUrlTo(Image image) {

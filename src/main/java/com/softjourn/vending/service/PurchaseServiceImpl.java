@@ -6,7 +6,6 @@ import com.softjourn.vending.dto.PurchaseFilterDTO;
 import com.softjourn.vending.dto.SoldProductDTO;
 import com.softjourn.vending.entity.Purchase;
 import com.softjourn.vending.enums.PurchaseDateEnum;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -41,7 +39,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public Page<PurchaseDTO> getAllUsingFilter(PurchaseFilterDTO filter, Pageable pageable) throws ParseException {
+    public Page<PurchaseDTO> getAllUsingFilter(PurchaseFilterDTO filter, Pageable pageable) {
         // -1 - by all machines
         if (filter.getMachineId() == -1) {
             // by any date
@@ -102,7 +100,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         try {
             Instant startTimestamp = Instant.parse(start);
             Instant dueTimestamp = Instant.parse(due);
-            Pageable size = new PageRequest(0, topSize);
+            Pageable size = PageRequest.of(0, topSize);
             return this.purchaseRepository.findTopProductsByTime(startTimestamp, dueTimestamp, size);
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("Datetime field should be in ISO format(Example: 2016-10-06T04:00:00Z)");

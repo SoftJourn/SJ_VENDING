@@ -9,15 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SoldProductDTO {
 
-    private String product;
+  private String product;
+  private Long quantity;
 
-    private Long quantity;
-
-    @Override
-    public String toString() {
-        return "SoldProductDTO{" +
-                "product='" + product + '\'' +
-                ", quantity=" + quantity +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "SoldProductDTO{" +
+        "product='" + product + '\'' +
+        ", quantity=" + quantity +
+        '}';
+  }
 }

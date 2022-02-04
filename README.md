@@ -3,6 +3,7 @@
 ## Prepare stage
 #### Setup environment variables.
 ```
+SJ_VENDING_SERVER_PORT=8082
 SJ_VENDING_SERVER_DATASOURCE_URL=jdbc:mysql://localhost:3306/sj_coins?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
 SJ_VENDING_SERVER_DATASOURCE_USERNAME=sj
 SJ_VENDING_SERVER_DATASOURCE_PASSWORD=password
@@ -18,6 +19,7 @@ SJ_VENDING_MACHINE_KEYSTORE_ALIAS=vending
 ```
 Or with export:
 ```
+export SJ_VENDING_SERVER_PORT=8082
 export SJ_VENDING_SERVER_DATASOURCE_URL='jdbc:mysql://localhost:3306/sj_coins?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false'
 export SJ_VENDING_SERVER_DATASOURCE_USERNAME='sj'
 export SJ_VENDING_SERVER_DATASOURCE_PASSWORD='password'

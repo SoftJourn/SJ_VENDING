@@ -1,26 +1,24 @@
 package com.softjourn.vending.dao;
 
 import com.softjourn.vending.entity.Favorite;
+import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
 public interface FavoritesRepository extends CrudRepository<Favorite, Long> {
 
-    @Query("SELECT f FROM Favorite f WHERE f.account = ?1")
-    List<Favorite> getByAcount(String account);
+  @Query("SELECT f FROM Favorite f WHERE f.account = ?1")
+  List<Favorite> getByAcount(String account);
 
-    @Modifying
-    @Query("DELETE FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
-    void delete(String account, Integer productId);
+  @Modifying
+  @Query("DELETE FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
+  void delete(String account, Integer productId);
 
-    @Modifying
-    @Query("DELETE FROM Favorite f WHERE f.product.id = ?1")
-    void deleteByProduct(Integer productId);
+  @Modifying
+  @Query("DELETE FROM Favorite f WHERE f.product.id = ?1")
+  void deleteByProduct(Integer productId);
 
-    @Query("SELECT f FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
-    Favorite getByAccountAndProduct(String account, Integer productId);
-
+  @Query("SELECT f FROM Favorite f WHERE f.account = ?1 AND f.product.id = ?2")
+  Favorite getByAccountAndProduct(String account, Integer productId);
 }

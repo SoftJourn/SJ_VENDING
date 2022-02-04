@@ -1,26 +1,25 @@
 package com.softjourn.vending.controller;
 
 import com.softjourn.vending.service.DashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/v1/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
+@RequestMapping(value = "/v1/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DashboardController {
 
-    @Autowired
-    private DashboardService dashboardService;
+  private final DashboardService dashboardService;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getDashboard() {
-        return new ResponseEntity<>(dashboardService.getDashboard(), HttpStatus.OK);
-    }
-
+  @GetMapping
+  public ResponseEntity<?> getDashboard() {
+    return new ResponseEntity<>(dashboardService.getDashboard(), HttpStatus.OK);
+  }
 }

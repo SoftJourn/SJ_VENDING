@@ -2,52 +2,53 @@ package com.softjourn.vending.controller;
 
 import com.softjourn.vending.entity.Category;
 import com.softjourn.vending.service.CategoriesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('INVENTORY','SUPER_ADMIN')")
+@RequestMapping(value = "/v1/categories", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoriesController {
 
-    private final CategoriesService categoriesService;
+  private final CategoriesService categoriesService;
 
-    @Autowired
-    public CategoriesController(CategoriesService categoriesService) {
-        this.categoriesService = categoriesService;
-    }
+  @GetMapping
+  public ResponseEntity<List<Category>> getCategories() {
+    return new ResponseEntity<>(categoriesService.getAll(), HttpStatus.OK);
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Category>> getCategories() {
-        return new ResponseEntity<>(categoriesService.getAll(), HttpStatus.OK);
-    }
+  @PostMapping
+  public ResponseEntity<Category> addCategories(@Valid @RequestBody Category category) {
+    return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
+  }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Category> addCategories(@Valid @RequestBody Category category) {
-        return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
-    }
+  @PutMapping
+  public ResponseEntity<Category> updateCategories(@Valid @RequestBody Category category) {
+    return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
+  }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Category> updateCategories(@Valid @RequestBody Category category) {
-        return new ResponseEntity<>(categoriesService.save(category), HttpStatus.OK);
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<Category> getCategory(@PathVariable Long id) {
+    return new ResponseEntity<>(categoriesService.get(id), HttpStatus.OK);
+  }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Category> getCategory(@PathVariable Long id) {
-        return new ResponseEntity<>(categoriesService.get(id), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> removeCategories(@PathVariable Long id) {
-        categoriesService.delete(id);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> removeCategories(@PathVariable Long id) {
+    categoriesService.delete(id);
+    return new ResponseEntity(HttpStatus.OK);
+  }
 }

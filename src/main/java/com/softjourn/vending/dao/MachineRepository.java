@@ -1,12 +1,11 @@
 package com.softjourn.vending.dao;
 
-
 import com.softjourn.vending.entity.VendingMachine;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MachineRepository extends RefreshableRepository<VendingMachine, Integer> {
-    List<VendingMachine> findByIsActive(Boolean isActive);
+
+  List<VendingMachine> findByIsActive(Boolean isActive);
 }

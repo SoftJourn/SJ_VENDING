@@ -2,8 +2,7 @@ package com.softjourn.vending.service;
 
 public interface MachineService {
 
-    void buy(Integer machineId, String fieldInternalId);
+  void buy(Integer machineId, String fieldInternalId);
 
-    void resetEngines(Integer machineId);
-
+  void resetEngines(Integer machineId);
 }

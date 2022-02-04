@@ -1,6 +1,5 @@
 package com.softjourn.vending;
 
-
 import com.softjourn.common.spring.aspects.logging.EnableLoggingAspect;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,25 +11,24 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-
-@SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
-@EnableResourceServer
 @EnableLoggingAspect
+@EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
 @PropertySources(
-        @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)
+    @PropertySource(value = "file:${user.home}/.vending/application.properties", ignoreResourceNotFound = true)
 )
 public class Vending {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Vending.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(Vending.class, args);
+  }
 
-    public static class ServletInit extends SpringBootServletInitializer {
+  public static class ServletInit extends SpringBootServletInitializer {
 
-        @Override
-        protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-            return application.sources(Vending.class);
-        }
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+      return application.sources(Vending.class);
     }
+  }
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MerchantDTO {
-    private String name;
-    private String uniqueId;
+
+  private String name;
+  private String uniqueId;
 }

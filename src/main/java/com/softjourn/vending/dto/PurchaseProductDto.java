@@ -2,10 +2,13 @@ package com.softjourn.vending.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.softjourn.vending.utils.InstantJsonSerializer;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -14,12 +17,9 @@ import java.time.Instant;
 @AllArgsConstructor
 public class PurchaseProductDto {
 
-    private String name;
+  private String name;
+  private BigDecimal price;
 
-    private BigDecimal price;
-
-    @JsonSerialize(using = InstantJsonSerializer.class)
-    private Instant time;
-
-
+  @JsonSerialize(using = InstantJsonSerializer.class)
+  private Instant time;
 }

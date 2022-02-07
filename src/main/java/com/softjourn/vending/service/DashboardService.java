@@ -4,6 +4,5 @@ import com.softjourn.vending.dto.DashboardDTO;
 
 public interface DashboardService {
 
-    DashboardDTO getDashboard();
-
+  DashboardDTO getDashboard();
 }

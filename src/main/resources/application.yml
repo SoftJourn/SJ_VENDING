@@ -1,3 +1,6 @@
+server:
+  port: ${SJ_VENDING_SERVER_PORT}
+
 # Spring
 # For custom endpoint exception handling
 spring:

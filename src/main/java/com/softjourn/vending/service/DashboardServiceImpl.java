@@ -11,25 +11,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
-    @Autowired
-    private ProductRepository productRepository;
+  @Autowired
+  private ProductRepository productRepository;
 
-    @Autowired
-    private MachineRepository machineRepository;
+  @Autowired
+  private MachineRepository machineRepository;
 
-    @Autowired
-    private CategoriesRepository categoriesRepository;
+  @Autowired
+  private CategoriesRepository categoriesRepository;
 
-    @Autowired
-    private PurchaseRepository purchaseRepository;
+  @Autowired
+  private PurchaseRepository purchaseRepository;
 
-    @Override
-    public DashboardDTO getDashboard() {
-        DashboardDTO dashboardDTO = new DashboardDTO();
-        dashboardDTO.setProducts(productRepository.count());
-        dashboardDTO.setMachines(machineRepository.count());
-        dashboardDTO.setCategories(categoriesRepository.count());
-        dashboardDTO.setPurchases(purchaseRepository.count());
-        return dashboardDTO;
-    }
+  @Override
+  public DashboardDTO getDashboard() {
+    DashboardDTO dashboardDTO = new DashboardDTO();
+    dashboardDTO.setProducts(productRepository.count());
+    dashboardDTO.setMachines(machineRepository.count());
+    dashboardDTO.setCategories(categoriesRepository.count());
+    dashboardDTO.setPurchases(purchaseRepository.count());
+    return dashboardDTO;
+  }
 }

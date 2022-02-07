@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Position {
-    int row;
-    int column;
-    String cellName;
+
+  int row;
+  int column;
+  String cellName;
 }

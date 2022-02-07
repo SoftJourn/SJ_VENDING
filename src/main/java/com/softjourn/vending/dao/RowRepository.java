@@ -1,6 +1,5 @@
 package com.softjourn.vending.dao;
 
-
 import com.softjourn.vending.entity.Row;
 import org.springframework.data.repository.CrudRepository;
 

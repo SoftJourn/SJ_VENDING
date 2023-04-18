@@ -30,7 +30,7 @@
         <org.springframework.security.oauth.oauth2.version>2.5.1.RELEASE</org.springframework.security.oauth.oauth2.version>
         <com.softjourn.common.version>0.5</com.softjourn.common.version>
         <org.projectlombok.version>1.18.22</org.projectlombok.version>
-        <mysql.version>8.0.27</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <org.flywaydb.version>5.2.4</org.flywaydb.version>
 <!--        <org.flywaydb.version>8.4.1</org.flywaydb.version>-->
         <junit.version>4.13.2</junit.version>
